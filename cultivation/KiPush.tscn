@@ -9,9 +9,11 @@ extents = Vector2( 14.6215, 37.4926 )
 [node name="KiPush" type="Area2D"]
 position = Vector2( 392.218, 79.8735 )
 rotation = -0.58487
-space_override = 3
+space_override = 4
 gravity = 100.0
 linear_damp = 2.0
+monitoring = false
+monitorable = false
 collision_layer = 0
 collision_mask = 31
 script = ExtResource( 1 )

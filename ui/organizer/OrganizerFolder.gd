@@ -7,17 +7,26 @@ onready var label = $VBoxContainer/HBoxContainer/Label
 onready var editNameButton = $VBoxContainer/HBoxContainer/EditNameButton
 
 export var labelText = "folder"
-export var draggable = true
+export var canDrag = true
+export var canDelete = true
 
 var isOpen = false
 var editBox:OrganizerLabelEdit
+var containingOrganizer
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	self.rect_pivot_offset = rect_size / 2
 	entryContainer.visible = false
-	label.text = labelText
+	if labelText: label.text = labelText
+	else: label.text = name
 	labelText = null
+	for child in get_children():
+		if child.has_method('is_organizer_entry') && child.is_organizer_entry():
+			self.remove_child(child)
+			entryContainer.add_child(child)
+
+func is_organizer_entry(): return true
 
 func get_entry_container():
 	return entryContainer
@@ -84,10 +93,20 @@ func update_name_entered(newText):
 	update_name_lost_focus()
 
 func ask_to_delete():
+	if !canDelete:
+		var noDeletePopup = OrganizerDeleteRejectDialog.new()
+		noDeletePopup.dialog_text = "You may not delete "+label.text+"."
+		var addLayer = self
+		while addLayer.get_parent() && !(addLayer is CanvasLayer): addLayer = addLayer.get_parent()
+		addLayer.add_child(noDeletePopup)
+		noDeletePopup.popup()
+		return
 	var confirm:OrganizerDeleteConfirmationDialog = OrganizerDeleteConfirmationDialog.new()
 	confirm.dialog_text = "Are you sure you want to delete "+label.text+"?\n\nThis is irreversible."
 	confirm.connect("confirmed", self, 'really_delete')
-	get_tree().root.add_child(confirm)
+	var addLayer = self
+	while addLayer.get_parent() && !(addLayer is CanvasLayer): addLayer = addLayer.get_parent()
+	addLayer.add_child(confirm)
 	confirm.popup()
 	
 func really_delete():

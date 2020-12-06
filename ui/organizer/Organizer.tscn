@@ -1,13 +1,14 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://ui/Organizer.gd" type="Script" id=2]
-[ext_resource path="res://img/delete.png" type="Texture" id=3]
-[ext_resource path="res://ui/OrganizerDeleteTarget.gd" type="Script" id=4]
+[ext_resource path="res://img/delete.png" type="Texture" id=1]
+[ext_resource path="res://ui/organizer/Organizer.gd" type="Script" id=2]
+[ext_resource path="res://ui/organizer/OrganizerDeleteTarget.gd" type="Script" id=3]
 
 [node name="Organizer" type="PanelContainer"]
 margin_right = 300.0
 margin_bottom = 300.0
 rect_min_size = Vector2( 300, 300 )
+size_flags_vertical = 3
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -36,8 +37,8 @@ margin_right = 286.0
 margin_bottom = 20.0
 hint_tooltip = "Drag entries and folders here to delete"
 size_flags_horizontal = 10
-texture = ExtResource( 3 )
-script = ExtResource( 4 )
+texture = ExtResource( 1 )
+script = ExtResource( 3 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
 margin_top = 24.0
@@ -64,4 +65,3 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 [connection signal="pressed" from="VBoxContainer/ToolContainer/NewFolderButton" to="." method="_on_NewFolderButton_pressed"]
-[connection signal="mouse_exited" from="VBoxContainer/ToolContainer/DeleteTarget" to="VBoxContainer/ToolContainer/DeleteTarget" method="_on_DeleteTarget_mouse_exited"]

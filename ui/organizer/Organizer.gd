@@ -15,6 +15,9 @@ const OrganizerEntryScene = preload('./OrganizerEntry.tscn')
 
 func _ready():
 	for child in get_children():
+		if child.has_method('is_organizer_entry') && child.is_organizer_entry():
+			self.remove_child(child)
+			entryContainer.add_child(child)
 		connect_drag_events_for_tree(child)
 
 func _process(delta):
@@ -104,10 +107,10 @@ func update_drag_indicator():
 							childrenToScan = dropContainer.get_children()
 							stillScanning = true
 							break
-#
-#
+
 func connect_drag_events_for_tree(entry):
 	if entry is Control and !entry.name.ends_with('Target'):
+		if entry.has_meta('containingOrganizer'): entry.containingOrganizer = self
 		print('setting up drag for ', entry)
 		entry.set_drag_forwarding(self)
 	for child in entry.get_children():
@@ -116,10 +119,10 @@ func connect_drag_events_for_tree(entry):
 func add_new_entry(entry:Node2D):
 	if entry.has_method('connect_parent_container'): entry.connect_parent_container(self)
 	add_child(entry)
-	
+
 func can_drop_data(position, data):
 	return (data is OrganizerEntry) or (data is OrganizerFolder)
-	
+
 func can_drop_data_fw(position, data, from_control):
 	return (data is OrganizerEntry) or (data is OrganizerFolder)
 
@@ -153,7 +156,7 @@ func drop_data_fw(position, data, from_control):
 func get_drag_data_fw(position, from_control):
 	while from_control && !(from_control is OrganizerEntry) && !(from_control is OrganizerFolder):
 		from_control = from_control.get_parent()
-	if !from_control || !from_control.draggable: return null
+	if !from_control || !from_control.canDrag: return null
 	draggingEntry = from_control
 	dragIndicator.visible = true
 	set_process(true)
@@ -161,11 +164,9 @@ func get_drag_data_fw(position, from_control):
 	print('starting drag for ', from_control)
 	return from_control
 
-
 func _on_NewFolderButton_pressed():
 	var newFolder = OrganizerFolderScene.instance()
 	entryContainer.add_child(newFolder)
 	connect_drag_events_for_tree(newFolder)
 	yield(get_tree(),"idle_frame")
 	newFolder.edit_name()
-

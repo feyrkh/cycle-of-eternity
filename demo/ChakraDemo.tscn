@@ -1,19 +1,52 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://cultivation/chakra_1.tscn" type="PackedScene" id=1]
 [ext_resource path="res://img/body_male_skin.png" type="Texture" id=2]
 [ext_resource path="res://ui/DragSurface.gd" type="Script" id=3]
 [ext_resource path="res://cultivation/ki.tscn" type="PackedScene" id=4]
+[ext_resource path="res://ui/organizer/Organizer.tscn" type="PackedScene" id=5]
 [ext_resource path="res://ui/TimeController.tscn" type="PackedScene" id=6]
 [ext_resource path="res://ui/QueryTool.tscn" type="PackedScene" id=7]
 [ext_resource path="res://ui/QueryToolCursor.tscn" type="PackedScene" id=8]
 [ext_resource path="res://cultivation/KiPush.tscn" type="PackedScene" id=9]
 [ext_resource path="res://cultivation/KiWell.tscn" type="PackedScene" id=10]
+[ext_resource path="res://ui/organizer/OrganizerFolder.tscn" type="PackedScene" id=11]
+[ext_resource path="res://ui/organizer/OrganizerEntry.tscn" type="PackedScene" id=12]
+[ext_resource path="res://img/query.png" type="Texture" id=13]
+[ext_resource path="res://ui/MouseLayer.gd" type="Script" id=14]
+[ext_resource path="res://img/quill.png" type="Texture" id=15]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = \"text\"
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	$\"/root/Event\".connect(\"organizer_entry_toggled\", self, 'technique_toggled')
+	
+func technique_toggled(organizer, organizerItem, pressed):
+	var node = get_node_or_null(organizerItem.name)
+	print('toggling ', organizerItem.name, ': ', pressed)
+	if node: 
+		if pressed: activate(node)
+		else: deactivate(node)
+
+func deactivate(node):
+	if node.has_method('deactivate'): node.deactivate()
+	
+func activate(node):
+	if node.has_method('activate'): node.activate()
+"
 
 [node name="ChakraDemo" type="Node2D"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2( 506, 300 )
+position = Vector2( 535.951, 306.263 )
 current = true
 
 [node name="body_male_skin" type="Sprite" parent="."]
@@ -22,34 +55,34 @@ scale = Vector2( 16.8865, 16.8865 )
 texture = ExtResource( 2 )
 
 [node name="movers2" type="Node2D" parent="."]
+script = SubResource( 1 )
 
-[node name="KiPush" parent="movers2" instance=ExtResource( 9 )]
+[node name="Northwest" parent="movers2" instance=ExtResource( 9 )]
 
-[node name="KiPush2" parent="movers2" instance=ExtResource( 9 )]
+[node name="Northeast" parent="movers2" instance=ExtResource( 9 )]
 position = Vector2( 626.359, 84.1114 )
 rotation = 1.50639
-scale = Vector2( 1, 1 )
 
-[node name="KiPush3" parent="movers2" instance=ExtResource( 9 )]
+[node name="Southwest" parent="movers2" instance=ExtResource( 9 )]
 position = Vector2( 369.969, 475.583 )
 rotation = -2.55786
 
-[node name="KiPush4" parent="movers2" instance=ExtResource( 9 )]
+[node name="Southeast" parent="movers2" instance=ExtResource( 9 )]
 position = Vector2( 666.619, 483.529 )
 rotation = 1.72728
 
-[node name="KiWell" parent="movers2" instance=ExtResource( 10 )]
+[node name="Wood Collector" parent="movers2" instance=ExtResource( 10 )]
 position = Vector2( 300.915, 434.285 )
 
-[node name="KiWell2" parent="movers2" instance=ExtResource( 10 )]
+[node name="Earth Collector" parent="movers2" instance=ExtResource( 10 )]
 position = Vector2( 643.122, 89.9593 )
 collision_mask = 1
 
-[node name="KiWell3" parent="movers2" instance=ExtResource( 10 )]
+[node name="Water Collector" parent="movers2" instance=ExtResource( 10 )]
 position = Vector2( 377.197, 54.997 )
 collision_mask = 8
 
-[node name="KiWell4" parent="movers2" instance=ExtResource( 10 )]
+[node name="Metal Collector" parent="movers2" instance=ExtResource( 10 )]
 position = Vector2( 722.052, 498.382 )
 collision_mask = 16
 
@@ -346,7 +379,6 @@ scale = Vector2( 0.799999, 0.799999 )
 
 [node name="QueryToolCursor" parent="." instance=ExtResource( 8 )]
 visible = false
-position = Vector2( -86.182, -46.1843 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -362,19 +394,126 @@ __meta__ = {
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
-margin_right = 135.0
-margin_bottom = 159.0
+anchor_bottom = 1.0
+margin_right = 300.0
+size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TimeController" parent="CanvasLayer/VBoxContainer" instance=ExtResource( 6 )]
+[node name="Organizer" parent="CanvasLayer/VBoxContainer" instance=ExtResource( 5 )]
+margin_bottom = 1042.0
+
+[node name="Pushers" parent="CanvasLayer/VBoxContainer/Organizer" instance=ExtResource( 11 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 293.0
+margin_bottom = 1035.0
+labelText = "Pushers"
+canDelete = false
+
+[node name="Northeast" parent="CanvasLayer/VBoxContainer/Organizer/Pushers" instance=ExtResource( 12 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 279.0
+margin_bottom = 1021.0
+labelText = "Northeast Meridian"
+canDelete = false
+isToggle = true
+
+[node name="Northwest" parent="CanvasLayer/VBoxContainer/Organizer/Pushers" instance=ExtResource( 12 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 279.0
+margin_bottom = 1021.0
+labelText = "Northwest Meridian"
+isToggle = true
+
+[node name="Southeast" parent="CanvasLayer/VBoxContainer/Organizer/Pushers" instance=ExtResource( 12 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 279.0
+margin_bottom = 1021.0
+labelText = "Southeast Meridian"
+isToggle = true
+
+[node name="Southwest" parent="CanvasLayer/VBoxContainer/Organizer/Pushers" instance=ExtResource( 12 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 279.0
+margin_bottom = 1021.0
+labelText = "Southwest Meridian"
+isToggle = true
+
+[node name="Collectors" parent="CanvasLayer/VBoxContainer/Organizer" instance=ExtResource( 11 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 293.0
+margin_bottom = 1035.0
+
+[node name="Earth Collector" parent="CanvasLayer/VBoxContainer/Organizer/Collectors" instance=ExtResource( 12 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 279.0
+margin_bottom = 1021.0
+isToggle = true
+
+[node name="Wood Collector" parent="CanvasLayer/VBoxContainer/Organizer/Collectors" instance=ExtResource( 12 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 279.0
+margin_bottom = 1021.0
+isToggle = true
+
+[node name="Water Collector" parent="CanvasLayer/VBoxContainer/Organizer/Collectors" instance=ExtResource( 12 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 279.0
+margin_bottom = 1021.0
+isToggle = true
+
+[node name="Metal Collector" parent="CanvasLayer/VBoxContainer/Organizer/Collectors" instance=ExtResource( 12 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 279.0
+margin_bottom = 1021.0
+isToggle = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/VBoxContainer"]
+margin_top = 1046.0
+margin_right = 300.0
+margin_bottom = 1080.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TimeController" parent="CanvasLayer/VBoxContainer/HBoxContainer" instance=ExtResource( 6 )]
 margin_right = 135.0
 margin_bottom = 34.0
+size_flags_vertical = 8
 
-[node name="QueryTool" parent="CanvasLayer/VBoxContainer" instance=ExtResource( 7 )]
-margin_top = 38.0
-margin_right = 135.0
-margin_bottom = 159.0
+[node name="QueryTool" parent="CanvasLayer/VBoxContainer/HBoxContainer" instance=ExtResource( 7 )]
+margin_left = 139.0
+margin_top = 14.0
+margin_right = 159.0
+margin_bottom = 34.0
+size_flags_vertical = 8
+offsetCameraPath = NodePath("../../../../Camera2D")
+queryToolCursorPath = NodePath("../../../../QueryToolCursor")
+rootScenePath = NodePath("../../../..")
+
+[node name="MouseLayer" type="CanvasLayer" parent="."]
+script = ExtResource( 14 )
+
+[node name="mousePosition" type="Node2D" parent="MouseLayer"]
+
+[node name="query" type="Sprite" parent="MouseLayer/mousePosition"]
+visible = false
+texture = ExtResource( 13 )
+
+[node name="quill" type="Sprite" parent="MouseLayer/mousePosition"]
+visible = false
+rotation = 1.5708
+texture = ExtResource( 15 )
 [connection signal="gui_input" from="CanvasLayer/DragSurface" to="CanvasLayer/DragSurface" method="_on_DragSurface_gui_input"]
 [connection signal="mouse_exited" from="CanvasLayer/DragSurface" to="CanvasLayer/DragSurface" method="_on_DragSurface_mouse_exited"]

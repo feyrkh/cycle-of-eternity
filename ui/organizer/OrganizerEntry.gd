@@ -1,18 +1,27 @@
 extends PanelContainer
 class_name OrganizerEntry
 
-export var labelText = 'entry'
-export var draggable = true
+export var labelText = ''
+export var canDrag = true
+export var canDelete = true
+export var isToggle = false
 
 onready var label = $HBoxContainer/Label
 onready var editNameButton = $HBoxContainer/EditNameButton
 
 var editBox:OrganizerLabelEdit
+var containingOrganizer
 
 func _ready():
 	print('loading')
-	label.text = labelText
+	if labelText: label.text = labelText
+	else: label.text = name
 	labelText = null
+	label.flat = !isToggle
+	label.toggle_mode = isToggle
+	
+
+func is_organizer_entry(): return true
 
 func highlight():
 	self.modulate = Color.yellow
@@ -43,11 +52,30 @@ func update_name_entered(newText):
 	update_name_lost_focus()
 
 func ask_to_delete():
+	if !canDelete:
+		var noDeletePopup = OrganizerDeleteRejectDialog.new()
+		noDeletePopup.dialog_text = "You may not delete "+label.text+"."
+		var addLayer = self
+		while addLayer.get_parent() && !(addLayer is CanvasLayer): addLayer = addLayer.get_parent()
+		addLayer.add_child(noDeletePopup)
+		noDeletePopup.popup()
+		return
+		
 	var confirm:OrganizerDeleteConfirmationDialog = OrganizerDeleteConfirmationDialog.new()
 	confirm.dialog_text = "Are you sure you want to delete "+label.text+"?\n\nThis is irreversible."
 	confirm.connect("confirmed", self, 'really_delete')
-	get_tree().root.add_child(confirm)
+	var addLayer = self
+	while addLayer.get_parent() && !(addLayer is CanvasLayer): addLayer = addLayer.get_parent()
+	addLayer.add_child(confirm)
 	confirm.popup()
 	
 func really_delete():
 	self.queue_free()
+
+
+func _on_Label_pressed():
+	$"/root/Event".emit_signal("organizer_entry_clicked", containingOrganizer, self)
+
+
+func _on_Label_toggled(button_pressed):
+	$"/root/Event".emit_signal("organizer_entry_toggled", containingOrganizer, self, button_pressed)

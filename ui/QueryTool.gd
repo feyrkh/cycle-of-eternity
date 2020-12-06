@@ -1,23 +1,32 @@
 extends TextureButton
 
-export var queryToolCursorPath = '../../../QueryToolCursor'
+export(NodePath) var offsetCameraPath
+var offsetCamera:Camera2D
+
+export(NodePath) var queryToolCursorPath
+export(NodePath) var rootScenePath
 onready var area2d:Area2D = get_node(queryToolCursorPath)
+onready var rootScene = get_node(rootScenePath)
+var drawLayer
 var highlighted = null
 var querying = false
 var queryTimer = 0.1
 
 func _ready():
 	set_process(false)
-	
+	drawLayer = self
+	while drawLayer.get_parent() && !(drawLayer is CanvasLayer): drawLayer = drawLayer.get_parent()
+	offsetCamera = get_node(offsetCameraPath)
 
 func _on_TextureButton_pressed():
 	querying = true
 	set_process(true)
-	area2d.visible = true
+	#area2d.visible = true
+	$"/root/Event".emit_signal("set_mouse_image", 'query')
 	print('Entered query mode')
 	
 func _process(delta):
-	area2d.global_position = area2d.get_global_mouse_position()
+	area2d.position = offsetCamera.get_global_mouse_position()
 	if Input.is_action_just_pressed('query_click'):
 		queryHighlightedItem()
 	queryTimer -= max(0.1, delta)
@@ -29,6 +38,7 @@ func queryHighlightedItem():
 	querying = false
 	area2d.visible = false
 	print('Leaving query mode')
+	$"/root/Event".emit_signal("set_mouse_image", 'default')
 	set_process(false)
 	if !highlighted: return
 	if highlighted.has_method('query_popup'): highlighted.query_popup()

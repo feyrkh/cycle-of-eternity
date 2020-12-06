@@ -9,11 +9,6 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "ColorRect",
-"class": "DragHandle",
-"language": "GDScript",
-"path": "res://ui/DragHandle.gd"
-}, {
 "base": "Node",
 "class": "KiUtil",
 "language": "GDScript",
@@ -22,27 +17,32 @@ _global_script_classes=[ {
 "base": "ConfirmationDialog",
 "class": "OrganizerDeleteConfirmationDialog",
 "language": "GDScript",
-"path": "res://ui/OrganizerDeleteConfirmDialog.gd"
+"path": "res://ui/organizer/OrganizerDeleteConfirmDialog.gd"
+}, {
+"base": "AcceptDialog",
+"class": "OrganizerDeleteRejectDialog",
+"language": "GDScript",
+"path": "res://ui/organizer/OrganizerRejectDeleteDialog.gd"
 }, {
 "base": "PanelContainer",
 "class": "OrganizerEntry",
 "language": "GDScript",
-"path": "res://ui/OrganizerEntry.gd"
+"path": "res://ui/organizer/OrganizerEntry.gd"
 }, {
 "base": "PanelContainer",
 "class": "OrganizerFolder",
 "language": "GDScript",
-"path": "res://ui/OrganizerFolder.gd"
+"path": "res://ui/organizer/OrganizerFolder.gd"
 }, {
 "base": "LineEdit",
 "class": "OrganizerLabelEdit",
 "language": "GDScript",
-"path": "res://ui/OrganizerLabelEdit.gd"
+"path": "res://ui/organizer/OrganizerLabelEdit.gd"
 } ]
 _global_script_class_icons={
-"DragHandle": "",
 "KiUtil": "",
 "OrganizerDeleteConfirmationDialog": "",
+"OrganizerDeleteRejectDialog": "",
 "OrganizerEntry": "",
 "OrganizerFolder": "",
 "OrganizerLabelEdit": ""
@@ -61,6 +61,10 @@ Event="*res://Event.tscn"
 
 window/size/width=1920
 window/size/height=1080
+
+[gui]
+
+timers/tooltip_delay_sec=0.2
 
 [input]
 
