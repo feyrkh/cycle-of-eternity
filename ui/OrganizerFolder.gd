@@ -42,6 +42,10 @@ func _on_TextureRect_gui_input(event):
 		if event.button_index == BUTTON_LEFT and event.pressed:
 			toggle_folder()
 
+
+func _on_Label_pressed():
+	toggle_folder()
+
 func toggle_folder():
 	print('toggling folder')
 	isOpen = !isOpen

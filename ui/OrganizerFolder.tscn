@@ -34,14 +34,15 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+[node name="Label" type="Button" parent="VBoxContainer/HBoxContainer"]
 margin_left = 24.0
-margin_top = 3.0
 margin_right = 236.0
-margin_bottom = 17.0
-mouse_filter = 1
+margin_bottom = 20.0
 size_flags_horizontal = 3
+size_flags_vertical = 4
 text = "Folder Name"
+flat = true
+align = 0
 
 [node name="EditNameButton" parent="VBoxContainer/HBoxContainer" instance=ExtResource( 3 )]
 
@@ -51,4 +52,5 @@ margin_right = 260.0
 margin_bottom = 24.0
 [connection signal="gui_input" from="VBoxContainer/HBoxContainer/OpenIcon" to="." method="_on_TextureRect_gui_input"]
 [connection signal="visibility_changed" from="VBoxContainer/HBoxContainer/OpenIcon" to="." method="_on_OpenIcon_visibility_changed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Label" to="." method="_on_Label_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/EditNameButton" to="." method="edit_name"]

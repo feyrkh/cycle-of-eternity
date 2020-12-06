@@ -46,7 +46,7 @@ func update_drag_indicator():
 		dropTarget = null
 		dropContainer = null
 		return
-	print(mousePos, ' contained in ', self.get_global_rect())
+	#print(mousePos, ' contained in ', self.get_global_rect())
 	dragIndicator.visible = true
 	var childrenToScan = dropContainer.get_children()
 	var stillScanning = true
@@ -128,7 +128,8 @@ func drop_data_fw(position, data, from_control):
 	print('checking drop at position ', position)
 	# Check if dropTarget is a descendant of the item we're dropping
 	var checkNode = dropTarget
-	var invalidDrop = false
+	var invalidDrop = dropTarget == self
+	print('checking for invalid drop: ', dropTarget.name, ' vs ', data.name, ' (preemptive check: ', invalidDrop, ')')
 	while checkNode != null:
 		if checkNode == data: 
 			print('invalid drop, ', data, ' is an ancestor of ', dropTarget)
