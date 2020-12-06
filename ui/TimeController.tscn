@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://ui/TimeController.gd" type="Script" id=1]
+
+[node name="TimeController" type="PanelContainer"]
+margin_right = 14.0
+margin_bottom = 14.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 128.0
+margin_bottom = 27.0
+
+[node name="PauseButton" type="Button" parent="HBoxContainer"]
+margin_right = 26.0
+margin_bottom = 20.0
+focus_mode = 0
+enabled_focus_mode = 0
+text = "||"
+
+[node name="PlayButton" type="Button" parent="HBoxContainer"]
+margin_left = 30.0
+margin_right = 50.0
+margin_bottom = 20.0
+focus_mode = 0
+enabled_focus_mode = 0
+text = ">"
+
+[node name="FFButton" type="Button" parent="HBoxContainer"]
+margin_left = 54.0
+margin_right = 82.0
+margin_bottom = 20.0
+focus_mode = 0
+enabled_focus_mode = 0
+text = ">>"
+
+[node name="MaxSpeedButton" type="Button" parent="HBoxContainer"]
+margin_left = 86.0
+margin_right = 121.0
+margin_bottom = 20.0
+focus_mode = 0
+enabled_focus_mode = 0
+text = ">>|"
+[connection signal="pressed" from="HBoxContainer/PauseButton" to="." method="set_speed" binds= [ 0 ]]
+[connection signal="pressed" from="HBoxContainer/PlayButton" to="." method="set_speed" binds= [ 1 ]]
+[connection signal="pressed" from="HBoxContainer/FFButton" to="." method="set_speed" binds= [ 2 ]]
+[connection signal="pressed" from="HBoxContainer/MaxSpeedButton" to="." method="set_speed" binds= [ 3 ]]

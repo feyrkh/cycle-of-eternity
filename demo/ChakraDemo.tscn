@@ -1,0 +1,380 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://cultivation/chakra_1.tscn" type="PackedScene" id=1]
+[ext_resource path="res://img/body_male_skin.png" type="Texture" id=2]
+[ext_resource path="res://ui/DragSurface.gd" type="Script" id=3]
+[ext_resource path="res://cultivation/ki.tscn" type="PackedScene" id=4]
+[ext_resource path="res://ui/TimeController.tscn" type="PackedScene" id=6]
+[ext_resource path="res://ui/QueryTool.tscn" type="PackedScene" id=7]
+[ext_resource path="res://ui/QueryToolCursor.tscn" type="PackedScene" id=8]
+[ext_resource path="res://cultivation/KiPush.tscn" type="PackedScene" id=9]
+[ext_resource path="res://cultivation/KiWell.tscn" type="PackedScene" id=10]
+
+[node name="ChakraDemo" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 506, 300 )
+current = true
+
+[node name="body_male_skin" type="Sprite" parent="."]
+position = Vector2( 538.137, 789.959 )
+scale = Vector2( 16.8865, 16.8865 )
+texture = ExtResource( 2 )
+
+[node name="movers2" type="Node2D" parent="."]
+
+[node name="KiPush" parent="movers2" instance=ExtResource( 9 )]
+
+[node name="KiPush2" parent="movers2" instance=ExtResource( 9 )]
+position = Vector2( 626.359, 84.1114 )
+rotation = 1.50639
+scale = Vector2( 1, 1 )
+
+[node name="KiPush3" parent="movers2" instance=ExtResource( 9 )]
+position = Vector2( 369.969, 475.583 )
+rotation = -2.55786
+
+[node name="KiPush4" parent="movers2" instance=ExtResource( 9 )]
+position = Vector2( 666.619, 483.529 )
+rotation = 1.72728
+
+[node name="KiWell" parent="movers2" instance=ExtResource( 10 )]
+position = Vector2( 300.915, 434.285 )
+
+[node name="KiWell2" parent="movers2" instance=ExtResource( 10 )]
+position = Vector2( 643.122, 89.9593 )
+collision_mask = 1
+
+[node name="KiWell3" parent="movers2" instance=ExtResource( 10 )]
+position = Vector2( 377.197, 54.997 )
+collision_mask = 8
+
+[node name="KiWell4" parent="movers2" instance=ExtResource( 10 )]
+position = Vector2( 722.052, 498.382 )
+collision_mask = 16
+
+[node name="ki" type="Node2D" parent="."]
+
+[node name="ki" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki41" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki42" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki43" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki44" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki45" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki46" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki47" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki48" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki49" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki50" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki51" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki52" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki53" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki54" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki55" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki56" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki57" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki58" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki59" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki60" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki61" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki62" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki63" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki64" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki65" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki66" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki67" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki68" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki69" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki70" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki71" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki72" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki73" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki74" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki75" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki76" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki77" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki78" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki79" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki80" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki81" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki82" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki83" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki84" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki85" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki86" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki87" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki88" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki89" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki90" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki91" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki92" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki93" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki94" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki95" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki11" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki12" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki13" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki14" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki15" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki16" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki17" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki18" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki19" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki20" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki21" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki22" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki23" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki24" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki25" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki26" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki27" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki28" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki29" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki30" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki31" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki32" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki33" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki34" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki35" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki36" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki37" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki38" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki39" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki40" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki2" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki3" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki4" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki5" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki6" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki7" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki8" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki9" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="ki10" parent="ki" instance=ExtResource( 4 )]
+position = Vector2( 501.023, 290.277 )
+
+[node name="chakra" parent="." instance=ExtResource( 1 )]
+position = Vector2( 507.913, 298.438 )
+scale = Vector2( 0.799999, 0.799999 )
+
+[node name="QueryToolCursor" parent="." instance=ExtResource( 8 )]
+visible = false
+position = Vector2( -86.182, -46.1843 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DragSurface" type="MarginContainer" parent="CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+margin_right = 135.0
+margin_bottom = 159.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TimeController" parent="CanvasLayer/VBoxContainer" instance=ExtResource( 6 )]
+margin_right = 135.0
+margin_bottom = 34.0
+
+[node name="QueryTool" parent="CanvasLayer/VBoxContainer" instance=ExtResource( 7 )]
+margin_top = 38.0
+margin_right = 135.0
+margin_bottom = 159.0
+[connection signal="gui_input" from="CanvasLayer/DragSurface" to="CanvasLayer/DragSurface" method="_on_DragSurface_gui_input"]
+[connection signal="mouse_exited" from="CanvasLayer/DragSurface" to="CanvasLayer/DragSurface" method="_on_DragSurface_mouse_exited"]

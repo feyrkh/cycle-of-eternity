@@ -1,0 +1,27 @@
+Elements:
+	earth
+	air
+	fire
+	water
+	metal
+	light
+	dark
+	heaven
+	hell
+	
+Element refinement:
+	chaotic
+	turbid
+	wild
+	disordered
+	unbalanced	
+	controlled
+	purified
+	distilled
+	organized
+	methodical
+	systematic
+	harmonized
+	celestial
+	eternal
+

@@ -1,0 +1,100 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "ColorRect",
+"class": "DragHandle",
+"language": "GDScript",
+"path": "res://ui/DragHandle.gd"
+}, {
+"base": "Node",
+"class": "KiUtil",
+"language": "GDScript",
+"path": "res://cultivation/KiUtil.gd"
+}, {
+"base": "PanelContainer",
+"class": "OrganizerEntry",
+"language": "GDScript",
+"path": "res://ui/OrganizerEntry.gd"
+}, {
+"base": "PanelContainer",
+"class": "OrganizerFolder",
+"language": "GDScript",
+"path": "res://ui/OrganizerFolder.gd"
+} ]
+_global_script_class_icons={
+"DragHandle": "",
+"KiUtil": "",
+"OrganizerEntry": "",
+"OrganizerFolder": ""
+}
+
+[application]
+
+config/name="cycle-of-eternity"
+config/icon="res://icon.png"
+
+[autoload]
+
+Event="*res://Event.tscn"
+
+[display]
+
+window/size/width=1920
+window/size/height=1080
+
+[input]
+
+ui_pause={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":32,"unicode":0,"echo":false,"script":null)
+ ]
+}
+ui_time_scroll={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777218,"unicode":0,"echo":false,"script":null)
+ ]
+}
+ui_time_scroll_reverse={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":true,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777218,"unicode":0,"echo":false,"script":null)
+ ]
+}
+query_click={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"pressed":false,"doubleclick":false,"script":null)
+ ]
+}
+
+[layer_names]
+
+2d_physics/layer_1="earth"
+2d_physics/layer_2="wood"
+2d_physics/layer_3="fire"
+2d_physics/layer_4="water"
+2d_physics/layer_5="metal"
+2d_physics/layer_6="dark"
+2d_physics/layer_7="heaven"
+2d_physics/layer_8="hell"
+2d_physics/layer_9="dream"
+2d_physics/layer_10="enlightenment"
+2d_physics/layer_19="highlightable"
+2d_physics/layer_20="obstruction"
+
+[physics]
+
+2d/thread_model=2
+2d/default_gravity_vector=Vector2( 0, 0 )
+2d/default_linear_damp=0.0
+2d/default_angular_damp=0.0
+
+[rendering]
+
+environment/default_environment="res://default_env.tres"

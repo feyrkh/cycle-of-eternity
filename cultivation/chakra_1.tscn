@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://img/chakra_1.png" type="Texture" id=1]
+
+[sub_resource type="PhysicsMaterial" id=1]
+bounce = 0.1
+absorbent = true
+
+[node name="StaticBody2D" type="StaticBody2D"]
+collision_layer = 524288
+collision_mask = 0
+physics_material_override = SubResource( 1 )
+
+[node name="chakra_1" type="Sprite" parent="."]
+position = Vector2( -2.4964, -5.88312 )
+texture = ExtResource( 1 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+visible = false
+polygon = PoolVector2Array( -8.4556, -346.851, 73.507, -338.833, 160.815, -305.87, 183.978, -281.816, 183.088, -244.398, 98.4522, -116.999, 86.8705, -76.018, 92.2159, -11.8733, 118.943, 44.2534, 163.488, 95.9255, 224.069, 142.252, 259.705, 193.033, 276.632, 229.56, 272.177, 270.542, 247.232, 315.977, 188.433, 348.941, 89.5432, 363.195, 7.58051, 360.522, -122.491, 342.704, -205.344, 318.65, -262.362, 272.323, -279.289, 239.36, -277.507, 185.906, -246.326, 130.671, -163.472, 55.835, -126.945, 15.7446, -102, -40.382, -95.7637, -96.5087, -150.999, -183.817, -189.308, -250.634, -195.544, -282.706, -166.145, -321.906, -108.236, -353.087, -8.45566, -346.851, -11.2713, -504.009, -399.71, -508.013, -467.786, 451.737, 418.547, 467.755, 385.176, -455.954, -12.6061, -498.669 )
