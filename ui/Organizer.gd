@@ -4,11 +4,9 @@ onready var dragIndicator = $DragIndicator
 onready var entryContainer = $'ScrollContainer/VBoxContainer'
 
 var draggingEntry:Node = null
-var dropPoint = null
-enum {TOP_OF_LIST, AFTER_NODE, BEFORE_NODE}
+enum {TOP_OF_LIST, BOTTOM_OF_LIST, AFTER_NODE, BEFORE_NODE}
 var dropTargetType
 var dropTarget:Node = null
-var dropTargetIndex = 0
 var dropContainer:Control = null
 
 
@@ -19,12 +17,14 @@ func _ready():
 func _process(delta):
 	if !Input.is_mouse_button_pressed(BUTTON_LEFT):
 		stop_dropping()
-	if draggingEntry:
-		update_drag_indicator()
-	else: 
+	if !draggingEntry:
 		dragIndicator.visible = false
 		set_process(false)
 
+func _input(event):
+	if draggingEntry:
+		update_drag_indicator()
+		
 func stop_dropping():
 	print('stopping drop operation')
 	if draggingEntry && draggingEntry.has_method('unhighlight'): draggingEntry.unhighlight()
@@ -35,13 +35,15 @@ func stop_dropping():
 	
 func update_drag_indicator():
 	dropTarget = self
-	dropTargetIndex = 0
 	dropTargetType = TOP_OF_LIST
 	dropContainer = entryContainer
-	var mousePos = get_local_mouse_position()
-	if !self.get_rect().has_point(mousePos):
+	var mousePos = get_global_mouse_position()
+	if !self.get_global_rect().has_point(mousePos-Vector2(0, 7)) or !self.get_global_rect().has_point(mousePos+Vector2(0, 7)) :
 		dragIndicator.visible = false
+		dropTarget = null
+		dropContainer = null
 		return
+	print(mousePos, ' contained in ', self.get_global_rect())
 	dragIndicator.visible = true
 	var childrenToScan = dropContainer.get_children()
 	var stillScanning = true
@@ -50,53 +52,57 @@ func update_drag_indicator():
 		stillScanning = false
 		dropTargetType = TOP_OF_LIST
 		for entry in childrenToScan:
-			var entryRelativePosition = entry.rect_position - Vector2($ScrollContainer.scroll_horizontal, $ScrollContainer.scroll_vertical)
-			if mousePos.y <= entryRelativePosition.y: # above me, put above me since it must be below other nodes or the loop would have ended
-				if dropContainer != entryContainer: # if we're dropping into the top of a sub-folder, underline the subfolder header instead
-					dragIndicator.position.x = entryRelativePosition.x + rootOffset.x #- dropContainer.rect_position.x
-					dragIndicator.position.y = entryRelativePosition.y - 2 + rootOffset.y #- dropContainer.rect_position.y
-					dropTargetIndex = dropContainer.get_child_count()
-				else:
-					dragIndicator.position.x = entryRelativePosition.x + rootOffset.x
-					dragIndicator.position.y = entryRelativePosition.y - 2 + rootOffset.y
-				return
-				
-			if mousePos.y <= entryRelativePosition.y + entry.rect_size.y: # overlapping me, figure out if we want to go above or below...unless I'm a folder, in which case go inside instead!
-				# If we're overlapping a folder, get its entry container and restart from the start of its children (and descend indefinitely)
-				if entry is OrganizerFolder: 
-					#print('descending into folder')
-					dropContainer = entry.get_entry_container()
-					childrenToScan = dropContainer.get_children()
-					rootOffset = rootOffset + (dropContainer.rect_global_position - entryContainer.rect_global_position) - Vector2($ScrollContainer.scroll_horizontal, $ScrollContainer.scroll_vertical)
-					mousePos = dropContainer.get_local_mouse_position()
-					stillScanning = true
-					dropTargetIndex = 0
-					dropTarget = dropContainer
-					break
-				# Otherwise we're overlapping an entry
-				if mousePos.y <= entryRelativePosition.y + entry.rect_size.y/2: # overlapping top half
-					dragIndicator.position.x = entryRelativePosition.x + rootOffset.x
-					dragIndicator.position.y = entryRelativePosition.y - 2 + rootOffset.y
-				else:
-					dropTargetIndex += 1
-					dragIndicator.position.x = entryRelativePosition.x + rootOffset.x
-					dragIndicator.position.y = entryRelativePosition.y + entry.rect_size.y + 2 + rootOffset.y
-				return
-				
-			if mousePos.y >  entryRelativePosition.y + entry.rect_size.y: # below me, put it below me but keep looking in case someone else wants to move it
-				dragIndicator.position.x = entryRelativePosition.x + rootOffset.x
-				dragIndicator.position.y = entryRelativePosition.y + entry.rect_size.y + 2 + rootOffset.y
-				dropTarget = entry # We'll drop after me if we run off the end of the list
-				dropTargetIndex += 1
-
-
-#func _input(event):
-#	if draggingEntry:
-#		if event is InputEventMouseMotion:
-#			handle_dragging(self)
-#		elif event is InputEventMouseButton && event.button_index == BUTTON_LEFT and !event.pressed:
-#			finish_dragging()
-
+			var entryPosition = entry.rect_global_position
+#			if mousePos.y < entryPosition.y: # above me - we must be above the first item of a container, drop to the top of the list and underline container
+#				dropTargetType = TOP_OF_LIST
+#				dropTarget = dropContainer
+#				dragIndicator.global_position = dropContainer.get_global_rect().position - Vector2(0, 2)
+#				return
+			if !(entry is OrganizerFolder): # handle overlaps with non-folders
+				if mousePos.y < entryPosition.y + entry.rect_size.y/2: # overlapping my top half, insert before me
+					dropTargetType = BEFORE_NODE
+					dropTarget = entry
+					dragIndicator.global_position = dropTarget.get_global_rect().position - Vector2(0, 2)
+					return
+				if mousePos.y <= entryPosition.y + entry.rect_size.y: # overlapping my bottom half, insert after me
+					dropTargetType = AFTER_NODE
+					dropTarget = entry
+					dragIndicator.global_position = dropTarget.get_global_rect().position + Vector2(0, dropTarget.get_global_rect().size.y + 2)
+					return
+				# this might be the last item in the list...set to drop after this just in case, it will get reset otherwise
+				dropTargetType = AFTER_NODE
+				dropTarget = entry
+				dragIndicator.global_position = dropTarget.get_global_rect().position + Vector2(0, dropTarget.get_global_rect().size.y + 2)
+			elif(entry is OrganizerFolder): # handle folders
+				if mousePos.y >= entryPosition.y && mousePos.y <= entryPosition.y + dropContainer.rect_size.y:
+					if !entry.isOpen or entry.get_entry_container().get_child_count() == 0: # if the folder is closed (or has 0 items), it's easy - just add to the end of its list
+						# Allow a few pixels space on the top so we can drop above lists that are at the top of another list
+						if mousePos.y <= entryPosition.y + 8:
+							dropTargetType = BEFORE_NODE
+							dropTarget = entry
+							dragIndicator.global_position = dropTarget.get_global_rect().position - Vector2(0, 2)
+							return
+						if mousePos.y >= entryPosition.y && mousePos.y <= entryPosition.y + entry.rect_size.y:
+							dropContainer = entry.get_entry_container()
+							dropTargetType = BOTTOM_OF_LIST
+							dropTarget = entry.get_entry_container()
+							var highlightTarget = entry
+							dragIndicator.global_position = highlightTarget.get_global_rect().position + Vector2(25, highlightTarget.rect_size.y - 12)
+							return
+					else: # if the folder is open and we're overlapping it, we have to recurse
+						# Allow a few pixels space on the top so we can drop above lists that are at the top of another list
+						if mousePos.y <= entryPosition.y + 8:
+							dropTargetType = BEFORE_NODE
+							dropTarget = entry
+							dragIndicator.global_position = dropTarget.get_global_rect().position - Vector2(0, 2)
+							return
+						if mousePos.y >= entryPosition.y && mousePos.y <= entryPosition.y + entry.rect_size.y:
+							dropContainer = entry.get_entry_container()
+							childrenToScan = dropContainer.get_children()
+							stillScanning = true
+							break
+#
+#
 func connect_drag_events_for_tree(entry):
 	if entry is Control: 
 		print('setting up drag for ', entry)
@@ -108,25 +114,15 @@ func add_new_entry(entry:Node2D):
 	if entry.has_method('connect_parent_container'): entry.connect_parent_container(self)
 	
 	add_child(entry)
-
-#func on_drag_started(entry:Node2D):
-#	draggingEntry = entry
-
-#func handle_dragging(targetContainer):
-#	var curMousePos = get_local_mouse_position()
-	
-#func finish_dragging():
-#	print('dragging complete')
 	
 func can_drop_data(position, data):
-#	print('checking local can drop for ', data)
 	return (data is OrganizerEntry) or (data is OrganizerFolder)
 	
 func can_drop_data_fw(position, data, from_control):
-#	print('checking can drop for ', data)
-	return true
+	return (data is OrganizerEntry) or (data is OrganizerFolder)
 
 func drop_data_fw(position, data, from_control):
+	if dropTarget == null || dropContainer == null || data == null: return
 	print('checking drop at position ', position)
 	# Check if dropTarget is a descendant of the item we're dropping
 	var checkNode = dropTarget
@@ -141,17 +137,13 @@ func drop_data_fw(position, data, from_control):
 	if !invalidDrop: # Only drop if we're actually moving...
 		var entryParent = data.get_parent()
 		if entryParent: entryParent.remove_child(data)
-		print('dropping ', data, ' at position ', dropTargetIndex)
 		dropContainer.add_child(data)
-		dropContainer.move_child(data, dropTargetIndex)
-		
-#		if dropTargetType == TOP_OF_LIST: # Dropping at the top of the list
-#			print('dropping ', data, ' at start of list')
-#			dropContainer.add_child(data)
-#			dropContainer.move_child(data, 0)
-#		else: 
-#			print('dropping ', data, ' below ', dropTarget)
-#			dropContainer.add_child_below_node(dropTarget, data)
+		match dropTargetType:
+			TOP_OF_LIST: dropContainer.move_child(data, 0)
+			BOTTOM_OF_LIST: pass
+			BEFORE_NODE: dropContainer.move_child(data, dropTarget.get_index())
+			AFTER_NODE: dropContainer.move_child(data, dropTarget.get_index()+1)
+		if data.has_method('on_dropped'): data.on_dropped()
 	else: print('tried dropping onto yourself, no op')
 	stop_dropping()
 

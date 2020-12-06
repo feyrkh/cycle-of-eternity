@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://ui/OrganizerEntry.tscn" type="PackedScene" id=1]
 [ext_resource path="res://ui/Organizer.gd" type="Script" id=2]
 [ext_resource path="res://img/carat_icon.png" type="Texture" id=3]
 [ext_resource path="res://ui/OrganizerFolder.gd" type="Script" id=4]
+[ext_resource path="res://ui/OrganizerFolder.tscn" type="PackedScene" id=5]
 
 [node name="Organizer" type="PanelContainer"]
 margin_right = 300.0
@@ -22,31 +23,21 @@ margin_bottom = 293.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
 margin_right = 274.0
-margin_bottom = 578.0
+margin_bottom = 528.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="entry1" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_right = 274.0
-labelText = "entry 1"
-
-[node name="entry2" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 32.0
-margin_right = 274.0
-margin_bottom = 60.0
-labelText = "entry 2"
-
 [node name="folder1" type="PanelContainer" parent="ScrollContainer/VBoxContainer"]
-margin_top = 64.0
 margin_right = 274.0
-margin_bottom = 194.0
+margin_bottom = 38.0
 script = ExtResource( 4 )
+labelText = "Folder 1"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/VBoxContainer/folder1"]
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 267.0
-margin_bottom = 123.0
+margin_bottom = 31.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/folder1/VBoxContainer"]
 margin_right = 260.0
@@ -71,108 +62,103 @@ mouse_filter = 1
 text = "Folder Name"
 
 [node name="EntryContainer" type="VBoxContainer" parent="ScrollContainer/VBoxContainer/folder1/VBoxContainer"]
-margin_left = 5.0
 margin_top = 24.0
 margin_right = 260.0
-margin_bottom = 116.0
+margin_bottom = 24.0
 
-[node name="entry a1" parent="ScrollContainer/VBoxContainer/folder1/VBoxContainer/EntryContainer" instance=ExtResource( 1 )]
-margin_right = 255.0
-labelText = "entry A1"
+[node name="folder2" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 5 )]
 
-[node name="entry a2" parent="ScrollContainer/VBoxContainer/folder1/VBoxContainer/EntryContainer" instance=ExtResource( 1 )]
-margin_top = 32.0
-margin_right = 255.0
-margin_bottom = 60.0
-labelText = "entry A2"
+[node name="entry1" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
+margin_top = 84.0
+margin_right = 274.0
+margin_bottom = 112.0
+labelText = "entry 1 this is a very long entry label that might even scroll off the end"
 
-[node name="entry a3" parent="ScrollContainer/VBoxContainer/folder1/VBoxContainer/EntryContainer" instance=ExtResource( 1 )]
-margin_top = 64.0
-margin_right = 255.0
-margin_bottom = 92.0
-labelText = "entry A3"
+[node name="entry2" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
+margin_top = 116.0
+margin_right = 274.0
+margin_bottom = 144.0
+labelText = "entry 2"
 
 [node name="entry  3" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 198.0
+margin_top = 148.0
 margin_right = 274.0
-margin_bottom = 226.0
+margin_bottom = 176.0
 labelText = "entry3"
 
 [node name="PanelContainer4" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 230.0
+margin_top = 180.0
 margin_right = 274.0
-margin_bottom = 258.0
+margin_bottom = 208.0
 labelText = "entry4"
 
 [node name="PanelContainer5" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 262.0
+margin_top = 212.0
 margin_right = 274.0
-margin_bottom = 290.0
+margin_bottom = 240.0
 labelText = "entry5"
 
 [node name="PanelContainer6" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 294.0
+margin_top = 244.0
 margin_right = 274.0
-margin_bottom = 322.0
+margin_bottom = 272.0
 labelText = "entry6"
 
 [node name="PanelContainer7" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 326.0
+margin_top = 276.0
 margin_right = 274.0
-margin_bottom = 354.0
+margin_bottom = 304.0
 labelText = "entry6"
 
 [node name="PanelContainer8" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 358.0
+margin_top = 308.0
 margin_right = 274.0
-margin_bottom = 386.0
+margin_bottom = 336.0
 labelText = "entry6"
 
 [node name="PanelContainer9" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 390.0
+margin_top = 340.0
 margin_right = 274.0
-margin_bottom = 418.0
+margin_bottom = 368.0
 labelText = "entry6"
 
 [node name="PanelContainer10" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 422.0
+margin_top = 372.0
 margin_right = 274.0
-margin_bottom = 450.0
+margin_bottom = 400.0
 labelText = "entry6"
 
 [node name="PanelContainer11" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 454.0
+margin_top = 404.0
 margin_right = 274.0
-margin_bottom = 482.0
+margin_bottom = 432.0
 labelText = "entry6"
 
 [node name="PanelContainer12" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 486.0
+margin_top = 436.0
 margin_right = 274.0
-margin_bottom = 514.0
+margin_bottom = 464.0
 labelText = "entry6"
 
 [node name="PanelContainer13" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 518.0
+margin_top = 468.0
 margin_right = 274.0
-margin_bottom = 546.0
+margin_bottom = 496.0
 labelText = "entry6"
 
 [node name="PanelContainer14" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-margin_top = 550.0
+margin_top = 500.0
 margin_right = 274.0
-margin_bottom = 578.0
+margin_bottom = 528.0
 labelText = "entry6"
 
 [node name="DragIndicator" type="Node2D" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="DragIndicator"]
 margin_left = 7.0
-margin_top = 7.0
-margin_right = 293.0
-margin_bottom = 8.0
+margin_right = 200.0
+margin_bottom = 1.0
 rect_min_size = Vector2( 0, 1 )
-rect_scale = Vector2( 0.5, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
