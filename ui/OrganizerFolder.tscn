@@ -1,13 +1,16 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://ui/OrganizerFolder.gd" type="Script" id=1]
 [ext_resource path="res://img/carat_icon.png" type="Texture" id=2]
+[ext_resource path="res://ui/OrganizerEditNameButton.tscn" type="PackedScene" id=3]
 
-[node name="folder2" type="PanelContainer"]
-margin_top = 42.0
+[node name="OrganizerFolder" type="PanelContainer"]
 margin_right = 274.0
-margin_bottom = 80.0
+margin_bottom = 38.0
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 labelText = "New Folder"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -25,6 +28,7 @@ margin_right = 20.0
 margin_bottom = 20.0
 rect_pivot_offset = Vector2( 10, 10 )
 mouse_filter = 0
+size_flags_vertical = 3
 texture = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -33,10 +37,13 @@ __meta__ = {
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
 margin_left = 24.0
 margin_top = 3.0
-margin_right = 106.0
+margin_right = 236.0
 margin_bottom = 17.0
 mouse_filter = 1
+size_flags_horizontal = 3
 text = "Folder Name"
+
+[node name="EditNameButton" parent="VBoxContainer/HBoxContainer" instance=ExtResource( 3 )]
 
 [node name="EntryContainer" type="VBoxContainer" parent="VBoxContainer"]
 margin_top = 24.0
@@ -44,3 +51,4 @@ margin_right = 260.0
 margin_bottom = 24.0
 [connection signal="gui_input" from="VBoxContainer/HBoxContainer/OpenIcon" to="." method="_on_TextureRect_gui_input"]
 [connection signal="visibility_changed" from="VBoxContainer/HBoxContainer/OpenIcon" to="." method="_on_OpenIcon_visibility_changed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/EditNameButton" to="." method="edit_name"]

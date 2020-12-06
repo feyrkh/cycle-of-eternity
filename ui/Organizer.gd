@@ -1,7 +1,8 @@
 extends PanelContainer
 
+export(NodePath) var entryContainerPath
 onready var dragIndicator = $DragIndicator
-onready var entryContainer = $'ScrollContainer/VBoxContainer'
+onready var entryContainer = get_node(entryContainerPath)
 
 var draggingEntry:Node = null
 enum {TOP_OF_LIST, BOTTOM_OF_LIST, AFTER_NODE, BEFORE_NODE}
@@ -9,6 +10,8 @@ var dropTargetType
 var dropTarget:Node = null
 var dropContainer:Control = null
 
+const OrganizerFolderScene = preload('./OrganizerFolder.tscn')
+const OrganizerEntryScene = preload('./OrganizerEntry.tscn')
 
 func _ready():
 	for child in get_children():
@@ -104,7 +107,7 @@ func update_drag_indicator():
 #
 #
 func connect_drag_events_for_tree(entry):
-	if entry is Control: 
+	if entry is Control and !entry.name.ends_with('Target'):
 		print('setting up drag for ', entry)
 		entry.set_drag_forwarding(self)
 	for child in entry.get_children():
@@ -112,7 +115,6 @@ func connect_drag_events_for_tree(entry):
 
 func add_new_entry(entry:Node2D):
 	if entry.has_method('connect_parent_container'): entry.connect_parent_container(self)
-	
 	add_child(entry)
 	
 func can_drop_data(position, data):
@@ -150,9 +152,19 @@ func drop_data_fw(position, data, from_control):
 func get_drag_data_fw(position, from_control):
 	while from_control && !(from_control is OrganizerEntry) && !(from_control is OrganizerFolder):
 		from_control = from_control.get_parent()
-	if !from_control: return null
+	if !from_control || !from_control.draggable: return null
 	draggingEntry = from_control
 	dragIndicator.visible = true
 	set_process(true)
+	if draggingEntry && draggingEntry.has_method('highlight'): draggingEntry.highlight()
 	print('starting drag for ', from_control)
 	return from_control
+
+
+func _on_NewFolderButton_pressed():
+	var newFolder = OrganizerFolderScene.instance()
+	entryContainer.add_child(newFolder)
+	connect_drag_events_for_tree(newFolder)
+	yield(get_tree(),"idle_frame")
+	newFolder.edit_name()
+

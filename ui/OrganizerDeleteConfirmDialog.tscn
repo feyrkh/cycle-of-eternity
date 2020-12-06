@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://ui/OrganizerDeleteConfirmDialog.gd" type="Script" id=1]
+
+[node name="OrganizerDeleteConfirmDialog" type="ConfirmationDialog"]
+margin_right = 200.0
+margin_bottom = 70.0
+window_title = "Really delete?"
+resizable = true
+dialog_autowrap = true
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
