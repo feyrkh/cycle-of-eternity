@@ -1,4 +1,5 @@
 extends RigidBody2D
+class_name Ki
 
 export var min_velocity = 5
 export var max_velocity = 100
@@ -10,8 +11,14 @@ const defaultScaleY = 0.1
 const defaultAlpha = 0.9
 
 const HIGHLIGHT_LAYER = 18
-var ki_element:int
 
+var KiQueryPopup = load("res://cultivation/KiQueryPopup.tscn")
+
+var ki_element:int
+var ki_quality:int
+var ki_energy:int
+
+var popup
 
 export(Material) var highlightMaterial
 
@@ -20,7 +27,10 @@ func _ready():
 	linear_velocity = linear_velocity.rotated(rand_range(0, deg2rad(360)))
 	angular_velocity = rand_range(min_angular_velocity, max_angular_velocity)
 	
+	ki_quality = 0
 	ki_element = randi()%5
+	ki_energy = randi()%10 + 1
+	
 	self.collision_layer = 1 << ki_element | 1 << HIGHLIGHT_LAYER
 	self.collision_mask = KiUtil.ElementCollisionMask[ki_element]
 	$Image.texture = KiUtil.ElementImages[ki_element]
@@ -52,3 +62,17 @@ func highlight():
 
 func unhighlight():
 	material = null
+
+func query_item():
+	print('querying ki')
+	if popup: return
+	print('querying ki2')
+	popup = KiQueryPopup.instance()
+	popup.configure(self)
+	#popup.connect('popup_hide', self, 'on_query_popup_close')
+	$"/root/Event".emit_signal('show_query_popup', popup, self)
+	
+func on_query_popup_close():
+	popup.queue_free()
+	popup = null
+	

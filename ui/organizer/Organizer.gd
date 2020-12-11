@@ -111,7 +111,7 @@ func update_drag_indicator():
 func connect_drag_events_for_tree(entry):
 	if entry is Control and !entry.name.ends_with('Target'):
 		if entry.has_meta('containingOrganizer'): entry.containingOrganizer = self
-		print('setting up drag for ', entry)
+#		print('setting up drag for ', entry)
 		entry.set_drag_forwarding(self)
 	for child in entry.get_children():
 		connect_drag_events_for_tree(child)
@@ -128,18 +128,18 @@ func can_drop_data_fw(position, data, from_control):
 
 func drop_data_fw(position, data, from_control):
 	if dropTarget == null || dropContainer == null || data == null: return
-	print('checking drop at position ', position)
+#	print('checking drop at position ', position)
 	# Check if dropTarget is a descendant of the item we're dropping
 	var checkNode = dropTarget
 	var invalidDrop = dropTarget == self
-	print('checking for invalid drop: ', dropTarget.name, ' vs ', data.name, ' (preemptive check: ', invalidDrop, ')')
+#	print('checking for invalid drop: ', dropTarget.name, ' vs ', data.name, ' (preemptive check: ', invalidDrop, ')')
 	while checkNode != null:
 		if checkNode == data: 
-			print('invalid drop, ', data, ' is an ancestor of ', dropTarget)
+#			print('invalid drop, ', data, ' is an ancestor of ', dropTarget)
 			invalidDrop = true
 			break
 		checkNode = checkNode.get_parent()
-	print('invalidDrop=', invalidDrop, '; checked to see if ', data.name, ' is an ancestor of ', dropTarget.name)
+#	print('invalidDrop=', invalidDrop, '; checked to see if ', data.name, ' is an ancestor of ', dropTarget.name)
 	if !invalidDrop: # Only drop if we're actually moving...
 		var entryParent = data.get_parent()
 		if entryParent: entryParent.remove_child(data)

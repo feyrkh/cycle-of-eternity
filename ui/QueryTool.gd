@@ -44,6 +44,7 @@ func queryHighlightedItem():
 	if highlighted.has_method('query_popup'): highlighted.query_popup()
 	if highlighted.has_method('unhighlight'):
 		highlighted.unhighlight()
+	if highlighted.has_method('query_item'): highlighted.query_item()
 
 func _on_Timer_timeout():
 	var nearby = area2d.get_overlapping_bodies()

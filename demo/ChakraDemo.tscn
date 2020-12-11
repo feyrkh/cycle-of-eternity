@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://cultivation/chakra_1.tscn" type="PackedScene" id=1]
 [ext_resource path="res://img/body_male_skin.png" type="Texture" id=2]
@@ -12,9 +12,8 @@
 [ext_resource path="res://cultivation/KiWell.tscn" type="PackedScene" id=10]
 [ext_resource path="res://ui/organizer/OrganizerFolder.tscn" type="PackedScene" id=11]
 [ext_resource path="res://ui/organizer/OrganizerEntry.tscn" type="PackedScene" id=12]
-[ext_resource path="res://img/query.png" type="Texture" id=13]
-[ext_resource path="res://ui/MouseLayer.gd" type="Script" id=14]
-[ext_resource path="res://img/quill.png" type="Texture" id=15]
+[ext_resource path="res://ui/PopupLayer.gd" type="Script" id=13]
+[ext_resource path="res://ui/MouseLayer.tscn" type="PackedScene" id=14]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node2D
@@ -502,18 +501,9 @@ offsetCameraPath = NodePath("../../../../Camera2D")
 queryToolCursorPath = NodePath("../../../../QueryToolCursor")
 rootScenePath = NodePath("../../../..")
 
-[node name="MouseLayer" type="CanvasLayer" parent="."]
-script = ExtResource( 14 )
+[node name="PopupLayer" type="CanvasLayer" parent="."]
+script = ExtResource( 13 )
 
-[node name="mousePosition" type="Node2D" parent="MouseLayer"]
-
-[node name="query" type="Sprite" parent="MouseLayer/mousePosition"]
-visible = false
-texture = ExtResource( 13 )
-
-[node name="quill" type="Sprite" parent="MouseLayer/mousePosition"]
-visible = false
-rotation = 1.5708
-texture = ExtResource( 15 )
+[node name="MouseLayer" parent="." instance=ExtResource( 14 )]
 [connection signal="gui_input" from="CanvasLayer/DragSurface" to="CanvasLayer/DragSurface" method="_on_DragSurface_gui_input"]
 [connection signal="mouse_exited" from="CanvasLayer/DragSurface" to="CanvasLayer/DragSurface" method="_on_DragSurface_mouse_exited"]
