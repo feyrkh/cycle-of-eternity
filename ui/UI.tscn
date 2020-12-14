@@ -1,0 +1,136 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://ui/PopupLayer.gd" type="Script" id=4]
+[ext_resource path="res://ui/organizer/Organizer.tscn" type="PackedScene" id=9]
+[ext_resource path="res://ui/TimeController.tscn" type="PackedScene" id=10]
+[ext_resource path="res://ui/QueryToolCursor.tscn" type="PackedScene" id=11]
+[ext_resource path="res://ui/QueryTool.tscn" type="PackedScene" id=12]
+[ext_resource path="res://ui/MouseLayer.tscn" type="PackedScene" id=13]
+[ext_resource path="res://ui/organizer/OrganizerFolder.tscn" type="PackedScene" id=14]
+[ext_resource path="res://ui/TIE.tscn" type="PackedScene" id=15]
+[ext_resource path="res://ui/DragSurface.gd" type="Script" id=17]
+
+[sub_resource type="DynamicFontData" id=5]
+font_path = "res://demo/Cave-Story.ttf"
+
+[sub_resource type="DynamicFont" id=6]
+size = 38
+font_data = SubResource( 5 )
+
+[node name="UI" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 512.074, 299.537 )
+current = true
+zoom = Vector2( 10, 10 )
+
+[node name="QueryToolCursor" parent="." instance=ExtResource( 11 )]
+visible = false
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HBoxContainer"]
+margin_right = 300.0
+margin_bottom = 1080.0
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Organizer" parent="CanvasLayer/HBoxContainer/VBoxContainer" instance=ExtResource( 9 )]
+margin_bottom = 1042.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer"]
+margin_top = 1046.0
+margin_right = 300.0
+margin_bottom = 1080.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TimeController" parent="CanvasLayer/HBoxContainer/VBoxContainer/HBoxContainer" instance=ExtResource( 10 )]
+margin_right = 135.0
+margin_bottom = 34.0
+size_flags_vertical = 8
+
+[node name="QueryTool" parent="CanvasLayer/HBoxContainer/VBoxContainer/HBoxContainer" instance=ExtResource( 12 )]
+margin_left = 139.0
+margin_top = 14.0
+margin_right = 159.0
+margin_bottom = 34.0
+size_flags_vertical = 8
+offsetCameraPath = NodePath("../../../../../Camera2D")
+queryToolCursorPath = NodePath("../../../../../UI/QueryToolCursor")
+rootScenePath = NodePath("../../../../../UI/CanvasLayer")
+
+[node name="VSplitContainer" type="VSplitContainer" parent="CanvasLayer/HBoxContainer"]
+margin_left = 304.0
+margin_right = 1616.0
+margin_bottom = 1080.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+split_offset = -150
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DragSurface" type="MarginContainer" parent="CanvasLayer/HBoxContainer/VSplitContainer"]
+margin_right = 1312.0
+margin_bottom = 854.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 17 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/HBoxContainer/VSplitContainer"]
+margin_top = 866.0
+margin_right = 1312.0
+margin_bottom = 1080.0
+
+[node name="TIE" parent="CanvasLayer/HBoxContainer/VSplitContainer/PanelContainer" instance=ExtResource( 15 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 1305.0
+margin_bottom = 207.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+FONT = SubResource( 6 )
+
+[node name="Organizer2" parent="CanvasLayer/HBoxContainer" instance=ExtResource( 9 )]
+margin_left = 1620.0
+margin_right = 1920.0
+margin_bottom = 1080.0
+mouse_filter = 1
+size_flags_horizontal = 8
+entryContainerPath = NodePath("../../../UI/CanvasLayer/HBoxContainer/Organizer2/VBoxContainer/ScrollContainer/EntryContainer")
+
+[node name="Queries" parent="CanvasLayer/HBoxContainer/Organizer2" instance=ExtResource( 14 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 293.0
+margin_bottom = 1073.0
+canDrag = false
+canDelete = false
+
+[node name="PopupLayer" type="CanvasLayer" parent="."]
+script = ExtResource( 4 )
+
+[node name="MouseLayer" parent="." instance=ExtResource( 13 )]
+[connection signal="gui_input" from="CanvasLayer/HBoxContainer/VSplitContainer/DragSurface" to="CanvasLayer/HBoxContainer/VSplitContainer/DragSurface" method="_on_DragSurface_gui_input"]
+[connection signal="mouse_exited" from="CanvasLayer/HBoxContainer/VSplitContainer/DragSurface" to="CanvasLayer/HBoxContainer/VSplitContainer/DragSurface" method="_on_DragSurface_mouse_exited"]

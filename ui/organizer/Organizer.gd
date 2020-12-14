@@ -14,6 +14,9 @@ const OrganizerFolderScene = preload('./OrganizerFolder.tscn')
 const OrganizerEntryScene = preload('./OrganizerEntry.tscn')
 
 func _ready():
+	if entryContainer == null:
+		entryContainer = find_node('EntryContainer', true, false)
+		
 	for child in get_children():
 		if child.has_method('is_organizer_entry') && child.is_organizer_entry():
 			self.remove_child(child)

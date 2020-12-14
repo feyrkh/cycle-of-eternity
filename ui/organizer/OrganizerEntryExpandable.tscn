@@ -1,0 +1,53 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://ui/organizer/OrganizerEntryExpandable.gd" type="Script" id=1]
+[ext_resource path="res://ui/organizer/OrganizerEditNameButton.tscn" type="PackedScene" id=2]
+
+[sub_resource type="StyleBoxEmpty" id=3]
+
+[node name="(entry)" type="PanelContainer"]
+margin_right = 286.0
+margin_bottom = 28.0
+custom_styles/panel = SubResource( 3 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+isToggle = true
+labelPath = NodePath("VBoxContainer/TitleBar/Label")
+editNameButtonPath = NodePath("VBoxContainer/TitleBar/EditNameButton")
+contentsPath = NodePath("VBoxContainer/Contents")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 286.0
+margin_bottom = 28.0
+
+[node name="TitleBar" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 286.0
+margin_bottom = 20.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Button" parent="VBoxContainer/TitleBar"]
+margin_right = 262.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Entry"
+flat = true
+align = 0
+
+[node name="EditNameButton" parent="VBoxContainer/TitleBar" instance=ExtResource( 2 )]
+margin_left = 266.0
+margin_right = 286.0
+toggle_mode = true
+
+[node name="Contents" type="Control" parent="VBoxContainer"]
+visible = false
+margin_top = 24.0
+margin_right = 286.0
+margin_bottom = 24.0
+[connection signal="pressed" from="VBoxContainer/TitleBar/Label" to="." method="_on_Label_pressed"]
+[connection signal="toggled" from="VBoxContainer/TitleBar/Label" to="." method="_on_Label_toggled"]
+[connection signal="pressed" from="VBoxContainer/TitleBar/EditNameButton" to="." method="edit_name"]

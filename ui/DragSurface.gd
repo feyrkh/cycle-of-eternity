@@ -3,7 +3,7 @@ extends MarginContainer
 var dragging = null
 var dragStart
 
-onready var camera:Camera2D = $'../../Camera2D'
+onready var camera:Camera2D = $'../../../../Camera2D'
 onready var zoomLevel = camera.zoom
 onready var moveMultiplier = camera.zoom.x
 

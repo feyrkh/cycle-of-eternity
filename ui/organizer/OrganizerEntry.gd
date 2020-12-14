@@ -6,14 +6,17 @@ export var canDrag = true
 export var canDelete = true
 export var isToggle = false
 
-onready var label = $HBoxContainer/Label
-onready var editNameButton = $HBoxContainer/EditNameButton
+export(NodePath) var labelPath 
+export(NodePath) var editNameButtonPath 
+var label
+var editNameButton
 
 var editBox:OrganizerLabelEdit
 var containingOrganizer
 
 func _ready():
-	print('loading')
+	label = get_node(labelPath)
+	editNameButton = get_node(editNameButtonPath)
 	if labelText: label.text = labelText
 	else: label.text = name
 	labelText = null
