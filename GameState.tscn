@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node
+
+var curScene = null
+
+func _ready():
+	setupGameWorld()
+
+func setupGameWorld():
+	loadScene('conversation', {
+		
+	})
+	
+func loadScene(newSceneName:String, newSceneData:Dictionary):
+	if curScene && curScene.has_method('shutdownScene'): curScene.shutdownScene()
+	if curScene: curScene.queue_free()
+	var newScene = load('res://scene/'+newSceneName+'.tscn')
+	if newScene.has_method('startupScene'): newScene.startupScene(newSceneData)
+	$\"/root/Event\".emit_signal(\"new_scene_loaded\", newScene)
+"
+
+[node name="GameState" type="Node"]
+script = SubResource( 1 )
