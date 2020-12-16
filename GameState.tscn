@@ -7,7 +7,8 @@ var curScene = null
 var bootstrapScene = null
 
 var settings = {
-	'playerName': 'Master'
+	'playerName': 'Master',
+	'helperName': 'Ren Xiu'
 }
 
 var quest = {

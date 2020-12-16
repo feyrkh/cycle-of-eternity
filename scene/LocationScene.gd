@@ -19,6 +19,6 @@ func setup_default():
 	pass
 
 func setup_quest():
-	if GameState.quest.get('placeholder') > 0:
-		return true
+	#if GameState.quest.get('placeholder') == 'condition':
+	#	return true
 	return false

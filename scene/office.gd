@@ -10,6 +10,12 @@ func setup_default():
 
 # Check for any important quest states and setup as needed, may call setup_default() manually as well if needed
 func setup_quest():
-	if GameState.quest.get('placeholder') > 0:
+	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_OFFICE:
+		Event.show_character('secretary')
+		Event.write_text_with_breaks("""
+Welcome to your office for the first time!
+""")
+		yield(Event.wait_for_text(), 'completed')
+		GameState.quest[Quest.Q_TUTORIAL] = null
 		return true # Make any changes you need here...
 	return .setup_quest()

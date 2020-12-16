@@ -87,7 +87,11 @@ func really_delete():
 
 func _on_Label_pressed():
 	$"/root/Event".emit_signal("organizer_entry_clicked", containingOrganizer, self)
+	self.visible = false # easy way to lose focus
+	self.visible = true
 
 
 func _on_Label_toggled(button_pressed):
 	$"/root/Event".emit_signal("organizer_entry_toggled", containingOrganizer, self, button_pressed)
+	self.visible = false # easy way to lose focus
+	self.visible = true

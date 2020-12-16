@@ -64,7 +64,7 @@ func buff_debug(f, lab = false, arg0 = null, push_front = false): # For simple d
 	else:
 		_buffer.push_front(b)
 
-func buff_text(text, vel = 0.001, tag = "", push_front = false): # The text for the output, and its printing velocity (per character)
+func buff_text(text, vel = 0, tag = "", push_front = false): # The text for the output, and its printing velocity (per character)
 	var b = {"buff_type":BUFF_TEXT, "buff_text":text, "buff_vel":vel, "buff_tag":tag}
 	if !push_front:
 		_buffer.append(b)
@@ -226,7 +226,7 @@ func _physics_process(delta):
 					_output_delay = _output_delay_limit + delta
 				else:
 					_output_delay += delta
-				if(_output_delay > _output_delay_limit and o['buff_text'] != null and o['buff_text'].length() > 0):
+				if(_output_delay > _output_delay_limit and o.get('buff_text') != null and o['buff_text'].length() > 0):
 					if(AUTO_SKIP_WORDS and (o['buff_text'] == null or o['buff_text'].length() == 0 or o["buff_text"][0] == " " or _buff_beginning)):
 						_skip_word()
 					_label_print(o["buff_text"][0])
@@ -359,6 +359,7 @@ func _has_to_skip_word(word): # what an awful name
 	return ret
 
 func _skip_word():
+	if _buffer[0]['buff_type'] != BUFF_TEXT: return
 	var ot = _buffer[0]["buff_text"]
 	
 	# which comes first, a space or a new line (else, till the end)

@@ -25,8 +25,13 @@ func write_text_with_breaks(text_to_write):
 			textInterface.buff_clear()
 		textInterface.buff_text(chunk.format(GameState.settings))
 		firstChunk = false
+		
+func wait_for_text():
+	yield(textInterface, 'buff_end')
 
 func show_character(characterImg):
+	if !characterImg.begins_with('res:'):
+		characterImg = 'res://img/people/%s.png'%characterImg
 	emit_signal('show_character', characterImg)
 	
 func hide_character():

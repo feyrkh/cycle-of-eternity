@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Object",
+"class": "Conversation",
+"language": "GDScript",
+"path": "res://ui/Conversation.gd"
+}, {
 "base": "RigidBody2D",
 "class": "Ki",
 "language": "GDScript",
@@ -60,6 +65,7 @@ _global_script_classes=[ {
 "path": "res://addons/GodotTIE/text_interface_engine.gd"
 } ]
 _global_script_class_icons={
+"Conversation": "",
 "Ki": "",
 "KiUtil": "",
 "LocationScene": "",
@@ -75,12 +81,14 @@ _global_script_class_icons={
 [application]
 
 config/name="cycle-of-eternity"
+run/main_scene="res://MainMenu.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
 Event="*res://Event.tscn"
 GameState="*res://GameState.tscn"
+Quest="*res://Quest.tscn"
 
 [debug]
 
