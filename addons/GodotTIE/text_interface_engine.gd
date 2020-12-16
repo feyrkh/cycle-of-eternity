@@ -4,7 +4,7 @@
 
 # Intern initializations
 extends ReferenceRect # Extends from ReferenceFrame
-
+class_name TextInterface
 
 const STATE_WAITING = 0
 const STATE_OUTPUT = 1
@@ -64,12 +64,14 @@ func buff_debug(f, lab = false, arg0 = null, push_front = false): # For simple d
 	else:
 		_buffer.push_front(b)
 
-func buff_text(text, vel = 0, tag = "", push_front = false): # The text for the output, and its printing velocity (per character)
+func buff_text(text, vel = 0.001, tag = "", push_front = false): # The text for the output, and its printing velocity (per character)
 	var b = {"buff_type":BUFF_TEXT, "buff_text":text, "buff_vel":vel, "buff_tag":tag}
 	if !push_front:
 		_buffer.append(b)
 	else:
 		_buffer.push_front(b)
+	if _state == STATE_WAITING:
+		set_state(STATE_OUTPUT)
 
 func buff_silence(length, tag = "", push_front = false): # A duration without output
 	var b = {"buff_type":BUFF_SILENCE, "buff_length":length, "buff_tag":tag}
@@ -224,13 +226,13 @@ func _physics_process(delta):
 					_output_delay = _output_delay_limit + delta
 				else:
 					_output_delay += delta
-				if(_output_delay > _output_delay_limit):
-					if(AUTO_SKIP_WORDS and (o["buff_text"][0] == " " or _buff_beginning)):
+				if(_output_delay > _output_delay_limit and o['buff_text'] != null and o['buff_text'].length() > 0):
+					if(AUTO_SKIP_WORDS and (o['buff_text'] == null or o['buff_text'].length() == 0 or o["buff_text"][0] == " " or _buff_beginning)):
 						_skip_word()
 					_label_print(o["buff_text"][0])
+					o["buff_text"] = o["buff_text"].right(1)
 					_buff_beginning = false
 					_output_delay -= _output_delay_limit
-					o["buff_text"] = o["buff_text"].right(1)
 			# -- Popout Buff --
 			if (o["buff_text"] == ""): # This buff finished, so pop it out of the array
 				_buffer.pop_front()

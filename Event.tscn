@@ -4,3 +4,4 @@
 
 [node name="Event" type="Node"]
 script = ExtResource( 1 )
+[connection signal="organizer_entry_clicked" from="." to="." method="_on_Event_organizer_entry_clicked"]

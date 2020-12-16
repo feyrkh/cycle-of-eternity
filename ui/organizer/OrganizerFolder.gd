@@ -31,6 +31,29 @@ func is_organizer_entry(): return true
 func get_entry_container():
 	return entryContainer
 
+func call_attention():
+	for _i in range(20):
+		self_modulate = Color.green
+		yield(get_tree().create_timer(0.1),"timeout")
+		self_modulate = Color.white
+		yield(get_tree().create_timer(0.1),"timeout")
+		
+
+func collapse():
+	isOpen = false
+	update_contents()
+	
+func expand():
+	isOpen = true
+	update_contents()
+
+func add_item_top(item):
+	entryContainer.add_child(item)
+	entryContainer.move_child(item, 0)
+	
+func add_item_bottom(item):
+	entryContainer.add_child(item)
+
 func update_contents():
 	if isOpen:
 		print('updating folder icon (open)')
@@ -50,7 +73,6 @@ func _on_TextureRect_gui_input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT and event.pressed:
 			toggle_folder()
-
 
 func _on_Label_pressed():
 	toggle_folder()

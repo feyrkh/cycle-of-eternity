@@ -4,21 +4,45 @@
 script/source = "extends Node
 
 var curScene = null
+var bootstrapScene = null
+
+var settings = {
+	'playerName': 'Master'
+}
+
+var quest = {
+	'tutorial':'start'
+}
 
 func _ready():
 	setupGameWorld()
 
 func setupGameWorld():
-	loadScene('conversation', {
-		
-	})
+	pass
 	
 func loadScene(newSceneName:String, newSceneData:Dictionary):
 	if curScene && curScene.has_method('shutdownScene'): curScene.shutdownScene()
 	if curScene: curScene.queue_free()
-	var newScene = load('res://scene/'+newSceneName+'.tscn')
+	var newScene = load('res://scene/'+newSceneName+'.tscn').instance()
 	if newScene.has_method('startupScene'): newScene.startupScene(newSceneData)
-	$\"/root/Event\".emit_signal(\"new_scene_loaded\", newScene)
+	settings['curSceneName'] = newSceneName
+	settings['curSceneSettings'] = newSceneData
+	Event.emit_signal(\"new_scene_loaded\", newScene)
+
+func run_command(cmd:String, data:Dictionary, sourceNode:Node=null):
+	match cmd:
+		'scene': cmd_scene(data, sourceNode)
+		_: printerr('Invalid command: ', cmd, '; data=', data, '; sourceNode=', sourceNode.name)
+
+# scene - name of the scene (not 'res://scene/office.tscn', but just 'office')
+# deleteSourceNodeAfterTransition - usually for deleting a choice-type item from an Organizer after you click it
+# keepCharacter - don't hide any character portrait that's currently displayed in the UI
+# keepText - don't clear any text buffered in the UI
+func cmd_scene(data:Dictionary, sourceNode):
+	if sourceNode && data.get('deleteSourceNodeAfterTransition'): sourceNode.queue_free()
+	if !data.get('keepCharacter'): Event.hide_character()
+	if !data.get('keepText'): Event.clear_text()
+	loadScene(data.get('scene'), data)
 "
 
 [node name="GameState" type="Node"]

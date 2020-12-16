@@ -10,6 +10,7 @@ export(NodePath) var labelPath
 export(NodePath) var editNameButtonPath 
 var label
 var editNameButton
+var data:Dictionary
 
 var editBox:OrganizerLabelEdit
 var containingOrganizer
@@ -26,6 +27,14 @@ func _ready():
 
 func is_organizer_entry(): return true
 
+func call_attention():
+	print('calling attention to myself!')
+	for _i in range(20):
+		modulate = Color.green
+		yield(get_tree().create_timer(0.1),"timeout")
+		modulate = Color.white
+		yield(get_tree().create_timer(0.1),"timeout")
+		
 func highlight():
 	self.modulate = Color.yellow
 

@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://img/location/mountain.jpg" type="Texture" id=1]
+[ext_resource path="res://scene/tutorial.gd" type="Script" id=3]
+
+[node name="Tutorial" type="Node2D"]
+position = Vector2( -394.12, -108.065 )
+script = ExtResource( 3 )
+
+[node name="Background" type="Sprite" parent="."]
+position = Vector2( 1332.93, 665.575 )
+scale = Vector2( 1.5934, 1.5934 )
+texture = ExtResource( 1 )

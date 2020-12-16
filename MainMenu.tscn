@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://MainMenu.gd" type="Script" id=1]
+
+[node name="MainMenu" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="NewGame" type="Button" parent="."]
+margin_left = 771.289
+margin_top = 403.715
+margin_right = 1126.29
+margin_bottom = 601.715
+text = "New Game"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="NewGame" to="." method="_on_NewGame_pressed"]

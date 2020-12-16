@@ -7,15 +7,16 @@ var levels = [0, 1, 3, 8]
 var physics_steps = [60, 60, 90, 600]
 
 func _process(delta):
-	if Input.is_action_just_released("ui_pause"):
-		if curLevel == 0:
-			set_speed(previousLevel)
-		else:
-			set_speed(0)
-	elif Input.is_action_just_released("ui_time_scroll"):
-		set_speed(curLevel+1)
-	elif Input.is_action_just_released("ui_time_scroll_reverse"):
-		set_speed(curLevel-1)
+	pass
+#	if Input.is_action_just_released("ui_pause"):
+#		if curLevel == 0:
+#			set_speed(previousLevel)
+#		else:
+#			set_speed(0)
+#	elif Input.is_action_just_released("ui_time_scroll"):
+#		set_speed(curLevel+1)
+#	elif Input.is_action_just_released("ui_time_scroll_reverse"):
+#		set_speed(curLevel-1)
 		
 func set_speed(newLevel):
 	newLevel = newLevel % levels.size()

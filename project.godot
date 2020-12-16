@@ -19,6 +19,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://cultivation/KiUtil.gd"
 }, {
+"base": "Node2D",
+"class": "LocationScene",
+"language": "GDScript",
+"path": "res://scene/LocationScene.gd"
+}, {
+"base": "PanelContainer",
+"class": "Organizer",
+"language": "GDScript",
+"path": "res://ui/organizer/Organizer.gd"
+}, {
 "base": "ConfirmationDialog",
 "class": "OrganizerDeleteConfirmationDialog",
 "language": "GDScript",
@@ -43,15 +53,23 @@ _global_script_classes=[ {
 "class": "OrganizerLabelEdit",
 "language": "GDScript",
 "path": "res://ui/organizer/OrganizerLabelEdit.gd"
+}, {
+"base": "ReferenceRect",
+"class": "TextInterface",
+"language": "GDScript",
+"path": "res://addons/GodotTIE/text_interface_engine.gd"
 } ]
 _global_script_class_icons={
 "Ki": "",
 "KiUtil": "",
+"LocationScene": "",
+"Organizer": "",
 "OrganizerDeleteConfirmationDialog": "",
 "OrganizerDeleteRejectDialog": "",
 "OrganizerEntry": "",
 "OrganizerFolder": "",
-"OrganizerLabelEdit": ""
+"OrganizerLabelEdit": "",
+"TextInterface": ""
 }
 
 [application]
@@ -62,6 +80,13 @@ config/icon="res://icon.png"
 [autoload]
 
 Event="*res://Event.tscn"
+GameState="*res://GameState.tscn"
+
+[debug]
+
+gdscript/warnings/unused_argument=false
+gdscript/warnings/unused_signal=false
+gdscript/warnings/return_value_discarded=false
 
 [display]
 

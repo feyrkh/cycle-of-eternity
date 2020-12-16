@@ -1,4 +1,5 @@
 extends PanelContainer
+class_name Organizer
 
 export(NodePath) var entryContainerPath
 onready var dragIndicator = $DragIndicator
@@ -33,7 +34,14 @@ func _process(delta):
 func _input(event):
 	if draggingEntry:
 		update_drag_indicator()
-		
+
+func add_item_top(item):
+	entryContainer.add_child(item)
+	entryContainer.move_child(item, 0)
+
+func add_item_bottom(item):
+	entryContainer.add_child(item)
+
 func stop_dropping():
 	print('stopping drop operation')
 	if draggingEntry && draggingEntry.has_method('unhighlight'): draggingEntry.unhighlight()
@@ -56,7 +64,6 @@ func update_drag_indicator():
 	dragIndicator.visible = true
 	var childrenToScan = dropContainer.get_children()
 	var stillScanning = true
-	var rootOffset = Vector2(0,0)
 	while stillScanning:
 		stillScanning = false
 		dropTargetType = TOP_OF_LIST
