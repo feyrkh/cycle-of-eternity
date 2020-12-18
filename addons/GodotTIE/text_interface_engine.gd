@@ -64,7 +64,7 @@ func buff_debug(f, lab = false, arg0 = null, push_front = false): # For simple d
 	else:
 		_buffer.push_front(b)
 
-func buff_text(text, vel = 0, tag = "", push_front = false): # The text for the output, and its printing velocity (per character)
+func buff_text(text, vel = 0.005, tag = "", push_front = false): # The text for the output, and its printing velocity (per character)
 	var b = {"buff_type":BUFF_TEXT, "buff_text":text, "buff_vel":vel, "buff_tag":tag}
 	if !push_front:
 		_buffer.append(b)
@@ -115,6 +115,7 @@ func clear_buffer(): # Clears all buffs in _buffer
 	_buff_beginning = true
 	_turbo = false
 	_max_lines_reached = false
+	emit_signal("buff_cleared")
 
 func reset(): # Reset TIE to its initial 100% cleared state
 	clear_text()
@@ -147,6 +148,7 @@ func set_color(c): # Changes the color of the text
 	_label.add_color_override("font_color", c)
 
 func set_state(i): # Changes the state of the Text Interface Engine
+	print('TIE state: ', i)
 	emit_signal("state_change", int(i))
 	if _state == STATE_INPUT:
 		_blink_input(true)
@@ -175,12 +177,53 @@ func _ready():
 	if(FONT != null):
 		_label.add_font_override("font", FONT)
 	
+	update_size()
+	apply_serialized_settings()
+
+var _tmp_serialized_settings = null
+
+func refresh_settings(serializedTextInterface):
+	if !serializedTextInterface: return
+	_tmp_serialized_settings = serializedTextInterface
+	if get_parent(): # refresh now
+		apply_serialized_settings()
+	else: # refresh later
+		pass
+
+func apply_serialized_settings():
+	if !_tmp_serialized_settings: return
+	var s = _tmp_serialized_settings
+	_buffer = s['_buffer']
+	_label.set_text(s['_label.text'])
+	_label.set_lines_skipped(s['_label.lines_skipped'])
+	_state = s['_state']
+	_output_delay = s['_output_delay']
+	_output_delay_limit = s['_output_delay_limit']
+	_on_break = s['_on_break']
+	_max_lines_reached = s['_max_lines_reached']
+	_buff_beginning = s['_buff_beginning']
+	_turbo = s['_turbo']
+	_blink_input_visible = s['_blink_input_visible']
+	_blink_input_timer = s['_blink_input_timer']
+	_input_timer_limit = s['_input_timer_limit']
+	_input_index = s['_input_index']
+	_tmp_serialized_settings = null
+
+func update_size():
 	# Setting size of the frame
 	_max_lines = floor(get_size().y/(_label.get_line_height()+_label.get_constant("line_spacing")))
 	_label.set_size(Vector2(get_size().x,get_size().y))
 	_label.set_autowrap(true)
 
 func _physics_process(delta):
+	if _output_delay_limit <= 0: perform_processing(delta)
+	else: 
+		perform_processing(delta)
+		while delta >= _output_delay_limit && _output_delay_limit > 0:
+			delta = delta - _output_delay_limit
+			perform_processing(_output_delay_limit)
+	
+func perform_processing(delta):
 	if(_state == STATE_OUTPUT): # Output
 		if(_buffer.size() == 0):
 			set_state(STATE_WAITING)
@@ -288,9 +331,7 @@ func _input(event):
 					_label.set_lines_skipped(_label.get_lines_skipped()+1)
 		elif(_state == 1 and _on_break): # If its on a break
 			if(event.scancode == _break_key):
-				emit_signal("resume_break")
-				_buffer.pop_front() # Pop out break buff
-				_on_break = false
+				resume_break()
 		elif(_state == 2): # If its on the input state
 			if(BLINKING_INPUT): # Stop blinking line while inputing
 				_blink_input(true) 
@@ -312,6 +353,13 @@ func _input(event):
 			else: # Add character
 				if(INPUT_CHARACTERS_LIMIT < 0 or input.length() < INPUT_CHARACTERS_LIMIT):
 					_label_print(char(event.unicode))
+
+func resume_break():
+	if _state == 1 and _on_break:
+		emit_signal("resume_break")
+		_buffer.pop_front() # Pop out break buff
+		_on_break = false
+	# TODO: skip to next line break otherwise
 
 # Private
 func _clear_skipped_lines():

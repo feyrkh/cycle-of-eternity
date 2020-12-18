@@ -14,4 +14,15 @@ text = "New Game"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Continue" type="Button" parent="."]
+margin_left = 769.289
+margin_top = 184.715
+margin_right = 1124.29
+margin_bottom = 382.715
+text = "Continue"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 [connection signal="pressed" from="NewGame" to="." method="_on_NewGame_pressed"]
+[connection signal="pressed" from="Continue" to="." method="_on_Continue_pressed"]

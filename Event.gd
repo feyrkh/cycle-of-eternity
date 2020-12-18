@@ -13,6 +13,7 @@ signal new_scene_loaded(newScene)
 
 signal show_character(characterImgPath) # load the specified image and show it on the UI
 signal hide_character # () - hide any shown characters
+signal msg_popup(msg, sourceNode) # pop up a scrollable text message
 
 var textInterface:TextInterface
 
@@ -38,9 +39,9 @@ func hide_character():
 	emit_signal('hide_character')
 
 func clear_text():
-	textInterface.clear_text()
+	textInterface.reset()
 
 func _on_Event_organizer_entry_clicked(organizer, organizerEntryClicked:OrganizerEntry):
-	if organizerEntryClicked && organizerEntryClicked.data && organizerEntryClicked.data['cmd']:
+	if organizerEntryClicked && organizerEntryClicked.data && organizerEntryClicked.data.has('cmd'):
 		GameState.run_command(organizerEntryClicked.data['cmd'], organizerEntryClicked.data, organizerEntryClicked)
 

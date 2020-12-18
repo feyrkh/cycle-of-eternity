@@ -1,6 +1,8 @@
 extends PanelContainer
 class_name OrganizerEntry
 
+const OrganizerDataEntry = preload("res://ui/organizer/OrganizerDataEntry.gd")
+
 export var labelText = ''
 export var canDrag = true
 export var canDelete = true
@@ -8,9 +10,11 @@ export var isToggle = false
 
 export(NodePath) var labelPath 
 export(NodePath) var editNameButtonPath 
+var id
 var label
 var editNameButton
 var data:Dictionary
+var blinkCount = 0
 
 var editBox:OrganizerLabelEdit
 var containingOrganizer
@@ -24,16 +28,32 @@ func _ready():
 	label.flat = !isToggle
 	label.toggle_mode = isToggle
 	
+func get_label_text(): return label.text
+
+func get_save_data(path):
+	var saveData = OrganizerDataEntry.build(id, get_label_text(), path, data, get_scene_name())
+	return saveData
+	
+func get_scene_name():
+	return 'OrganizerEntry'
 
 func is_organizer_entry(): return true
 
 func call_attention():
 	print('calling attention to myself!')
-	for _i in range(20):
-		modulate = Color.green
-		yield(get_tree().create_timer(0.1),"timeout")
+	GameState.attentionTimer.connect('timeout', self, 'blink')
+	blinkCount = 10
+
+func blink():
+	blinkCount = blinkCount - 1
+	if blinkCount <= 0:
 		modulate = Color.white
-		yield(get_tree().create_timer(0.1),"timeout")
+		GameState.attentionTimer.disconnect('timeout', self, 'blink')
+		return
+	if modulate == Color.white:
+		modulate = Color.green
+	else:
+		modulate = Color.white
 		
 func highlight():
 	self.modulate = Color.yellow

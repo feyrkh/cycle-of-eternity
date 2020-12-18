@@ -3,8 +3,12 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node
 
+var OrganizerData = load(\"res://ui/organizer/OrganizerData.gd\")
+
+var UI
 var curScene = null
-var bootstrapScene = null
+var bootstrapScene = null # Name of the scene to load at the start of GameScene. Used when starting a fresh game 
+var loadingSaveFile = null # Name of the save file to load at the start of GameScene. Used when restoring the game from the title screen, or other times when the GameScene isn't loaded
 
 var settings = {
 	'playerName': 'Master',
@@ -15,24 +19,97 @@ var quest = {
 	'tutorial':'start'
 }
 
+var _organizers = {}
+
+var attentionTimer:Timer
+
 func _ready():
+	attentionTimer = Timer.new()
+	attentionTimer.one_shot = false
+	attentionTimer.autostart = true
+	add_child(attentionTimer)
+	attentionTimer.start(0.1)
 	setupGameWorld()
 
 func setupGameWorld():
 	pass
+
+func serialize_world()->String:
+	UI.save_organizers()
+	settings['leftOrganizerName'] = UI.leftOrganizer.organizerDataName
+	settings['rightOrganizerName'] = UI.rightOrganizer.organizerDataName
+	settings['uiTextInterface'] = UI.serialize_text_interface()
+	var retval = {
+		'settings':settings,
+		'quest':quest,
+		'organizers':{}
+	}
+	for k in _organizers.keys():
+		if k == 'Null': continue
+		var serializedOrganizer = _organizers[k].serialize()
+		retval.organizers[k] = serializedOrganizer
+	return to_json(retval)
 	
+func deserialize_world(worldJson):
+	var serializedWorld = parse_json(worldJson)
+	settings = serializedWorld.settings
+	quest = serializedWorld.quest
+	_organizers = {}
+	var dummyOrg = OrganizerData.new() # needed because gdscript 3 doesn't support self-reference of classes from static functions :eyeroll:
+	for k in serializedWorld.organizers:
+		var deserializedOrganizer = dummyOrg.deserialize(serializedWorld.organizers[k])
+		_organizers[k] = deserializedOrganizer
+	if UI:
+		var leftOrganizerName = GameState.settings.get('leftOrganizerName')
+		var rightOrganizerName = GameState.settings.get('rightOrganizerName')
+		if leftOrganizerName: UI.load_left_organizer(leftOrganizerName)
+		if rightOrganizerName: UI.load_right_organizer(rightOrganizerName)
+		UI.deserialize_text_interface(settings.get('uiTextInterface'))
+	loadScene(settings['curSceneName'], settings['curSceneSettings'])
+		
+func save_world(saveSlot, serializedWorld):
+	var file = File.new()
+	file.open(\"user://%s.dat\"%saveSlot, File.WRITE)
+	file.store_string(serializedWorld)
+	file.close()
+
+func load_world(saveSlot):
+	var file = File.new()
+	file.open(\"user://%s.dat\"%saveSlot, File.READ)
+	var content = file.get_as_text()
+	file.close()
+	deserialize_world(content)
+	
+func add_organizer(organizerName, organizerData):
+	organizerData.name = organizerName
+	_organizers[organizerName] = organizerData
+
 func loadScene(newSceneName:String, newSceneData:Dictionary):
-	if curScene && curScene.has_method('shutdownScene'): curScene.shutdownScene()
+	Conversation.reset()
+	if UI && UI.textInterface: UI.textInterface.reset()
+	if curScene && curScene.has_method('shutdown_scene'): 
+		curScene.shutdown_scene()
 	if curScene: curScene.queue_free()
 	var newScene = load('res://scene/'+newSceneName+'.tscn').instance()
 	if newScene.has_method('startupScene'): newScene.startupScene(newSceneData)
+	curScene = newScene
 	settings['curSceneName'] = newSceneName
 	settings['curSceneSettings'] = newSceneData
 	Event.emit_signal(\"new_scene_loaded\", newScene)
 
+func get_organizer_data(organizerName:String):
+	if !_organizers.has(organizerName):
+		_organizers[organizerName] = OrganizerData.new()
+		_organizers[organizerName].name = organizerName
+	return _organizers[organizerName]
+
+
 func run_command(cmd:String, data:Dictionary, sourceNode:Node=null):
 	match cmd:
 		'scene': cmd_scene(data, sourceNode)
+		'msg': cmd_msg(data, sourceNode)
+		'quicksave': cmd_quicksave()
+		'quickload': cmd_quickload()
 		_: printerr('Invalid command: ', cmd, '; data=', data, '; sourceNode=', sourceNode.name)
 
 # scene - name of the scene (not 'res://scene/office.tscn', but just 'office')
@@ -40,10 +117,28 @@ func run_command(cmd:String, data:Dictionary, sourceNode:Node=null):
 # keepCharacter - don't hide any character portrait that's currently displayed in the UI
 # keepText - don't clear any text buffered in the UI
 func cmd_scene(data:Dictionary, sourceNode):
+#	if settings.get('curSceneName') == data.get('scene'): 
+#		print(\"Not changing scenes, we're already in the right place\")
+#		return
 	if sourceNode && data.get('deleteSourceNodeAfterTransition'): sourceNode.queue_free()
 	if !data.get('keepCharacter'): Event.hide_character()
 	if !data.get('keepText'): Event.clear_text()
 	loadScene(data.get('scene'), data)
+
+# msg - text to display on the popup
+func cmd_msg(data:Dictionary, sourceNode):
+	Event.emit_signal('msg_popup', data, sourceNode)
+
+func cmd_quicksave():
+	print('quicksaving')
+	var world = serialize_world()
+	print('World: ', world)
+	save_world('quicksave', world)
+	
+func cmd_quickload():
+	print('quickloading')
+	load_world('quicksave')
+	
 "
 
 [node name="GameState" type="Node"]

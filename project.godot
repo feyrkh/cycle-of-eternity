@@ -9,11 +9,6 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Object",
-"class": "Conversation",
-"language": "GDScript",
-"path": "res://ui/Conversation.gd"
-}, {
 "base": "RigidBody2D",
 "class": "Ki",
 "language": "GDScript",
@@ -33,6 +28,16 @@ _global_script_classes=[ {
 "class": "Organizer",
 "language": "GDScript",
 "path": "res://ui/organizer/Organizer.gd"
+}, {
+"base": "Resource",
+"class": "OrganizerData",
+"language": "GDScript",
+"path": "res://ui/organizer/OrganizerData.gd"
+}, {
+"base": "Object",
+"class": "OrganizerDataEntry",
+"language": "GDScript",
+"path": "res://ui/organizer/OrganizerDataEntry.gd"
 }, {
 "base": "ConfirmationDialog",
 "class": "OrganizerDeleteConfirmationDialog",
@@ -65,11 +70,12 @@ _global_script_classes=[ {
 "path": "res://addons/GodotTIE/text_interface_engine.gd"
 } ]
 _global_script_class_icons={
-"Conversation": "",
 "Ki": "",
 "KiUtil": "",
 "LocationScene": "",
 "Organizer": "",
+"OrganizerData": "",
+"OrganizerDataEntry": "",
 "OrganizerDeleteConfirmationDialog": "",
 "OrganizerDeleteRejectDialog": "",
 "OrganizerEntry": "",
@@ -89,6 +95,7 @@ config/icon="res://icon.png"
 Event="*res://Event.tscn"
 GameState="*res://GameState.tscn"
 Quest="*res://Quest.tscn"
+Conversation="*res://ui/Conversation.tscn"
 
 [debug]
 

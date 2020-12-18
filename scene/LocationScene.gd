@@ -22,3 +22,9 @@ func setup_quest():
 	#if GameState.quest.get('placeholder') == 'condition':
 	#	return true
 	return false
+
+func shutdown_scene():
+	print('shutting down scene')
+	UI.save_organizers()
+	UI.clear_organizer()
+	UI.textInterface.reset()

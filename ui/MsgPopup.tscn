@@ -1,0 +1,36 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://ui/MsgPopup.gd" type="Script" id=1]
+
+[node name="MsgPopup" type="PopupPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+anchor_left = 0.1
+anchor_right = 0.9
+anchor_bottom = 1.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="ScrollContainer"]
+margin_right = 1536.0
+margin_bottom = 1080.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "asdf
+one
+two
+three asdfas dfas dfas df"
+valign = 1
+autowrap = true
+[connection signal="popup_hide" from="." to="." method="_on_MsgPopup_popup_hide"]

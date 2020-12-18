@@ -1,8 +1,14 @@
 extends Object
-class_name Conversation
 
 var characters={}
 var buffer = []
+
+func _init():
+	character('helper', '{helperName}', 'secretary')
+	
+func reset():
+	buffer = []
+	run_speaking(null)
 
 func run():
 	while buffer.size() > 0:
@@ -26,7 +32,7 @@ func pause():
 	buffer.append(['pause'])
 
 func run_pause():
-	if Event.textInterface._buffer.length() > 0:
+	if Event.textInterface._buffer.size() > 0:
 		yield(Event.textInterface, 'buff_end')
 
 
@@ -38,14 +44,16 @@ func run_page(text):
 	if text != null:
 		text = text.trim_prefix('\n')
 		Event.textInterface.buff_text(text.format(GameState.settings))
-	Event.textInterface.buff_break()
-	yield(Event.textInterface, 'buff_end')
+	if buffer.size() > 0:
+		Event.textInterface.buff_break()
+		yield(Event.textInterface, 'buff_end')
 	
 func text(text):
 	buffer.append(['text', text])
 	yield(Event.textInterface, 'buff_end')
 	
 func run_text(text):
+	text = text.trim_prefix('\n')
 	Event.textInterface.buff_text(text.format(GameState.settings))
 	yield(Event.textInterface, 'buff_end')
 	
@@ -61,6 +69,7 @@ func clear():
 
 func run_clear():
 	Event.clear_text()
+	
 
 # Use like: yield(conv.run(self, 'whenConvComplete', ['arg1', 'arg2']), 'completed')
 func cmd(obj, method, args=[], shouldYield=false):

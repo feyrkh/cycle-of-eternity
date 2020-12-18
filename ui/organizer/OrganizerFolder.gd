@@ -10,9 +10,21 @@ export var labelText = "folder"
 export var canDrag = true
 export var canDelete = true
 
-var isOpen = false
+var data = {}
+
 var editBox:OrganizerLabelEdit
 var containingOrganizer
+
+func set_is_open(val):
+	if val: data['isOpen'] = true
+	else: data.erase('isOpen')
+
+func set_no_edit(val):
+	if val: data['noEdit'] = true
+	else: data.erase('noEdit')
+
+func get_is_open(): return data.get('isOpen')
+func get_no_edit(): return data.get('noEdit')
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -28,6 +40,15 @@ func _ready():
 
 func is_organizer_entry(): return true
 
+func get_label_text(): return label.text
+
+func get_save_data(path):
+	var saveData = OrganizerDataEntry.build(null, get_label_text(), path, data, get_scene_name())
+	return saveData
+
+func get_scene_name():
+	return 'OrganizerFolder'
+	
 func get_entry_container():
 	return entryContainer
 
@@ -40,11 +61,11 @@ func call_attention():
 		
 
 func collapse():
-	isOpen = false
+	data.erase('isOpen')
 	update_contents()
 	
 func expand():
-	isOpen = true
+	data['isOpen'] = true
 	update_contents()
 
 func add_item_top(item):
@@ -55,12 +76,13 @@ func add_item_bottom(item):
 	entryContainer.add_child(item)
 
 func update_contents():
-	if isOpen:
-		print('updating folder icon (open)')
+	if data.get('noEdit'): editNameButton.visible = false
+	if data.get('isOpen'):
+		#print('updating folder icon (open)')
 		folderOpenIcon.set_rotation(deg2rad(90))
 		entryContainer.visible = true
 	else: 
-		print('updating folder icon (closed)')
+		#print('updating folder icon (closed)')
 		folderOpenIcon.set_rotation(deg2rad(0))
 		entryContainer.visible = false
 
@@ -79,12 +101,14 @@ func _on_Label_pressed():
 
 func toggle_folder():
 	print('toggling folder')
-	isOpen = !isOpen
+	if data.get('isOpen'): data.erase('isOpen')
+	else: data['isOpen'] = true
 	update_contents()
 
 func _on_OpenIcon_visibility_changed():
+	update_contents() # needed when reloading an organizer that has entries which haven't changed
 	yield(get_tree(),"idle_frame")
-	update_contents()
+	update_contents() # needed to update the open/closed icon on a folder when a new organizer is added
 
 func highlight():
 	self.modulate = Color.yellow

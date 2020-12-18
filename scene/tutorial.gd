@@ -12,14 +12,15 @@ func setupNewScene(ui, gameScene):
 	self.GameScene = gameScene
 
 func setupState():
-	match state:
-		'start': startState()
+	print('Resetting state for ', GameState.quest.get(Quest.Q_TUTORIAL))
+	match GameState.quest.get(Quest.Q_TUTORIAL):
+		Quest.Q_TUTORIAL_OFFICE: officeState()
 		_: startState()
 
 func startState():
-	var c = Conversation.new()
+	var c = Conversation
 	
-	c.character('helper', '{helperName}', 'secretary')
+	# done by default now - c.character('helper', '{helperName}', 'secretary')
 	c.speaking('helper')
 	c.page("""
 Master, you've arrived ahead of schedule! 
@@ -31,13 +32,17 @@ Actually...perhaps your authority would be useful here?
 If you'll follow me to your office I have prepared a requisition, it lacks only your signature.""")
 	c.speaking(null)
 	c.input('But first - how should we address you?', self, 'on_input_player_name')
+	yield(c.run(), 'completed')
+
+func officeState():
+	var c = Conversation
 	c.clear()
 	c.speaking('helper')
 	c.text("""Ah, {playerName}, of course! Well, as I was saying - please allow me to show you to your office.\n\nIf you will just follow me...""")
 	c.cmd(self, 'direct_to_office')
 	
 	yield(c.run(), 'completed')
-	print('Finished the conversation')
+	print('Finished the tutorial conversation')
 	
 func on_input_player_name(playerName):
 	#var playerName = yield(Event.textInterface, 'input_enter')
@@ -45,13 +50,22 @@ func on_input_player_name(playerName):
 		playerName = 'Master'
 	GameState.settings['playerName'] = playerName
 	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_OFFICE
+	setupState()
 	
-func direct_to_office():	
-	var locationsFolder:OrganizerFolder = UI.new_folder('Locations', true)
-	locationsFolder.canDelete = false
-	locationsFolder.canDrag = false
-	UI.leftOrganizer.add_item_top(locationsFolder)
-	var officeItem:OrganizerEntry = UI.new_item('{playerName}\'s Office'.format(GameState.settings), {'cmd':'scene', 'scene':'office'})
-	officeItem.canDelete = false
-	locationsFolder.add_item_bottom(officeItem)
+func direct_to_office():
+	
+	var mainOrg = load("res://ui/organizer/OrganizerData.gd").new()
+	mainOrg.add_entry('Settings', {'noEdit':true}, null, 'OrganizerFolder')
+	mainOrg.add_entry('Settings/Quicksave', {'cmd':'quicksave'}, 'quicksave')
+	mainOrg.add_entry('Settings/Quickload', {'cmd':'quickload'}, 'quickload')
+	mainOrg.add_entry('Locations', {'noEdit':true,'isOpen':true,'noDelete':true}, null, 'OrganizerFolder')
+	mainOrg.add_entry('Locations/Sacred School', {'noEdit':true,'isOpen':true,'noDelete':true}, null, 'OrganizerFolder')
+	mainOrg.add_entry('Locations/Sacred School/'+'{playerName}\'s Office'.format(GameState.settings), 
+		 {'cmd':'scene', 'scene':'office'}, 'gotoOffice')
+	
+	GameState.add_organizer('main', mainOrg)
+	UI.leftOrganizer.refresh_organizer_data(GameState.get_organizer_data('main'))
+	yield(get_tree(), 'idle_frame')
+	var officeItem = UI.leftOrganizer.get_entry_by_id('gotoOffice')
 	officeItem.call_attention()
+	officeItem.canDelete = false
