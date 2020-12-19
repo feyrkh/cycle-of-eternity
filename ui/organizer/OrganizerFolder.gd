@@ -10,6 +10,7 @@ export var labelText = "folder"
 export var canDrag = true
 export var canDelete = true
 
+var id
 var data = {}
 
 var editBox:OrganizerLabelEdit

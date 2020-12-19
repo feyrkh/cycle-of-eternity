@@ -480,13 +480,6 @@ custom_styles/panel = SubResource( 2 )
 labelText = "Southwest Meridian"
 isToggle = true
 
-[node name="PanelContainer" type="PanelContainer" parent="UI/CanvasLayer/HBoxContainer/VBoxContainer/Organizer/Pushers/Southwest"]
-margin_right = 272.0
-margin_bottom = 1014.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="Collectors" parent="UI/CanvasLayer/HBoxContainer/VBoxContainer/Organizer" instance=ExtResource( 11 )]
 margin_left = 7.0
 margin_top = 7.0

@@ -3,8 +3,8 @@ extends PanelContainer
 var previousLevel = 0
 var curLevel = 1
 
-var levels = [0, 1, 3, 8]
-var physics_steps = [60, 60, 90, 600]
+var levels = [0, 1, 3, 180]
+var physics_steps = [30, 30, levels[2]*30, levels[3]*30]
 
 func _process(delta):
 	pass

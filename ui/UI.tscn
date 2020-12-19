@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://ui/UI.gd" type="Script" id=1]
 [ext_resource path="res://img/people/secretary.png" type="Texture" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://img/carat_icon.png" type="Texture" id=5]
 [ext_resource path="res://font/KaushanScript-Regular.otf" type="DynamicFontData" id=6]
 [ext_resource path="res://ui/MsgPopup.tscn" type="PackedScene" id=7]
+[ext_resource path="res://img/arrow_swirl.png" type="Texture" id=8]
 [ext_resource path="res://ui/organizer/Organizer.tscn" type="PackedScene" id=9]
 [ext_resource path="res://ui/TimeController.tscn" type="PackedScene" id=10]
 [ext_resource path="res://ui/QueryToolCursor.tscn" type="PackedScene" id=11]
@@ -154,12 +155,34 @@ wait_time = 0.5
 script = ExtResource( 3 )
 blinkTargetPath = NodePath("../../TextBoxContainer/Blinker")
 
-[node name="Organizer2" parent="CanvasLayer/HBoxContainer" instance=ExtResource( 9 )]
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/HBoxContainer"]
 margin_left = 1620.0
 margin_right = 1920.0
 margin_bottom = 1080.0
+
+[node name="Organizer2" parent="CanvasLayer/HBoxContainer/VBoxContainer2" instance=ExtResource( 9 )]
+margin_bottom = 913.0
 mouse_filter = 1
 size_flags_horizontal = 8
+entryContainerPath = NodePath("../VBoxContainer2/Organizer2/VBoxContainer/ScrollContainer/EntryContainer")
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer2"]
+margin_top = 917.0
+margin_right = 300.0
+margin_bottom = 1080.0
+size_flags_horizontal = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 293.0
+margin_bottom = 156.0
+
+[node name="NextWeekButton" type="TextureButton" parent="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer/CenterContainer"]
+margin_left = 68.0
+margin_right = 218.0
+margin_bottom = 149.0
+texture_normal = ExtResource( 8 )
 
 [node name="PopupLayer" type="CanvasLayer" parent="."]
 script = ExtResource( 4 )
@@ -188,3 +211,4 @@ size_flags_vertical = 4
 [connection signal="resized" from="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE" to="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE" method="update_size"]
 [connection signal="resume_break" from="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE" to="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/BlinkTimer" method="_on_TIE_resume_break"]
 [connection signal="timeout" from="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/BlinkTimer" to="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/BlinkTimer" method="_on_BlinkTimer_timeout"]
+[connection signal="pressed" from="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer/CenterContainer/NextWeekButton" to="." method="_on_NextWeekButton_pressed"]

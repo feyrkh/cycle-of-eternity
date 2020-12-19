@@ -119,6 +119,15 @@ func add_item_top(item):
 func add_item_bottom(item):
 	entryContainer.add_child(item)
 
+func get_or_create_folder(folderId, folderName, folderOptions, folderParent):
+	var folder = get_entry_by_id(folderId)
+	if !folder: 
+		if !folderParent: folderParent = self
+		folder = OrganizerFolderScene.instance()
+		folder.labelText = folderName
+		folder.data = folderOptions
+		folderParent.add_item_bottom(folder)
+
 func stop_dropping():
 	print('stopping drop operation')
 	if draggingEntry && draggingEntry.has_method('unhighlight'): draggingEntry.unhighlight()

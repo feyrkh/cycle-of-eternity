@@ -1,7 +1,7 @@
 extends Node2D
 
 onready var leftOrganizer:Organizer = $CanvasLayer/HBoxContainer/VBoxContainer/Organizer
-onready var rightOrganizer:Organizer = $CanvasLayer/HBoxContainer/Organizer2
+onready var rightOrganizer:Organizer = $CanvasLayer/HBoxContainer/VBoxContainer2/Organizer2
 onready var textInterfaceSplit:VSplitContainer = $CanvasLayer/HBoxContainer/VSplitContainer
 
 var folderScene = load('res://ui/organizer/OrganizerFolder.tscn')
@@ -107,3 +107,7 @@ func deserialize_text_interface(serializedTextInterface):
 	textInterfaceSplit.split_offset = s['splitContainerOffset']
 	textInterface.reset()
 #	textInterface.refresh_settings(s)
+
+
+func _on_NextWeekButton_pressed():
+	Event.emit_signal('pass_time', '1')
