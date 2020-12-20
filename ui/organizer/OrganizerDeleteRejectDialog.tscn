@@ -7,3 +7,5 @@ margin_right = 83.0
 margin_bottom = 58.0
 window_title = ""
 script = ExtResource( 1 )
+[connection signal="about_to_show" from="." to="." method="_on_OrganizerRejectDeleteDialog_about_to_show"]
+[connection signal="popup_hide" from="." to="." method="_on_OrganizerRejectDeleteDialog_popup_hide"]

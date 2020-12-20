@@ -15,6 +15,8 @@ signal show_character(characterImgPath) # load the specified image and show it o
 signal hide_character # () - hide any shown characters
 signal msg_popup(msg, sourceNode) # pop up a scrollable text message
 
+signal pass_time(amt)
+
 var textInterface:TextInterface
 
 func write_text_with_breaks(text_to_write):
@@ -44,4 +46,3 @@ func clear_text():
 func _on_Event_organizer_entry_clicked(organizer, organizerEntryClicked:OrganizerEntry):
 	if organizerEntryClicked && organizerEntryClicked.data && organizerEntryClicked.data.has('cmd'):
 		GameState.run_command(organizerEntryClicked.data['cmd'], organizerEntryClicked.data, organizerEntryClicked)
-

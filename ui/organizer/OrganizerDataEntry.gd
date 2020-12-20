@@ -4,10 +4,12 @@ class_name OrganizerDataEntry
 #var uuid=preload("res://addons/uuid.gd")
 
 static func build(id, name:String, path, data:Dictionary, scene:String)->Dictionary:
-	if !id: id = v4()
+	#if !id: id = v4()
 	if path is String:
 		path = (path).trim_prefix('/').split('/', false)
-	return {'id':id, 'name':name, 'path':path, 'data':data, 'scene':scene}
+	var result = {'name':name, 'path':path, 'data':data, 'scene':scene}
+	if id: result['id'] = id
+	return result
 
 #static func serialize(entry:Dictionary):
 #	return {'i':entry.id, 'n': entry.name, 'p':entry.path, 'd':entry.data, 's':entry.scene}

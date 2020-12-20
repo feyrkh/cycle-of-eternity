@@ -52,7 +52,9 @@ func refresh_organizer_data(data):
 		var item = load('res://ui/organizer/'+entry.scene+'.tscn').instance()
 		item.labelText = entry.name
 		item.data = entry.data
-		if entry.id: entryIds[entry.id] = item
+		if entry.has('id'): 
+			entryIds[entry.id] = item
+			item.id = entry.id
 		print('adding entry: ', item.labelText, ' to bottom of ', target.get_path())
 		target.add_item_bottom(item)
 		connect_drag_events_for_tree(item)
@@ -114,9 +116,11 @@ func get_or_create_path(path:Array):
 func add_item_top(item):
 	entryContainer.add_child(item)
 	entryContainer.move_child(item, 0)
+	connect_drag_events_for_tree(item)
 
 func add_item_bottom(item):
 	entryContainer.add_child(item)
+	connect_drag_events_for_tree(item)
 
 func get_or_create_folder(folderId, folderName, folderOptions, folderParent):
 	var folder = get_entry_by_id(folderId)
@@ -228,10 +232,6 @@ func connect_drag_events_for_tree(entry):
 	for child in entry.get_children():
 		connect_drag_events_for_tree(child)
 
-func add_new_entry(entry:Node2D):
-	if entry.has_method('connect_parent_container'): entry.connect_parent_container(self)
-	add_child(entry)
-
 func can_drop_data(position, data):
 	return (data is OrganizerEntry) or (data is OrganizerFolder)
 
@@ -270,7 +270,7 @@ func drop_data_fw(position, data, from_control):
 func get_drag_data_fw(position, from_control):
 	while from_control && !(from_control is OrganizerEntry) && !(from_control is OrganizerFolder):
 		from_control = from_control.get_parent()
-	if !from_control || !from_control.canDrag: return null
+	if !from_control || from_control.get_no_drag(): return null
 	draggingEntry = from_control
 	dragIndicator.visible = true
 	set_process(true)
@@ -284,3 +284,11 @@ func _on_NewFolderButton_pressed():
 	connect_drag_events_for_tree(newFolder)
 	yield(get_tree(),"idle_frame")
 	newFolder.edit_name()
+
+func add_new_entry(label:String, data:Dictionary, id=null):
+	var newEntry = OrganizerEntryScene.instance()
+	newEntry.labelText = label
+	newEntry.data = data
+	newEntry.id = id
+	add_item_bottom(newEntry)
+	return newEntry

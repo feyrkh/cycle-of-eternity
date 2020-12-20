@@ -2,7 +2,7 @@ extends TextureRect
 
 func can_drop_data(position, data):
 	var retval = (data is OrganizerEntry) or (data is OrganizerFolder)
-	if retval && data.canDelete: 
+	if retval && !data.get_no_delete(): 
 		self.modulate = Color.pink
 	return retval
 	

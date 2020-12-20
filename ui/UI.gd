@@ -1,13 +1,17 @@
 extends Node2D
 
-onready var leftOrganizer:Organizer = $CanvasLayer/HBoxContainer/VBoxContainer/Organizer
-onready var rightOrganizer:Organizer = $CanvasLayer/HBoxContainer/VBoxContainer2/Organizer2
-onready var textInterfaceSplit:VSplitContainer = $CanvasLayer/HBoxContainer/VSplitContainer
+onready var leftOrganizer:Organizer = find_node('Organizer')
+onready var rightOrganizer:Organizer = find_node('Organizer2')
+onready var textInterfaceSplit:VSplitContainer = find_node('VSplitContainer')
+onready var timePassContainer = find_node('TimePassContainer')
+onready var controlsContainer = find_node('ControlsContainer')
 
 var folderScene = load('res://ui/organizer/OrganizerFolder.tscn')
 var entryScene = load('res://ui/organizer/OrganizerEntry.tscn')
 var msgPopupScene = load('res://ui/MsgPopup.tscn')
 var textInterface
+
+var lastPopup
 
 func _ready():
 	textInterface = $CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE
@@ -44,6 +48,7 @@ func _on_DragSurface_resized():
 func add_popup(item):
 	if item.get_parent(): item.get_parent().remove_child(item)
 	$PopupLayer.add_child(item)
+	lastPopup = item
 
 func on_msg_popup(data, sourceNode):
 	var popup = msgPopupScene.instance()
@@ -83,21 +88,6 @@ func _on_TIE_gui_input(event):
 func serialize_text_interface()->String:
 	var s = {}
 	s['splitContainerOffset'] = textInterfaceSplit.split_offset
-	
-#	s['_buffer'] = textInterface._buffer
-#	s['_label.text'] = textInterface._label.get_text()
-#	s['_label.lines_skipped'] = textInterface._label.get_lines_skipped()
-#	s['_state'] = textInterface._state
-#	s['_output_delay'] = textInterface._output_delay
-#	s['_output_delay_limit'] = textInterface._output_delay_limit
-#	s['_on_break'] = textInterface._on_break
-#	s['_max_lines_reached'] = textInterface._max_lines_reached
-#	s['_buff_beginning'] = textInterface._buff_beginning
-#	s['_turbo'] = textInterface._turbo
-#	s['_blink_input_visible'] = textInterface._blink_input_visible
-#	s['_blink_input_timer'] = textInterface._blink_input_timer
-#	s['_input_timer_limit'] = textInterface._input_timer_limit
-#	s['_input_index'] = textInterface._input_index
 	return s
 	
 
@@ -107,7 +97,3 @@ func deserialize_text_interface(serializedTextInterface):
 	textInterfaceSplit.split_offset = s['splitContainerOffset']
 	textInterface.reset()
 #	textInterface.refresh_settings(s)
-
-
-func _on_NextWeekButton_pressed():
-	Event.emit_signal('pass_time', '1')

@@ -64,3 +64,4 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 [connection signal="pressed" from="VBoxContainer/ToolContainer/NewFolderButton" to="." method="_on_NewFolderButton_pressed"]
+[connection signal="mouse_exited" from="VBoxContainer/ToolContainer/DeleteTarget" to="VBoxContainer/ToolContainer/DeleteTarget" method="_on_DeleteTarget_mouse_exited"]

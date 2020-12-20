@@ -37,7 +37,8 @@ func _ready():
 func update_rect_position():
 	var screenCenter = get_viewport_rect().size / 2
 	var halfSize = rect_size / 2
-	rect_global_position = screenCenter - halfSize 
+	rect_global_position = screenCenter - halfSize
+	rect_global_position.y = 10
 
 func update_rect_size():
 	yield(get_tree(), 'idle_frame')

@@ -1,7 +1,7 @@
 extends Resource
 
 var filename
-# choice['workers'] = {'l':'Number of Workers', 'o':[{'l':'1', 'v':{'numWorkers':1, 'diplomacy':-10}}, 'l':'2', {'numWorkers':2, 'diplomacy':-25}, ...]}
+# choice['workers'] = {'l':'Number of Workers', 'o':[{'l':'1', 't':'one work crew', 'v':{'numWorkers':1, 'diplomacy':-10}}, 'l':'2', {'numWorkers':2, 'diplomacy':-25}, ...]}
 var choice = {}
 # selectedOptions['workers'] = {'numWorkers':1, 'diplomacy':-10}
 var selectedOptions = {}
@@ -33,7 +33,10 @@ func merge_selected_options():
 	var mergedSelections = {}
 	for optionId in choice.keys():
 		var selectedOption = get_selected_option(optionId)
-		mergedSelections[optionId] = selectedOption['l']
+		# 't' is specifically for inserting into formatted 't'ext, so use it if present - otherwise default to the 'l'abel used by the dropdown list
+		if selectedOption.has('t'): mergedSelections[optionId] = selectedOption['t']
+		else: mergedSelections[optionId] = selectedOption['l']
+
 		for resourceName in selectedOption['v'].keys():
 			var resourceValue = selectedOption['v'][resourceName]
 			var mergedValue = mergedSelections.get(resourceName, 0) + resourceValue
@@ -41,17 +44,21 @@ func merge_selected_options():
 	return mergedSelections
 	
 func get_decree_text():
-	return decreeTextTemplate.format(merge_selected_options())
+	return decreeTextTemplate.format(merge_selected_options()).format(GameState.settings)
 
 func serialize():
 	return {'cmd':'decree', 'f':filename, 'so':selectedOptions}
 
 func deserialize(data):
+	init_from_file(data['f'])
+	selectedOptions = data.get('so', {})
+
+func init_from_file(filename):
+	self.filename = filename
 	var file = File.new()
-	file.open(data['f'], file.READ)
+	file.open(filename, file.READ)
 	var text = file.get_as_text()
 	file.close()
 	var baseData = parse_json(text)
-	choice = baseData['c']
-	selectedOptions = data.get('so', {})
 	decreeTextTemplate = baseData['t']
+	choice = baseData['c']

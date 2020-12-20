@@ -7,8 +7,6 @@ onready var label = $VBoxContainer/HBoxContainer/Label
 onready var editNameButton = $VBoxContainer/HBoxContainer/EditNameButton
 
 export var labelText = "folder"
-export var canDrag = true
-export var canDelete = true
 
 var id
 var data = {}
@@ -16,6 +14,16 @@ var data = {}
 var editBox:OrganizerLabelEdit
 var containingOrganizer
 
+
+
+func set_no_drag(val):
+	if val: data['noDrag'] = true
+	else: data.erase('noDrag')
+
+func set_no_delete(val):
+	if val: data['noDel'] = true
+	else: data.erase('noDel')
+	
 func set_is_open(val):
 	if val: data['isOpen'] = true
 	else: data.erase('isOpen')
@@ -24,6 +32,8 @@ func set_no_edit(val):
 	if val: data['noEdit'] = true
 	else: data.erase('noEdit')
 
+func get_no_drag(): return data.get('noDrag', false)
+func get_no_delete(): return data.get('noDel', false)
 func get_is_open(): return data.get('isOpen')
 func get_no_edit(): return data.get('noEdit')
 
@@ -77,7 +87,7 @@ func add_item_bottom(item):
 	entryContainer.add_child(item)
 
 func update_contents():
-	if data.get('noEdit'): editNameButton.visible = false
+	if get_no_edit(): editNameButton.visible = false
 	if data.get('isOpen'):
 		#print('updating folder icon (open)')
 		folderOpenIcon.set_rotation(deg2rad(90))
@@ -140,7 +150,7 @@ func update_name_entered(newText):
 	update_name_lost_focus()
 
 func ask_to_delete():
-	if !canDelete:
+	if get_no_delete():
 		var noDeletePopup = OrganizerDeleteRejectDialog.new()
 		noDeletePopup.dialog_text = "You may not delete "+label.text+"."
 		var addLayer = self

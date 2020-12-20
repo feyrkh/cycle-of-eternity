@@ -19,7 +19,10 @@ func setupState():
 
 func startState():
 	var c = Conversation
-	
+	UI.leftOrganizer.visible = false
+	UI.rightOrganizer.visible = false
+	UI.controlsContainer.visible = false
+	UI.timePassContainer.visible = false
 	# done by default now - c.character('helper', '{helperName}', 'secretary')
 	c.speaking('helper')
 	c.page("""
@@ -55,9 +58,9 @@ func on_input_player_name(playerName):
 func direct_to_office():
 	
 	var mainOrg = load("res://ui/organizer/OrganizerData.gd").new()
-	mainOrg.add_entry('Settings', {'noEdit':true}, null, 'OrganizerFolder')
-	mainOrg.add_entry('Settings/Quicksave', {'cmd':'quicksave'}, 'quicksave')
-	mainOrg.add_entry('Settings/Quickload', {'cmd':'quickload'}, 'quickload')
+	mainOrg.add_entry('Settings', {'noDel':true, 'noDrag':true, 'noEdit':true}, null, 'OrganizerFolder')
+	mainOrg.add_entry('Settings/Quicksave', {'cmd':'quicksave', 'noDel':true, 'noDrag':true, 'noEdit':true}, 'quicksave')
+	mainOrg.add_entry('Settings/Quickload', {'cmd':'quickload', 'noDel':true, 'noDrag':true, 'noEdit':true}, 'quickload')
 	mainOrg.add_entry('Locations', {'noEdit':true,'isOpen':true,'noDelete':true}, null, 'OrganizerFolder')
 	mainOrg.add_entry('Locations/Sacred School', {'noEdit':true,'isOpen':true,'noDelete':true}, null, 'OrganizerFolder')
 	mainOrg.add_entry('Locations/Sacred School/'+'{playerName}\'s Office'.format(GameState.settings), 
@@ -65,7 +68,8 @@ func direct_to_office():
 	
 	GameState.add_organizer('main', mainOrg)
 	UI.leftOrganizer.refresh_organizer_data(GameState.get_organizer_data('main'))
+	UI.leftOrganizer.visible = true
 	yield(get_tree(), 'idle_frame')
 	var officeItem = UI.leftOrganizer.get_entry_by_id('gotoOffice')
 	officeItem.call_attention()
-	officeItem.canDelete = false
+	officeItem.set_no_delete(true)

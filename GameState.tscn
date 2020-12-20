@@ -69,14 +69,16 @@ func deserialize_world(worldJson):
 	loadScene(settings['curSceneName'], settings['curSceneSettings'])
 		
 func save_world(saveSlot, serializedWorld):
+	var dir:Directory = Directory.new()
+	dir.make_dir('user://save')
 	var file = File.new()
-	file.open(\"user://%s.dat\"%saveSlot, File.WRITE)
+	file.open(\"user://save/%s.dat\"%saveSlot, File.WRITE)
 	file.store_string(serializedWorld)
 	file.close()
 
 func load_world(saveSlot):
 	var file = File.new()
-	file.open(\"user://%s.dat\"%saveSlot, File.READ)
+	file.open(\"user://save/%s.dat\"%saveSlot, File.READ)
 	var content = file.get_as_text()
 	file.close()
 	deserialize_world(content)

@@ -27,4 +27,5 @@ func _on_TIE_buff_end():
 
 
 func _on_TIE_buff_cleared():
+	yield(get_tree(), 'idle_frame')
 	stopBlinking()

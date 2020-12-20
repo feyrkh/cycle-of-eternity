@@ -12,3 +12,5 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="about_to_show" from="." to="." method="_on_OrganizerDeleteConfirmDialog_about_to_show"]
+[connection signal="popup_hide" from="." to="." method="_on_OrganizerDeleteConfirmDialog_popup_hide"]
