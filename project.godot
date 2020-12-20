@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "OptionButton",
+"class": "DecreeOption",
+"language": "GDScript",
+"path": "res://decree/DecreeOption.gd"
+}, {
 "base": "RigidBody2D",
 "class": "Ki",
 "language": "GDScript",
@@ -70,6 +75,7 @@ _global_script_classes=[ {
 "path": "res://addons/GodotTIE/text_interface_engine.gd"
 } ]
 _global_script_class_icons={
+"DecreeOption": "",
 "Ki": "",
 "KiUtil": "",
 "LocationScene": "",

@@ -165,7 +165,6 @@ margin_bottom = 1080.0
 margin_bottom = 913.0
 mouse_filter = 1
 size_flags_horizontal = 8
-entryContainerPath = NodePath("../VBoxContainer2/Organizer2/VBoxContainer/ScrollContainer/EntryContainer")
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer2"]
 margin_top = 917.0

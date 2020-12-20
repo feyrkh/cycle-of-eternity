@@ -32,22 +32,26 @@ Please take a look at your outbox to the right, where you will find the decree. 
 	return .setup_quest()
 
 func setup_first_decree():
+	var decreeData = load("res://decree/DecreeData.gd").new()
+	decreeData.load_file("res://data/decree/work")
+#	decreeData.add_choice('workers', 'Number of Workers', [
+#		{'l':'one work crew', 'v':{'numWorkers':1, 'diplomacy':-10}},
+#		{'l':'two work crews', 'v':{'numWorkers':2, 'diplomacy':-25}},
+#		{'l':'three work crews', 'v':{'numWorkers':3, 'diplomacy':-65}}
+#	])
+#	decreeData.add_choice('giftSize', 'Size of Gift', [
+#		{'l':'nominal', 'v':{'coin':-1}},
+#		{'l':'small', 'v':{'coin':-5,'diplomacy':1}},
+#		{'l':'mediocre', 'v':{'coin':-25,'diplomacy':4}},
+#		{'l':'large', 'v':{'coin':-100,'diplomacy':15}},
+#		{'l':'enormous', 'v':{'coin':-500,'diplomacy':70}},
+#	])
+#	decreeData.decreeTextTemplate = 'Workers are required! Send {workers} to the {schoolName}. A {giftSize} gift will be provided in return.\n\n---\n\nCoins: {coin}\nVillage diplomacy change: {diplomacy}'
+#
 	var officeOrg = load("res://ui/organizer/OrganizerData.gd").new()
 	officeOrg.add_entry('Outbox:noEdit:isOpen/Work Orders:noEdit:isOpen/Raise Work Crew', 
-		{'order':'newWorkCrew'}, 'tutorialFirstWorkOrder')
-	officeOrg.add_entry('Inbox:noEdit/From the Emperor/Your mission', {'cmd':'msg', 'msg':"""
-From the office of the Radiant Emperor -
-
-1. By the Emperor's writ and seal, the bearer of this document is authorized and commanded to develop a school for the study and development of the newly discovered sacred sciences.
-
-2. The terrorist organization known as Penumbra Ascension, having damaged the Shadow Aegis which has protected the the Empire of Humanity for untold millennia, will be brought to heel by our mastery of this new form of warfare. 
-
-3. The cooperation of all loyal subjects of the Empire is required. Notwithstanding this decree, all efforts will be made toward self-sufficiency, that the police and military actions required for the ongoing security of Humanity not be compromised.
-
-4. As the sacred sciences are understood and exemplars are produced, the Emperor will request and require the release of individuals and groups of exemplars as necessary for the security of the realm. Failure to produce results risks shame for the leadership of the new school, suffering for the people of the Empire, and the death of all Humanity at the hands of the divine beasts held back by the failing Shadow Aegis.
-
-You have heard the command of the Radiant Emperor, Protector of Humanity, Nemesis of the Heavens - let his words guide your hands and heart, or may the light of Heaven devour you.
-"""})
+		 decreeData.serialize(), 'tutorialFirstWorkOrder')
+	officeOrg.add_entry('Inbox:noEdit/From the Emperor/Your mission', {'cmd':'msg', 'msg':"res://data/conv/emperor_your_mission.txt"})
 	officeOrg.add_entry('Inbox:noEdit/History/On Sacred Science', {'cmd':'msg', 'msg':"""
 - 
 """})

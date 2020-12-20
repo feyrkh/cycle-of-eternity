@@ -12,7 +12,8 @@ var loadingSaveFile = null # Name of the save file to load at the start of GameS
 
 var settings = {
 	'playerName': 'Master',
-	'helperName': 'Ren Xiu'
+	'schoolName': \"Heaven's Shadow\",
+	'helperName': 'Ren Xiu',
 }
 
 var quest = {
@@ -110,6 +111,7 @@ func run_command(cmd:String, data:Dictionary, sourceNode:Node=null):
 		'msg': cmd_msg(data, sourceNode)
 		'quicksave': cmd_quicksave()
 		'quickload': cmd_quickload()
+		'decree': cmd_decree(data, sourceNode)
 		_: printerr('Invalid command: ', cmd, '; data=', data, '; sourceNode=', sourceNode.name)
 
 # scene - name of the scene (not 'res://scene/office.tscn', but just 'office')
@@ -139,6 +141,14 @@ func cmd_quickload():
 	print('quickloading')
 	load_world('quicksave')
 	
+func cmd_decree(data, sourceNode):
+	var decreeData = preload('res://decree/DecreeData.gd').new()
+	decreeData.deserialize(data)
+	var decreePopup = preload(\"res://decree/Decree.tscn\").instance()
+	decreePopup.decreeData = decreeData
+	if sourceNode: decreePopup.decreeOrganizerNode = sourceNode
+	UI.add_popup(decreePopup)
+	decreePopup.popup_centered()
 "
 
 [node name="GameState" type="Node"]

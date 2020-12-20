@@ -1,9 +1,8 @@
 extends PanelContainer
 class_name Organizer
 
-export(NodePath) var entryContainerPath
-onready var dragIndicator = $DragIndicator
-onready var entryContainer = get_node(entryContainerPath)
+onready var dragIndicator = find_node('DragIndicator')
+onready var entryContainer = find_node('EntryContainer')
 
 var draggingEntry:Node = null
 enum {TOP_OF_LIST, BOTTOM_OF_LIST, AFTER_NODE, BEFORE_NODE}
