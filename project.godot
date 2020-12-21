@@ -108,7 +108,6 @@ Event="*res://Event.tscn"
 GameState="*res://GameState.tscn"
 Quest="*res://Quest.tscn"
 Conversation="*res://ui/Conversation.tscn"
-ProjectProcessor="*res://decree/ProjectProcessor.tscn"
 
 [debug]
 

@@ -67,6 +67,20 @@ func get_resource_level(resourceId, value):
 		if value <= level[0]: return level[1]
 	return levels[levels.size()-1][1]
 
+func reset_transient_resources():
+	for k in resources.keys():
+		if resourceData.get(k, {}).get('transient', false): resources.erase(resourceData)
+
+func produce_resources():
+	var addedResources = {}
+	for organizerData in _organizers.values():
+		var newResources = organizerData.collect_resources()
+		for k in newResources.keys():
+			var amt = newResources.get(k, 0)
+			addedResources[k] = addedResources.get(k, 0) + amt
+			resources[k] = resources.get(k, 0) + amt
+	return addedResources
+
 func serialize_world()->String:
 	UI.save_organizers()
 	settings['leftOrganizerName'] = UI.leftOrganizer.organizerDataName

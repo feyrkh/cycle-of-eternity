@@ -45,3 +45,8 @@ func add_folder(path:String, data:Dictionary):
 			entries.append(entry)
 		curPathChunks.append(pathChunk)
 	
+func collect_projects():
+	var results = []
+	for entry in entries:
+		if entry.get('path', [''])[0] == 'Outbox' and entry.get('data',{}).get('isProject', false):
+			results.append(entry)

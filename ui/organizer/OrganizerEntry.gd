@@ -31,6 +31,7 @@ func get_no_drag(): return data.get('noDrag', false)
 func get_is_toggle(): return data.get('isToggle', false)
 func get_no_delete(): return data.get('noDel', false)
 func get_no_edit(): return data.get('noEdit')
+func get_is_project(): return data.get('isProject', false)
 
 func set_no_drag(val):
 	if val: data['noDrag'] = true
@@ -47,6 +48,10 @@ func set_is_toggle(val):
 func set_no_edit(val):
 	if val: data['noEdit'] = true
 	else: data.erase('noEdit')
+
+func set_is_project(val):
+	if val: data['isProject'] = true
+	else: data.erase['isProject']
 
 func get_label_text(): return label.text
 
