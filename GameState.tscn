@@ -20,6 +20,26 @@ var quest = {
 	'tutorial':'start'
 }
 
+var resources = {
+	\"coin\": 500
+}
+
+# Translation from resources (ex: from the results of decrees) into human-friendly names
+# n: name (human-friendly name)
+# d: description
+# hide: (should this be hidden from decree results)
+# levels: [[-50, 'extremely low'], [-25, 'very low'], [-10, 'low'], [10, 'neutral'], [25, 'high'], [50, 'very high'], 'extremely high']
+# labor: If true, then this resource represents labor that must be supplied to complete a decree or other project. When time passes, available resources will be accumulated into the project.
+# transient: If true, this resource disappears after time passes - it must be used immediately. For example, \"unskilled labor\" or a temporary weather phenomenon.
+var resourceData = {
+	\"coin\": {\"n\":\"jade chips\", \"d\":\"The coin of the common folk. While the Emperor's mandate suffices to requisition anything you truly need, gifts of jade will help avoid ill feelings.\", \"labor\":true},
+	\"laborAdmin\": {\"n\":\"bureaucratic labor\", \"d\":\"Work performed by professional bureaucrats and functionaries.\", \"labor\":true, \"transient\":true},
+	\"laborScribe\": {\"n\":\"scribe labor\", \"d\":\"Work performed by skilled scribes.\", \"labor\":true, \"transient\":true},
+	\"laborUnskilled\": {\"n\":\"unskilled labor\", \"d\":\"Unskilled labor provided by work crews.\", \"labor\":true, \"transient\":true},
+	\"numWorkers\": {\"n\":\"work crews\", \"d\":\"Work crews perform common manual labor that is beneath the station of disciples and examplars - farming, construction, and so forth.\", \"levels\":[[0, \"no work crews\"], [1, \"one work crew\"], [2, \"two work crews\"], [3, \"three work crews\"], [4, \"four work crews\"], \"many work crews\"]},
+	\"villageDiplomacy\": {\"n\":\"villager reaction\", \"levels\":[[-60, \"infuriated\"], [-30, \"angry\"], [-15, \"insulted\"], [-5, \"irritated\"], [5, \"neutral\"], [15, \"pleased\"], [30, \"happy\"], [60, \"honored\"], \"ecstatic\"]},	
+}
+
 var _organizers = {}
 
 var attentionTimer:Timer
@@ -30,10 +50,22 @@ func _ready():
 	attentionTimer.autostart = true
 	add_child(attentionTimer)
 	attentionTimer.start(0.1)
-	setupGameWorld()
 
-func setupGameWorld():
-	pass
+func get_resource_name(resourceId):
+	var resource = resourceData.get(resourceId, {})
+	return resource.get('n', resourceId)
+
+func get_resource_description(resourceId):
+	var resource = resourceData.get(resourceId, {})
+	return resource.get('d')
+
+func get_resource_level(resourceId, value):
+	var resource = resourceData.get(resourceId, {})
+	var levels = resource.get('levels', [str(value)])
+	for level in levels:
+		if level is String: return level
+		if value <= level[0]: return level[1]
+	return levels[levels.size()-1][1]
 
 func serialize_world()->String:
 	UI.save_organizers()
@@ -43,7 +75,8 @@ func serialize_world()->String:
 	var retval = {
 		'settings':settings,
 		'quest':quest,
-		'organizers':{}
+		'organizers':{},
+		'resources':resources
 	}
 	for k in _organizers.keys():
 		if k == 'Null': continue
@@ -54,7 +87,8 @@ func serialize_world()->String:
 func deserialize_world(worldJson):
 	var serializedWorld = parse_json(worldJson)
 	settings = serializedWorld.settings
-	quest = serializedWorld.quest
+	quest = serializedWorld.get('quest', {})
+	resources = serializedWorld.get('resources', {})
 	_organizers = {}
 	var dummyOrg = OrganizerData.new() # needed because gdscript 3 doesn't support self-reference of classes from static functions :eyeroll:
 	for k in serializedWorld.organizers:

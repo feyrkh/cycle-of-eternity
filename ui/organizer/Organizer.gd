@@ -105,9 +105,12 @@ func get_or_create_path(path:Array):
 			var newFolder = OrganizerFolderScene.instance()
 			newFolder.labelText = pathSegment
 			for arg in pathSegmentArgs:
-				match arg:
-					'isOpen': newFolder.set_is_open(true)
-					'noEdit': newFolder.set_no_edit(true)
+				newFolder.data.set(arg, true)
+#				match arg:
+#					'isOpen': newFolder.set_is_open(true)
+#					'noEdit': newFolder.set_no_edit(true)
+#					'noDrag': newFolder.set_no_drag(true)
+#					'noDelete': newFolder.set_no_delete(true)
 			target.entryContainer.add_child(newFolder)
 			connect_drag_events_for_tree(newFolder)
 			target = newFolder

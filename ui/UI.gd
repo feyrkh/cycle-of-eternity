@@ -20,6 +20,7 @@ func _ready():
 	Event.connect("hide_character", self, 'on_hide_character')
 	Event.connect("msg_popup", self, 'on_msg_popup')
 	Event.connect('new_scene_loaded', self, 'on_new_scene_loaded')
+	Event.connect("pass_time", self, 'on_pass_time')
 	_on_DragSurface_resized()
 	_on_TextBoxContainer_resized()
 	GameState.UI = self
@@ -27,6 +28,10 @@ func _ready():
 	var rightOrganizerName = GameState.settings.get('rightOrganizerName')
 	if leftOrganizerName: load_left_organizer(leftOrganizerName)
 	if rightOrganizerName: load_right_organizer(rightOrganizerName)
+
+func on_pass_time():
+	save_organizers()
+	ProjectProcessor.process_projects()
 
 func on_show_character(charImgPath):
 	$CanvasLayer/Character.visible = true
@@ -63,12 +68,14 @@ func load_left_organizer(organizerName):
 	load_organizer(organizerName, leftOrganizer)
 
 func load_organizer(organizerName, organizer):
+	if organizer.organizerDataName:
+		var oldData = organizer.save()
+		GameState.add_organizer(organizer.organizerDataName, oldData)
 	var organizerData = GameState.get_organizer_data(organizerName)
 	if organizerData:
 		organizer.refresh_organizer_data(organizerData)
 
 func save_organizers():
-	print('Saving organizer...')
 	var leftData = leftOrganizer.save()
 	GameState.add_organizer(leftOrganizer.organizerDataName, leftData)
 	var rightData = rightOrganizer.save()

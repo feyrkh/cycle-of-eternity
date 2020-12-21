@@ -17,23 +17,24 @@ func _ready():
 	if decreeData == null && get_parent() == get_tree().root: 
 		show()
 		decreeData = load("res://decree/DecreeData.gd").new()
-		decreeData.add_choice('workers', 'Number of Workers', [
-			{'l':'one', 'v':{'numWorkers':1, 'diplomacy':-10}},
-			{'l':'two', 'v':{'numWorkers':2, 'diplomacy':-25}},
-			{'l':'three', 'v':{'numWorkers':3, 'diplomacy':-65}}
+		decreeData.add_choice('workers', 'Number of Crews', [
+			{'l':'one', 'v':{'numWorkers':1, 'villageDiplomacy':-10}},
+			{'l':'two', 'v':{'numWorkers':2, 'villageDiplomacy':-25}},
+			{'l':'three', 'v':{'numWorkers':3, 'villageDiplomacy':-65}}
 		])
 		decreeData.add_choice('giftSize', 'Size of Gift', [
 			{'l':'nominal', 'v':{'coin':-1}},
-			{'l':'small', 'v':{'coin':-5,'diplomacy':1}},
-			{'l':'mediocre', 'v':{'coin':-25,'diplomacy':4}},
-			{'l':'large', 'v':{'coin':-100,'diplomacy':15}},
-			{'l':'enormous', 'v':{'coin':-500,'diplomacy':70}},
+			{'l':'small', 'v':{'coin':-5,'villageDiplomacy':1}},
+			{'l':'mediocre', 'v':{'coin':-25,'villageDiplomacy':4}},
+			{'l':'large', 'v':{'coin':-100,'villageDiplomacy':15}},
+			{'l':'enormous', 'v':{'coin':-500,'villageDiplomacy':70}},
 		])
 		decreeData.decreeTextTemplate = 'Workers are required! Send {workers} work crews to the {schoolName}. A {giftSize} gift will be provided in return.\n\n---\n\nCoins: {coin}\nVillage diplomacy change: {diplomacy}'
 	var choiceData = decreeData.get_choice_data()
 	for choiceId in choiceData.keys():
 		add_choice(choiceId, choiceData[choiceId]['l'], choiceData[choiceId]['o'])
 	update_decree_text()
+	update_results()
 	##visible = false
 	update_rect_size()
 
@@ -51,8 +52,10 @@ func update_results():
 		label.margin_right += 10
 		var value = Label.new()
 		value.align = HALIGN_RIGHT
-		label.set_text(k)
-		value.set_text(str(v))
+		label.set_text(GameState.get_resource_name(k))
+		var description = GameState.get_resource_description(k)
+		if description: label.hint_tooltip = description
+		value.set_text(GameState.get_resource_level(k, v))
 		decreeResultsGrid.add_child(label)
 		decreeResultsGrid.add_child(value)
 

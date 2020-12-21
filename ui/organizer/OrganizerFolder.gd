@@ -15,7 +15,6 @@ var editBox:OrganizerLabelEdit
 var containingOrganizer
 
 
-
 func set_no_drag(val):
 	if val: data['noDrag'] = true
 	else: data.erase('noDrag')
@@ -34,7 +33,7 @@ func set_no_edit(val):
 
 func get_no_drag(): return data.get('noDrag', false)
 func get_no_delete(): return data.get('noDel', false)
-func get_is_open(): return data.get('isOpen')
+func get_is_open(): return data.get('isOpen', false)
 func get_no_edit(): return data.get('noEdit')
 
 # Called when the node enters the scene tree for the first time.

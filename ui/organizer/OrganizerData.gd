@@ -6,10 +6,11 @@ var entries = []
 var organizer
 
 func serialize():
-	return {
+	var result = {
 		'name':name,
 		'entries':entries
 	}
+	return result
 
 func deserialize(dict:Dictionary)->OrganizerData:
 	var retval = get_script().new()

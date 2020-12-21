@@ -6,6 +6,7 @@ var choice = {}
 # selectedOptions['workers'] = {'numWorkers':1, 'diplomacy':-10}
 var selectedOptions = {}
 var decreeTextTemplate = 'This is a decree! You selected: {myOptionId}'
+var appliedResources = {}
 
 func get_choice_data():
 	return choice
@@ -53,7 +54,7 @@ func get_decree_text():
 	return decreeTextTemplate.format(get_selected_option_flavor_text()).format(get_selected_option_outputs()).format(GameState.settings)
 
 func serialize():
-	return {'cmd':'decree', 'f':filename, 'so':selectedOptions}
+	return {'cmd':'decree', 'f':filename, 'so':selectedOptions, 'ar':appliedResources}
 
 func deserialize(data):
 	init_from_file(data['f'])

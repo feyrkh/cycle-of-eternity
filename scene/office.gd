@@ -49,7 +49,7 @@ func setup_first_decree():
 	var decreeData = load("res://decree/DecreeData.gd").new()
 	decreeData.init_from_file("res://data/decree/hireWorkCrew.json")
 	var officeOrg = load("res://ui/organizer/OrganizerData.gd").new()
-	officeOrg.add_entry('Outbox:noEdit:isOpen/Work Orders:noEdit:isOpen/Raise Work Crew', decreeData.serialize(), 'tutorialFirstWorkOrder')
+	officeOrg.add_entry('Outbox:noEdit:isOpen:noDelete/Raise Work Crew', decreeData.serialize(), 'tutorialFirstWorkOrder')
 	officeOrg.add_entry('Inbox:noEdit/From the Emperor/Your mission', {'cmd':'msg', 'msg':"res://data/conv/emperor_your_mission.txt"})
 	officeOrg.add_entry('Inbox:noEdit/History/On Sacred Science', {'cmd':'msg', 'msg':"""
 - 

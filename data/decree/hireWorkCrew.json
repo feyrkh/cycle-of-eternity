@@ -1,5 +1,6 @@
 {
-  "t": "Workers are required! Send {workers} to {schoolName}. A {giftSize} gift will be provided in return.\n\n---\n\nCoins: {coin}\nVillage diplomacy change: {diplomacy}",
+  "t": "Workers are required! Send {workers} to {schoolName}. A {giftSize} gift will be provided in return.",
+  "r": {"laborAdmin":1},
   "c": {
     "workers": {
       "l": "Number of crews",
@@ -9,7 +10,7 @@
           "t": "one work crew",
           "v": {
             "numWorkers": 1,
-            "diplomacy": -10
+            "villageDiplomacy": -10
           }
         },
         {
@@ -17,7 +18,7 @@
           "t": "two work crews",
           "v": {
             "numWorkers": 2,
-            "diplomacy": -25
+            "villageDiplomacy": -25
           }
         },
         {
@@ -25,7 +26,7 @@
           "t": "three work crews",
           "v": {
             "numWorkers": 3,
-            "diplomacy": -65
+            "villageDiplomacy": -65
           }
         }
       ]
@@ -33,11 +34,11 @@
     "giftSize": {
       "l": "Size of gift",
       "o": [
-        {"l": "nominal", "v":{"coin":-1, "diplomacy":-10}},
-        {"l": "token", "v":{"coin":-5, "diplomacy":0}},
-        {"l": "mediocre", "v":{"coin":-25, "diplomacy":5}},
-        {"l": "grand", "v":{"coin":-100, "diplomacy":15}},
-        {"l": "staggering", "v":{"coin":-500, "diplomacy":60}}
+        {"l": "nominal", "v":{"coin":-1, "villageDiplomacy":-10}},
+        {"l": "token", "v":{"coin":-5, "villageDiplomacy":5}},
+        {"l": "mediocre", "v":{"coin":-25, "villageDiplomacy":15}},
+        {"l": "grand", "v":{"coin":-100, "villageDiplomacy":31}},
+        {"l": "staggering", "v":{"coin":-500, "villageDiplomacy":60}}
       ]
     }
   }
