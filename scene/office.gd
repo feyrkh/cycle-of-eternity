@@ -38,7 +38,7 @@ This will be your office, {playerName}. From here you will administer the new sc
 
 I have taken the liberty of drawing up your first decree - the drafting of a work party from the nearby villages. With these workers we can get started on the infrastructure we need to support our studies into the sacred arts.
 
-Please take a look at your outbox to the right, where you will find the decree. Any decrees in your outbox at the end of the week will be carried out!'
+Please take a look at your outbox, where you will find the decree. Any decrees in your outbox at the end of the week will be carried out!'
 """)
 		c.cmd(self, 'setup_first_decree')
 		yield(c.run(), 'completed')
@@ -63,16 +63,18 @@ func setup_first_decree():
 	
 
 func tutorial_first_decree():
+	UI.rightOrganizer.visible = true
 	UI.controlsContainer.visible = false
 	UI.timePassContainer.visible = false
 	var c = Conversation
 	c.clear()
 	c.speaking('helper')
 	c.text("""
-{playerName}, please review the workorder in your inbox and make any changes as you see fit!
+{playerName}, please review the workorder in your outbox and make any changes as you see fit!
 """)
 	var workorder = UI.rightOrganizer.get_entry_by_id('tutorialFirstWorkOrder')
 	workorder.call_attention()
+	UI.call_attention_from_left(workorder)
 	workorder.connect('entry_clicked', self, 'first_decree_clicked')
 	c.run()
 
@@ -108,6 +110,7 @@ Ah! Forgive my mess {playerName}, these are decree drafts that should be discard
 Please feel free to drag those into the garbage bin where they belong! 
 """)
 	existingRubbish.call_attention()
+	UI.call_attention_from_left(existingRubbish)
 	existingRubbish.connect('entry_deleted', self, 'rubbish_deleted')
 	c.run()
 	
@@ -127,4 +130,5 @@ Well, no sense in waiting - let's get started!
 """)
 	c.clear()
 	c.text("Remember, although you are of course free to organize your documents as you see fit, you must leave any decrees you want processed in your Outbox before the end of the day!")
-	c.run()
+	yield(c.run(), 'completed')
+	UI.call_attention_from_left(UI.timePassContainer)

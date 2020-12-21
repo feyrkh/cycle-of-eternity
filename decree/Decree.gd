@@ -6,6 +6,9 @@ var decreeData
 var decreeOrganizerNode
 
 onready var decreeOptionsGrid:GridContainer = find_node('DecreeOptions')
+onready var decreeResultsGrid:GridContainer = find_node('DecreeResults')
+onready var decreeOptionsLabel:Label = find_node('DecreeOptionsLabel')
+onready var decreeResultsLabel:Label = find_node('DecreeResultsLabel')
 onready var decreeText:Label = find_node('DecreeText')
 var optionNodeList = [] # array of all the DecreeOption nodes for easy reference
 
@@ -34,6 +37,26 @@ func _ready():
 	##visible = false
 	update_rect_size()
 
+func update_results():
+	Util.clear_children(decreeResultsGrid)
+	var results = decreeData.get_selected_option_outputs()
+	if results.size() > 0: 
+		decreeResultsGrid.visible = true
+		decreeResultsGrid.visible = true
+	var sortedResultKeys = results.keys()
+	sortedResultKeys.sort()
+	for k in sortedResultKeys:
+		var v = results[k]
+		var label = Label.new()
+		label.margin_right += 10
+		var value = Label.new()
+		value.align = HALIGN_RIGHT
+		label.set_text(k)
+		value.set_text(str(v))
+		decreeResultsGrid.add_child(label)
+		decreeResultsGrid.add_child(value)
+
+
 func update_rect_position():
 	var screenCenter = get_viewport_rect().size / 2
 	var halfSize = rect_size / 2
@@ -41,6 +64,10 @@ func update_rect_position():
 	rect_global_position.y = 10
 
 func update_rect_size():
+	if optionNodeList.size() > 0: 
+		find_node('DecreeOptionsContainer').visible = true
+		decreeOptionsLabel.visible = true
+		decreeOptionsGrid.visible = true
 	yield(get_tree(), 'idle_frame')
 	self.rect_size.x = decreeOptionsGrid.rect_global_position.x - rect_global_position.x + decreeOptionsGrid.rect_size.x+6
 	#print('grid.x=', decreeOptionsGrid.rect_global_position.x, '; popup.x=',  rect_global_position.x, '; grid.size.x=', decreeOptionsGrid.rect_size.x)
@@ -68,6 +95,7 @@ func add_choice(id:String, label:String, options:Array):
 
 func option_changed(optionId, optionIdx):
 	decreeData.set_selected_option(optionId, optionIdx)
+	update_results()
 	update_decree_text()
 	update_rect_size()
 	

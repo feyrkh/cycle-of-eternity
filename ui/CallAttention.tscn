@@ -1,0 +1,56 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://img/attention_arrow.png" type="Texture" id=1]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+var target:Control
+var timer
+var targetOffset:Vector2
+var selfOffset:Vector2
+var bounceOffset:Vector2
+
+func call_attention_from_left(c:Control, t:float = 8):
+	target = c
+	timer = t
+	targetOffset = Vector2(0, 0.5)
+	selfOffset = Vector2(1, 0.5)
+	bounceOffset = Vector2(-0.25, 0)
+
+func call_attention_from_right(c:Control, t:float = 8):
+	target = c
+	timer = t
+	targetOffset = Vector2(1, 0.5)
+	selfOffset = Vector2(1, 0.5)
+	bounceOffset = Vector2(0.25, 0)
+	rect_scale.x = -rect_scale.x
+
+func _process(delta):
+	timer -= delta
+	if !target or timer <= 0: 
+		queue_free()
+		return
+	var curTimeSecs = OS.get_system_time_msecs() / 1000.0
+	#self.modulate.a = max(0.3, abs(sin(curTimeSecs*3)))
+	self.modulate.r = max(0.5, abs(cos(curTimeSecs*3)))
+	self.modulate.g = max(0.5, abs(sin(curTimeSecs*2)))
+	self.modulate.b = max(0.5, abs(cos(0.25+curTimeSecs*4)))
+	#self.rect_global_position = target.rect_global_position + Vector2(target.rect_size.x*offset.x, target.rect_size.y*offset.y)
+	var bounce = bounceOffset * abs(sin(curTimeSecs*5)) 
+	bounce = Vector2(bounce.x * rect_size.x, bounce.y * rect_size.y)
+	self.rect_global_position = bounce + target.rect_global_position + Vector2(target.rect_size.x*targetOffset.x, target.rect_size.y*targetOffset.y) - Vector2(rect_size.x*selfOffset.x, rect_size.y*selfOffset.y)
+"
+
+[node name="TextureRect" type="TextureRect"]
+margin_left = -120.658
+margin_top = -22.2016
+margin_right = -0.658386
+margin_bottom = 21.7984
+rect_scale = Vector2( 2, 2 )
+rect_pivot_offset = Vector2( 120, 22 )
+texture = ExtResource( 1 )
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

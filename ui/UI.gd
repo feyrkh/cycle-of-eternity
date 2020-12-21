@@ -97,3 +97,13 @@ func deserialize_text_interface(serializedTextInterface):
 	textInterfaceSplit.split_offset = s['splitContainerOffset']
 	textInterface.reset()
 #	textInterface.refresh_settings(s)
+
+func call_attention_from_left(target:Control):
+	var pointer = load("res://ui/CallAttention.tscn").instance()
+	add_popup(pointer)
+	pointer.call_attention_from_left(target)
+
+func call_attention_from_right(target:Control):
+	var pointer = load("res://ui/CallAttention.tscn").instance()
+	add_popup(pointer)
+	pointer.call_attention_from_right(target)

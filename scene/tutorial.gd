@@ -72,4 +72,5 @@ func direct_to_office():
 	yield(get_tree(), 'idle_frame')
 	var officeItem = UI.leftOrganizer.get_entry_by_id('gotoOffice')
 	officeItem.call_attention()
+	UI.call_attention_from_right(officeItem)
 	officeItem.set_no_delete(true)

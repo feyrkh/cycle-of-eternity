@@ -29,7 +29,7 @@ func set_selected_option(id, optionIdx):
 	selectedOptions[id] = choice[id]['o'][optionIdx]
 	selectedOptions[id]['i'] = optionIdx
 
-func merge_selected_options():
+func get_selected_option_flavor_text():
 	var mergedSelections = {}
 	for optionId in choice.keys():
 		var selectedOption = get_selected_option(optionId)
@@ -37,14 +37,20 @@ func merge_selected_options():
 		if selectedOption.has('t'): mergedSelections[optionId] = selectedOption['t']
 		else: mergedSelections[optionId] = selectedOption['l']
 
+	return mergedSelections
+
+func get_selected_option_outputs():
+	var mergedSelections = {}
+	for optionId in choice.keys():
+		var selectedOption = get_selected_option(optionId)
 		for resourceName in selectedOption['v'].keys():
 			var resourceValue = selectedOption['v'][resourceName]
 			var mergedValue = mergedSelections.get(resourceName, 0) + resourceValue
 			mergedSelections[resourceName] = mergedValue
 	return mergedSelections
-	
+
 func get_decree_text():
-	return decreeTextTemplate.format(merge_selected_options()).format(GameState.settings)
+	return decreeTextTemplate.format(get_selected_option_flavor_text()).format(get_selected_option_outputs()).format(GameState.settings)
 
 func serialize():
 	return {'cmd':'decree', 'f':filename, 'so':selectedOptions}
