@@ -51,9 +51,8 @@ func setup_first_decree():
 	var officeOrg = load("res://ui/organizer/OrganizerData.gd").new()
 	officeOrg.add_entry('Outbox:noEdit:isOpen:noDelete/Raise Work Crew', decreeData.serialize(), 'tutorialFirstWorkOrder')
 	officeOrg.add_entry('Inbox:noEdit/From the Emperor/Your mission', {'cmd':'msg', 'msg':"res://data/conv/emperor_your_mission.txt"})
-	officeOrg.add_entry('Inbox:noEdit/History/On Sacred Science', {'cmd':'msg', 'msg':"""
-- 
-"""})
+	officeOrg.add_entry('Inbox:noEdit/History/On Sacred Science', {'cmd':'msg', 'msg':'res://data/conv/on_sacred_science.txt'})
+	officeOrg.add_entry("{playerName}'s desk:noDelete", 'res://data/producer/office_desk.json')
 	GameState.add_organizer('office', officeOrg)
 	UI.rightOrganizer.refresh_organizer_data(GameState.get_organizer_data('office'))
 	UI.rightOrganizer.visible = true

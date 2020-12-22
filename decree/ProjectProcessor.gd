@@ -8,7 +8,7 @@ func process_projects():
 	GameState.produce_resources()
 	collect_projects()
 	for projectEntryData in processingProjects:
-		pass
+		projectEntryData.consume_resources()
 
 func collect_projects():
 	processingProjects = []

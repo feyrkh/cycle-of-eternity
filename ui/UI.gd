@@ -56,9 +56,16 @@ func add_popup(item):
 	lastPopup = item
 
 func on_msg_popup(data, sourceNode):
+	var msg = data.get('msg')
+	if !msg: 
+		printerr('Empty message in on_msg_popup')
+		return
+	if msg.begins_with('res:'): 
+		msg = Util.load_text_file(msg)
+		if !msg: msg = '(missing file: %s)'%data.get('msg')
 	var popup = msgPopupScene.instance()
 	add_popup(popup)
-	popup.set_text(data.get('msg'))
+	popup.set_text(msg)
 	popup.popup_centered(OS.get_window_size()/3*2)
 
 func load_right_organizer(organizerName):

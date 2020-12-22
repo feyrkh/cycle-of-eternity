@@ -29,7 +29,7 @@ func _ready():
 
 func get_no_drag(): return data.get('noDrag', false)
 func get_is_toggle(): return data.get('isToggle', false)
-func get_no_delete(): return data.get('noDel', false)
+func get_no_delete(): return data.get('noDelete', false)
 func get_no_edit(): return data.get('noEdit')
 func get_is_project(): return data.get('isProject', false)
 
@@ -38,8 +38,8 @@ func set_no_drag(val):
 	else: data.erase('noDrag')
 
 func set_no_delete(val):
-	if val: data['noDel'] = true
-	else: data.erase('noDel')
+	if val: data['noDelete'] = true
+	else: data.erase('noDelete')
 
 func set_is_toggle(val):
 	if val: data['isToggle'] = true

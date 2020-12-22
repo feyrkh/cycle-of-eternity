@@ -33,11 +33,11 @@ var resources = {
 # transient: If true, this resource disappears after time passes - it must be used immediately. For example, \"unskilled labor\" or a temporary weather phenomenon.
 var resourceData = {
 	\"coin\": {\"n\":\"jade chips\", \"d\":\"The coin of the common folk. While the Emperor's mandate suffices to requisition anything you truly need, gifts of jade will help avoid ill feelings.\", \"labor\":true},
-	\"laborAdmin\": {\"n\":\"bureaucratic labor\", \"d\":\"Work performed by professional bureaucrats and functionaries.\", \"labor\":true, \"transient\":true},
-	\"laborScribe\": {\"n\":\"scribe labor\", \"d\":\"Work performed by skilled scribes.\", \"labor\":true, \"transient\":true},
-	\"laborUnskilled\": {\"n\":\"unskilled labor\", \"d\":\"Unskilled labor provided by work crews.\", \"labor\":true, \"transient\":true},
-	\"numWorkers\": {\"n\":\"work crews\", \"d\":\"Work crews perform common manual labor that is beneath the station of disciples and examplars - farming, construction, and so forth.\", \"levels\":[[0, \"no new crews\"], [1, \"one new crew\"], [2, \"two new crews\"], [3, \"three new crews\"], [4, \"four new crews\"], \"many work crews\"]},
-	\"villageDiplomacy\": {\"n\":\"villager reaction\", \"levels\":[[-60, \"infuriated\"], [-30, \"angry\"], [-15, \"insulted\"], [-5, \"irritated\"], [5, \"neutral\"], [15, \"pleased\"], [30, \"happy\"], [60, \"honored\"], \"ecstatic\"]},	
+	\"laborAdmin\": {\"n\":\"bureaucratic labor\", \"d\":\"Work performed by professional bureaucrats and functionaries.\", \"labor\":true, \"transient\":true, \"suffix\":\"man-day\"},
+	\"laborScribe\": {\"n\":\"scribe labor\", \"d\":\"Work performed by skilled scribes.\", \"labor\":true, \"transient\":true, \"suffix\":\"day\"},
+	\"laborUnskilled\": {\"n\":\"unskilled labor\", \"d\":\"Unskilled labor provided by work crews.\", \"labor\":true, \"transient\":true, \"suffix\":\"day\"},
+	\"numWorkers\": {\"n\":\"workers\", \"d\":\"Work crews perform common manual labor that is beneath the station of disciples and examplars - farming, construction, and so forth.\", \"suffix\":\"crew\"},
+	\"villageDiplomacy\": {\"n\":\"villager reaction\", \"levels\":[[-60, \"infuriated\"], [-30, \"angry\"], [-15, \"insulted\"], [-5, \"irritated\"], [5, \"neutral\"], [15, \"pleased\"], [30, \"happy\"], [60, \"honored\"], \"ecstatic\"]},
 }
 
 var _organizers = {}
@@ -61,11 +61,22 @@ func get_resource_description(resourceId):
 
 func get_resource_level(resourceId, value):
 	var resource = resourceData.get(resourceId, {})
-	var levels = resource.get('levels', [str(value)])
-	for level in levels:
-		if level is String: return level
-		if value <= level[0]: return level[1]
-	return levels[levels.size()-1][1]
+	var levels = resource.get('levels')
+	if levels:
+		for level in levels:
+			if level is String: return level
+			if value <= level[0]: return level[1]
+		return levels[levels.size()-1][1]
+	var suffix
+	if value == 1: 
+		suffix = resource.get('suffix')
+	else: 
+		suffix = resource.get('psuffix')
+		if !suffix: 
+			suffix = resource.get('suffix')
+			if suffix: suffix = suffix + 's'
+	if suffix: value = str(value)+' '+suffix
+	return str(value)
 
 func reset_transient_resources():
 	for k in resources.keys():
@@ -80,6 +91,10 @@ func produce_resources():
 			addedResources[k] = addedResources.get(k, 0) + amt
 			resources[k] = resources.get(k, 0) + amt
 	return addedResources
+
+func consume_resource(resourceName, amt, projectName):
+	resources[resourceName] = resources.get(resourceName, 0) - amt
+	print(projectName, ' consumed ', amt, ' ', get_resource_name(resourceName))
 
 func serialize_world()->String:
 	UI.save_organizers()

@@ -20,8 +20,8 @@ func set_no_drag(val):
 	else: data.erase('noDrag')
 
 func set_no_delete(val):
-	if val: data['noDel'] = true
-	else: data.erase('noDel')
+	if val: data['noDelete'] = true
+	else: data.erase('noDelete')
 	
 func set_is_open(val):
 	if val: data['isOpen'] = true
@@ -32,7 +32,7 @@ func set_no_edit(val):
 	else: data.erase('noEdit')
 
 func get_no_drag(): return data.get('noDrag', false)
-func get_no_delete(): return data.get('noDel', false)
+func get_no_delete(): return data.get('noDelete', false)
 func get_is_open(): return data.get('isOpen', false)
 func get_no_edit(): return data.get('noEdit')
 

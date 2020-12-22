@@ -1,4 +1,5 @@
 {
+  "name": "Hire workers",
   "t": "Workers are required! Send {workers} to {schoolName}. A {giftSize} gift will be provided in return.",
   "in": {"laborAdmin":2},
   "c": {
@@ -37,11 +38,11 @@
     "giftSize": {
       "l": "Size of gift",
       "o": [
-        {"l": "nominal", "in":{"coin":-1}, "out":{"villageDiplomacy":-10}},
-        {"l": "token", "in":{"coin":-5}, "out":{"villageDiplomacy":5}},
-        {"l": "mediocre", "in":{"coin":-25}, "out":{"villageDiplomacy":15}},
-        {"l": "grand", "in":{"coin":-100}, "out":{"villageDiplomacy":31}},
-        {"l": "staggering", "in":{"coin":-500}, "out":{"villageDiplomacy":60}}
+        {"l": "nominal", "in":{"coin":1}, "out":{"villageDiplomacy":-10}},
+        {"l": "token", "in":{"coin":5}, "out":{"villageDiplomacy":5}},
+        {"l": "mediocre", "in":{"coin":25}, "out":{"villageDiplomacy":15}},
+        {"l": "grand", "in":{"coin":100}, "out":{"villageDiplomacy":31}},
+        {"l": "staggering", "in":{"coin":500}, "out":{"villageDiplomacy":60}}
       ]
     }
   }

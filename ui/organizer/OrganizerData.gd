@@ -28,6 +28,8 @@ func remove_entry_by_path(entryPath):
 	if entry: entries.remove(entry)
 
 func add_entry(path:String, data, id=null, entrySceneName:String='OrganizerEntry', position=-1):
+	if data && data is String && data.begins_with('res:'):
+		data = Util.load_json_file(data)
 	if data == null: data = {}
 	var pathChunks:Array = path.split('/', false)
 	var name = pathChunks.pop_back()
