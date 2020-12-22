@@ -8,9 +8,7 @@ func process_projects():
 	GameState.produce_resources()
 	collect_projects()
 	for projectEntryData in processingProjects:
-		
-
-	
+		pass
 
 func collect_projects():
 	processingProjects = []
@@ -20,3 +18,4 @@ func collect_projects():
 func process_organizer(organizerName):
 	var organizerData:OrganizerData = GameState.get_organizer_data(organizerName)
 	processingProjects += organizerData.collect_projects()
+	

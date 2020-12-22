@@ -1,12 +1,13 @@
 extends Resource
 
 var filename
-# choice['workers'] = {'l':'Number of Workers', 'o':[{'l':'1', 't':'one work crew', 'v':{'numWorkers':1, 'diplomacy':-10}}, 'l':'2', {'numWorkers':2, 'diplomacy':-25}, ...]}
+# choice['workers'] = {'l':'Number of Workers', 'o':[{'l':'1', 't':'one work crew', 'in':{'coin':-10}, out':{'numWorkers':1, 'diplomacy':-10}}, 'l':'2', 'out':{'numWorkers':2, 'diplomacy':-25}, ...]}
 var choice = {}
 # selectedOptions['workers'] = {'numWorkers':1, 'diplomacy':-10}
 var selectedOptions = {}
 var decreeTextTemplate = 'This is a decree! You selected: {myOptionId}'
 var appliedResources = {}
+var baseInputResources = {}
 
 func get_choice_data():
 	return choice
@@ -41,11 +42,17 @@ func get_selected_option_flavor_text():
 	return mergedSelections
 
 func get_selected_option_outputs():
-	var mergedSelections = {}
+	return merge_selections_by_key('out')
+	
+func get_selected_option_inputs():
+	return merge_selections_by_key('in', baseInputResources)
+	
+func merge_selections_by_key(key, baseResults={}):
+	var mergedSelections = baseResults.duplicate()
 	for optionId in choice.keys():
 		var selectedOption = get_selected_option(optionId)
-		for resourceName in selectedOption['v'].keys():
-			var resourceValue = selectedOption['v'][resourceName]
+		for resourceName in selectedOption.get(key, {}).keys():
+			var resourceValue = selectedOption[key][resourceName]
 			var mergedValue = mergedSelections.get(resourceName, 0) + resourceValue
 			mergedSelections[resourceName] = mergedValue
 	return mergedSelections
@@ -54,11 +61,12 @@ func get_decree_text():
 	return decreeTextTemplate.format(get_selected_option_flavor_text()).format(get_selected_option_outputs()).format(GameState.settings)
 
 func serialize():
-	return {'cmd':'decree', 'f':filename, 'so':selectedOptions, 'ar':appliedResources}
+	return {'cmd':'decree', 'f':filename, 'so':selectedOptions, 'ar':appliedResources, 'in':baseInputResources}
 
 func deserialize(data):
 	init_from_file(data['f'])
 	selectedOptions = data.get('so', {})
+	appliedResources = data.get('ar', {})
 
 func init_from_file(filename):
 	self.filename = filename
@@ -69,3 +77,4 @@ func init_from_file(filename):
 	var baseData = parse_json(text)
 	decreeTextTemplate = baseData['t']
 	choice = baseData['c']
+	baseInputResources = baseData['in'] # base resources just from the decree itself

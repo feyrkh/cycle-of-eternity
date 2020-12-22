@@ -49,10 +49,6 @@ func set_no_edit(val):
 	if val: data['noEdit'] = true
 	else: data.erase('noEdit')
 
-func set_is_project(val):
-	if val: data['isProject'] = true
-	else: data.erase['isProject']
-
 func get_label_text(): return label.text
 
 func get_save_data(path):

@@ -105,7 +105,7 @@ func get_or_create_path(path:Array):
 			var newFolder = OrganizerFolderScene.instance()
 			newFolder.labelText = pathSegment
 			for arg in pathSegmentArgs:
-				newFolder.data.set(arg, true)
+				newFolder.data[arg] = true
 #				match arg:
 #					'isOpen': newFolder.set_is_open(true)
 #					'noEdit': newFolder.set_no_edit(true)

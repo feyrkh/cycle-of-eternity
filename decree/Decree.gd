@@ -7,8 +7,10 @@ var decreeOrganizerNode
 
 onready var decreeOptionsGrid:GridContainer = find_node('DecreeOptions')
 onready var decreeResultsGrid:GridContainer = find_node('DecreeResults')
+onready var decreeInputsGrid:GridContainer = find_node('DecreeInputs')
 onready var decreeOptionsLabel:Label = find_node('DecreeOptionsLabel')
 onready var decreeResultsLabel:Label = find_node('DecreeResultsLabel')
+onready var decreeInputsLabel:Label = find_node('DecreeInputsLabel')
 onready var decreeText:Label = find_node('DecreeText')
 var optionNodeList = [] # array of all the DecreeOption nodes for easy reference
 
@@ -17,17 +19,18 @@ func _ready():
 	if decreeData == null && get_parent() == get_tree().root: 
 		show()
 		decreeData = load("res://decree/DecreeData.gd").new()
+		decreeData.baseInputResources = {'laborAdmin':3}
 		decreeData.add_choice('workers', 'Number of Crews', [
-			{'l':'one', 'v':{'numWorkers':1, 'villageDiplomacy':-10}},
-			{'l':'two', 'v':{'numWorkers':2, 'villageDiplomacy':-25}},
-			{'l':'three', 'v':{'numWorkers':3, 'villageDiplomacy':-65}}
+			{'l':'one', 'out':{'numWorkers':1, 'villageDiplomacy':-10}, 'in':{'laborAdmin':1}},
+			{'l':'two', 'out':{'numWorkers':2, 'villageDiplomacy':-25}, 'in':{'laborAdmin':2}},
+			{'l':'three', 'out':{'numWorkers':3, 'villageDiplomacy':-65}, 'in':{'laborAdmin':3}}
 		])
 		decreeData.add_choice('giftSize', 'Size of Gift', [
-			{'l':'nominal', 'v':{'coin':-1}},
-			{'l':'small', 'v':{'coin':-5,'villageDiplomacy':1}},
-			{'l':'mediocre', 'v':{'coin':-25,'villageDiplomacy':4}},
-			{'l':'large', 'v':{'coin':-100,'villageDiplomacy':15}},
-			{'l':'enormous', 'v':{'coin':-500,'villageDiplomacy':70}},
+			{'l':'nominal', 'in':{'coin':-1}},
+			{'l':'small', 'in':{'coin':-5},'out':{'villageDiplomacy':1}},
+			{'l':'mediocre', 'in':{'coin':-25},'out':{'villageDiplomacy':4}},
+			{'l':'large', 'in':{'coin':-100},'out':{'villageDiplomacy':15}},
+			{'l':'enormous', 'in':{'coin':-500},'out':{'villageDiplomacy':70}},
 		])
 		decreeData.decreeTextTemplate = 'Workers are required! Send {workers} work crews to the {schoolName}. A {giftSize} gift will be provided in return.\n\n---\n\nCoins: {coin}\nVillage diplomacy change: {diplomacy}'
 	var choiceData = decreeData.get_choice_data()
@@ -40,24 +43,33 @@ func _ready():
 
 func update_results():
 	Util.clear_children(decreeResultsGrid)
-	var results = decreeData.get_selected_option_outputs()
+	Util.clear_children(decreeInputsGrid)
+	render_resource_grid(decreeResultsGrid, decreeResultsLabel, decreeData.get_selected_option_outputs())
+	render_resource_grid(decreeInputsGrid, decreeInputsLabel, decreeData.get_selected_option_inputs())
+	
+func render_resource_grid(grid:GridContainer, sectionLabel:Label, results:Dictionary):
 	if results.size() > 0: 
-		decreeResultsGrid.visible = true
-		decreeResultsGrid.visible = true
-	var sortedResultKeys = results.keys()
+		grid.visible = true
+		sectionLabel.visible = true
+	var renamedResults = {}
+	var renamedToOriginal = {}
+	for k in results.keys():
+		var renamedKey = GameState.get_resource_name(k)
+		renamedResults[renamedKey] = results[k]
+		renamedToOriginal[renamedKey] = k
+	var sortedResultKeys = renamedResults.keys()
 	sortedResultKeys.sort()
 	for k in sortedResultKeys:
-		var v = results[k]
+		var v = renamedResults[k]
 		var label = Label.new()
-		label.margin_right += 10
 		var value = Label.new()
 		value.align = HALIGN_RIGHT
-		label.set_text(GameState.get_resource_name(k))
-		var description = GameState.get_resource_description(k)
+		label.set_text(k+'    ')
+		var description = GameState.get_resource_description(renamedToOriginal[k])
 		if description: label.hint_tooltip = description
-		value.set_text(GameState.get_resource_level(k, v))
-		decreeResultsGrid.add_child(label)
-		decreeResultsGrid.add_child(value)
+		value.set_text(GameState.get_resource_level(renamedToOriginal[k], v))
+		grid.add_child(label)
+		grid.add_child(value)
 
 
 func update_rect_position():
@@ -80,7 +92,7 @@ func update_rect_size():
 # choice format: [{'l':'Option 1', 'v':'1'}, {'l':'Option 2', 'v':'2'}, ...]
 func add_choice(id:String, label:String, options:Array):
 	var newLabel:Label = Label.new()
-	newLabel.text = label
+	newLabel.text = label+'    '
 	decreeOptionsGrid.add_child(newLabel)
 	var optionBtn:DecreeOption = DecreeOption.instance()
 	optionBtn.id = id

@@ -5,6 +5,7 @@
 [ext_resource path="res://decree/Decree.gd" type="Script" id=3]
 
 [node name="DecreePopup" type="PopupPanel"]
+visible = true
 margin_right = 642.0
 margin_bottom = 792.0
 script = ExtResource( 3 )
@@ -15,7 +16,7 @@ __meta__ = {
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 margin_left = 4.0
 margin_top = 4.0
-margin_right = 638.0
+margin_right = 650.0
 margin_bottom = 788.0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -62,14 +63,13 @@ autowrap = true
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer"]
 margin_left = 634.0
-margin_right = 634.0
+margin_right = 646.0
 margin_bottom = 784.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/ScrollContainer"]
-margin_right = 144.0
-margin_bottom = 50.0
+margin_bottom = 4.0
 
 [node name="DecreeOptionsContainer" type="VBoxContainer" parent="HBoxContainer/ScrollContainer/VBoxContainer"]
 visible = false
@@ -93,24 +93,40 @@ margin_right = 150.0
 margin_bottom = 50.0
 columns = 2
 
-[node name="DecreeResultsContainer" type="VBoxContainer" parent="HBoxContainer/ScrollContainer/VBoxContainer"]
-margin_right = 144.0
-margin_bottom = 50.0
+[node name="DecreeInputsContainer" type="VBoxContainer" parent="HBoxContainer/ScrollContainer/VBoxContainer"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="DecreeResultsLabel" type="Label" parent="HBoxContainer/ScrollContainer/VBoxContainer/DecreeResultsContainer"]
-margin_top = -1.0
+[node name="DecreeInputsLabel" type="Label" parent="HBoxContainer/ScrollContainer/VBoxContainer/DecreeInputsContainer"]
+visible = false
+margin_right = 208.0
+margin_bottom = 46.0
+rect_min_size = Vector2( 0, 46 )
+custom_fonts/font = ExtResource( 2 )
+text = "Decree Requirements"
+valign = 2
+
+[node name="DecreeInputs" type="GridContainer" parent="HBoxContainer/ScrollContainer/VBoxContainer/DecreeInputsContainer"]
+visible = false
 margin_right = 144.0
-margin_bottom = 45.0
+columns = 2
+
+[node name="DecreeResultsContainer2" type="VBoxContainer" parent="HBoxContainer/ScrollContainer/VBoxContainer"]
+margin_top = 4.0
+margin_bottom = 4.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="DecreeResultsLabel" type="Label" parent="HBoxContainer/ScrollContainer/VBoxContainer/DecreeResultsContainer2"]
+visible = false
+margin_right = 144.0
+margin_bottom = 46.0
 rect_min_size = Vector2( 0, 46 )
 custom_fonts/font = ExtResource( 2 )
 text = "Decree Results"
 valign = 2
 
-[node name="DecreeResults" type="GridContainer" parent="HBoxContainer/ScrollContainer/VBoxContainer/DecreeResultsContainer"]
-margin_top = 50.0
-margin_right = 144.0
-margin_bottom = 50.0
+[node name="DecreeResults" type="GridContainer" parent="HBoxContainer/ScrollContainer/VBoxContainer/DecreeResultsContainer2"]
+visible = false
 columns = 2
 [connection signal="popup_hide" from="." to="." method="_on_PopupPanel_popup_hide"]

@@ -48,5 +48,16 @@ func add_folder(path:String, data:Dictionary):
 func collect_projects():
 	var results = []
 	for entry in entries:
-		if entry.get('path', [''])[0] == 'Outbox' and entry.get('data',{}).get('isProject', false):
+		var pathChunks = entry.get('path', [])
+		if pathChunks.size() > 0 and pathChunks[0] == 'Outbox' and entry.get('data',{}).get('r', {}).size() > 0:
 			results.append(entry)
+	return results
+
+func collect_produced_resources():
+	var results = {}
+	for entry in entries:
+		var products = entry.get('produce')
+		if products and products.size() > 0:
+			for resource in products.keys():
+				results[resource] = products[resource] + results.get(resource, 0)
+	return results

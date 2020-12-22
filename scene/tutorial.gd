@@ -64,7 +64,7 @@ func direct_to_office():
 	mainOrg.add_entry('Locations', {'noEdit':true,'isOpen':true,'noDelete':true}, null, 'OrganizerFolder')
 	mainOrg.add_entry('Locations/Sacred School', {'noEdit':true,'isOpen':true,'noDelete':true}, null, 'OrganizerFolder')
 	mainOrg.add_entry('Locations/Sacred School/'+'{playerName}\'s Office'.format(GameState.settings), 
-		 {'cmd':'scene', 'scene':'office'}, 'gotoOffice')
+		 {'cmd':'scene', 'scene':'office', 'produce':{'laborAdmin':7}}, 'gotoOffice')
 	
 	GameState.add_organizer('main', mainOrg)
 	UI.leftOrganizer.refresh_organizer_data(GameState.get_organizer_data('main'))

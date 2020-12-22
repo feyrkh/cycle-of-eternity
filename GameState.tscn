@@ -36,7 +36,7 @@ var resourceData = {
 	\"laborAdmin\": {\"n\":\"bureaucratic labor\", \"d\":\"Work performed by professional bureaucrats and functionaries.\", \"labor\":true, \"transient\":true},
 	\"laborScribe\": {\"n\":\"scribe labor\", \"d\":\"Work performed by skilled scribes.\", \"labor\":true, \"transient\":true},
 	\"laborUnskilled\": {\"n\":\"unskilled labor\", \"d\":\"Unskilled labor provided by work crews.\", \"labor\":true, \"transient\":true},
-	\"numWorkers\": {\"n\":\"work crews\", \"d\":\"Work crews perform common manual labor that is beneath the station of disciples and examplars - farming, construction, and so forth.\", \"levels\":[[0, \"no work crews\"], [1, \"one work crew\"], [2, \"two work crews\"], [3, \"three work crews\"], [4, \"four work crews\"], \"many work crews\"]},
+	\"numWorkers\": {\"n\":\"work crews\", \"d\":\"Work crews perform common manual labor that is beneath the station of disciples and examplars - farming, construction, and so forth.\", \"levels\":[[0, \"no new crews\"], [1, \"one new crew\"], [2, \"two new crews\"], [3, \"three new crews\"], [4, \"four new crews\"], \"many work crews\"]},
 	\"villageDiplomacy\": {\"n\":\"villager reaction\", \"levels\":[[-60, \"infuriated\"], [-30, \"angry\"], [-15, \"insulted\"], [-5, \"irritated\"], [5, \"neutral\"], [15, \"pleased\"], [30, \"happy\"], [60, \"honored\"], \"ecstatic\"]},	
 }
 
@@ -74,7 +74,7 @@ func reset_transient_resources():
 func produce_resources():
 	var addedResources = {}
 	for organizerData in _organizers.values():
-		var newResources = organizerData.collect_resources()
+		var newResources = organizerData.collect_produced_resources()
 		for k in newResources.keys():
 			var amt = newResources.get(k, 0)
 			addedResources[k] = addedResources.get(k, 0) + amt

@@ -29,7 +29,7 @@ func _ready():
 	if leftOrganizerName: load_left_organizer(leftOrganizerName)
 	if rightOrganizerName: load_right_organizer(rightOrganizerName)
 
-func on_pass_time():
+func on_pass_time(timeAmt:int):
 	save_organizers()
 	ProjectProcessor.process_projects()
 
