@@ -36,7 +36,8 @@ func _process(delta):
 func _input(event):
 	if draggingEntry:
 		update_drag_indicator()
-		
+
+	
 func refresh_organizer_data(data):
 	var d = data
 	organizerDataName = data.name
@@ -46,16 +47,18 @@ func refresh_organizer_data(data):
 		
 	for e in data.entries:
 		var entry:Dictionary = e
+		if entry.get('!'): continue # deleted by some other process
 		var target = self
 		if entry.path.size() > 0: 
 			target = get_or_create_path(entry.path)
 		var item = load('res://ui/organizer/'+entry.scene+'.tscn').instance()
-		item.labelText = entry.name
-		item.data = entry.data
+		item.labelText = entry['name']
+		item.set_data(entry['data'])
+		item.entryFlags = entry.get('flags', 0)
 		if entry.has('id'): 
 			entryIds[entry.id] = item
 			item.id = entry.id
-		print('adding entry: ', item.labelText, ' to bottom of ', target.get_path())
+		print('adding entry: ', item.labelText, ' with data ', item.data, ' to bottom of ', target.get_path())
 		target.add_item_bottom(item)
 		connect_drag_events_for_tree(item)
 
@@ -73,6 +76,8 @@ func save(target=self, path=''):
 			else: saveData = saveData + childSaveData
 		else: 
 			var childSaveData = child.get_save_data(path)
+			if childSaveData.get('data') and not (childSaveData.get('data') is Dictionary):
+				childSaveData['data'] = childSaveData.get('data')#.serialize() # only serialize when writing to disk!
 			saveData.append(childSaveData)
 	if target == self: # we've loaded all our child entry data
 		print('Finished serializing children, saving')
@@ -92,8 +97,9 @@ func get_entry_by_id(id):
 func get_or_create_path(path:Array):
 	var target = self
 	for p in path:
-		var pathSegmentArgs = p.split(':')
+		var pathSegmentArgs = p.split('^')
 		var pathSegment = pathSegmentArgs[0]
+		pathSegmentArgs.remove(0)
 		var foundTarget = false
 		for entry in target.entryContainer.get_children():
 			if entry.get_label_text() == pathSegment: 
@@ -104,13 +110,7 @@ func get_or_create_path(path:Array):
 			# Existing path segment not found, create a new folder
 			var newFolder = OrganizerFolderScene.instance()
 			newFolder.labelText = pathSegment
-			for arg in pathSegmentArgs:
-				newFolder.data[arg] = true
-#				match arg:
-#					'isOpen': newFolder.set_is_open(true)
-#					'noEdit': newFolder.set_no_edit(true)
-#					'noDrag': newFolder.set_no_drag(true)
-#					'noDelete': newFolder.set_no_delete(true)
+			newFolder.entryFlags = Util.build_entry_flags(pathSegmentArgs)
 			target.entryContainer.add_child(newFolder)
 			connect_drag_events_for_tree(newFolder)
 			target = newFolder

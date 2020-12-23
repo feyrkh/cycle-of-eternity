@@ -78,6 +78,14 @@ func get_resource_level(resourceId, value):
 	if suffix: value = str(value)+' '+suffix
 	return str(value)
 
+# Returns like: {\"workers\": {amt: 1, f_amt: \"1 work crew\", k: \"numWorkers\"}}
+# Good for getting the human-friendly sortable keys for displaying resources in alphabetical order
+func get_friendly_resource_map(resourceMap:Dictionary)->Dictionary:
+	var retval = {}
+	for k in resourceMap.keys():
+		retval[get_resource_name(k)] = {\"amt\":resourceMap[k], \"f_amt\": get_resource_level(k, resourceMap[k]), \"k\": k}
+	return retval
+
 func reset_transient_resources():
 	for k in resources.keys():
 		if resourceData.get(k, {}).get('transient', false): resources.erase(resourceData)
@@ -96,6 +104,17 @@ func consume_resource(resourceName, amt, projectName):
 	resources[resourceName] = resources.get(resourceName, 0) - amt
 	print(projectName, ' consumed ', amt, ' ', get_resource_name(resourceName))
 
+func deserialize_organizer_entry(valData):
+	if valData is Dictionary:
+		var dataType = int(valData.get('dt', 0))
+		match dataType:
+			Util.DATATYPE_DICT: pass 
+			Util.DATATYPE_DECREE:
+				var deserData = DecreeData.new()
+				deserData.deserialize(valData)
+				valData = deserData
+	return valData
+	
 func serialize_world()->String:
 	UI.save_organizers()
 	settings['leftOrganizerName'] = UI.leftOrganizer.organizerDataName
@@ -112,7 +131,16 @@ func serialize_world()->String:
 		var serializedOrganizer = _organizers[k].serialize()
 		retval.organizers[k] = serializedOrganizer
 	return to_json(retval)
-	
+
+func refresh_organizers():
+	load_organizers(true)
+
+func load_organizers(skipSave=false):
+	var leftOrganizerName = GameState.settings.get('leftOrganizerName')
+	var rightOrganizerName = GameState.settings.get('rightOrganizerName')
+	if leftOrganizerName: UI.load_left_organizer(leftOrganizerName, skipSave)
+	if rightOrganizerName: UI.load_right_organizer(rightOrganizerName, skipSave)
+
 func deserialize_world(worldJson):
 	var serializedWorld = parse_json(worldJson)
 	settings = serializedWorld.settings
@@ -124,10 +152,7 @@ func deserialize_world(worldJson):
 		var deserializedOrganizer = dummyOrg.deserialize(serializedWorld.organizers[k])
 		_organizers[k] = deserializedOrganizer
 	if UI:
-		var leftOrganizerName = GameState.settings.get('leftOrganizerName')
-		var rightOrganizerName = GameState.settings.get('rightOrganizerName')
-		if leftOrganizerName: UI.load_left_organizer(leftOrganizerName)
-		if rightOrganizerName: UI.load_right_organizer(rightOrganizerName)
+		load_organizers()
 		UI.deserialize_text_interface(settings.get('uiTextInterface'))
 	loadScene(settings['curSceneName'], settings['curSceneSettings'])
 		
@@ -169,14 +194,20 @@ func get_organizer_data(organizerName:String):
 		_organizers[organizerName].name = organizerName
 	return _organizers[organizerName]
 
+func add_popup(popup):
+	UI.add_popup(popup)
 
-func run_command(cmd:String, data:Dictionary, sourceNode:Node=null):
+func run_command(cmd, data:Dictionary, sourceNode:Node=null):
+	if cmd is Array:
+		for c in cmd:
+			run_command(cmd, data, sourceNode)
+		return
 	match cmd:
 		'scene': cmd_scene(data, sourceNode)
 		'msg': cmd_msg(data, sourceNode)
 		'quicksave': cmd_quicksave()
 		'quickload': cmd_quickload()
-		'decree': cmd_decree(data, sourceNode)
+		'item': cmd_producer(data, sourceNode)
 		_: printerr('Invalid command: ', cmd, '; data=', data, '; sourceNode=', sourceNode.name)
 
 # scene - name of the scene (not 'res://scene/office.tscn', but just 'office')
@@ -195,6 +226,21 @@ func cmd_scene(data:Dictionary, sourceNode):
 # msg - text to display on the popup
 func cmd_msg(data:Dictionary, sourceNode):
 	Event.emit_signal('msg_popup', data, sourceNode)
+	
+# msg - text to display on the popup
+# produce - list of resources that are produced
+func cmd_producer(data:Dictionary, sourceNode):
+	var produces = data.get('produce', {})
+	var friendlyProduces = get_friendly_resource_map(produces)
+
+	var friendlyKeys = friendlyProduces.keys()
+	friendlyKeys.sort()
+	var productionNote = \"Weekly production:\\n\"
+	for k in friendlyKeys:
+		productionNote += \"    %s: %s\\n\" % [k, friendlyProduces[k][\"f_amt\"]]
+		
+	var descriptionNote = Util.load_text_file(data.get('msg', ''))
+	Event.emit_signal('msg_popup', \"%s\\n---\\n%s\"%[descriptionNote, productionNote], sourceNode)
 
 func cmd_quicksave():
 	print('quicksaving')
@@ -206,14 +252,6 @@ func cmd_quickload():
 	print('quickloading')
 	load_world('quicksave')
 	
-func cmd_decree(data, sourceNode):
-	var decreeData = preload('res://decree/DecreeData.gd').new()
-	decreeData.deserialize(data)
-	var decreePopup = preload(\"res://decree/Decree.tscn\").instance()
-	decreePopup.decreeData = decreeData
-	if sourceNode: decreePopup.decreeOrganizerNode = sourceNode
-	UI.add_popup(decreePopup)
-	decreePopup.popup_centered()
 "
 
 [node name="GameState" type="Node"]

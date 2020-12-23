@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Resource",
+"class": "DecreeData",
+"language": "GDScript",
+"path": "res://decree/DecreeData.gd"
+}, {
 "base": "OptionButton",
 "class": "DecreeOption",
 "language": "GDScript",
@@ -80,6 +85,7 @@ _global_script_classes=[ {
 "path": "res://Util.gd"
 } ]
 _global_script_class_icons={
+"DecreeData": "",
 "DecreeOption": "",
 "Ki": "",
 "KiUtil": "",

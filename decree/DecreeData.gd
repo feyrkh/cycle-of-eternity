@@ -1,4 +1,5 @@
 extends Resource
+class_name DecreeData 
 
 var filename
 var projectName = "Generic project"
@@ -9,7 +10,18 @@ var selectedOptions = {}
 var decreeTextTemplate = 'This is a decree! You selected: {myOptionId}'
 var appliedResources = {}
 var baseInputResources = {}
+var projectComplete = false
 
+func on_organizer_entry_clicked(entry):
+	cmd_decree(entry)
+
+func cmd_decree(sourceNode):
+	var decreePopup = preload("res://decree/Decree.tscn").instance()
+	decreePopup.decreeData = self
+	if sourceNode: decreePopup.decreeOrganizerNode = sourceNode
+	GameState.add_popup(decreePopup)
+	decreePopup.popup_centered()
+	
 func get_choice_data():
 	return choice
 
@@ -59,7 +71,7 @@ func merge_selections_by_key(key, baseResults={}):
 	return mergedSelections
 
 func consume_resources():
-	var projectIsComplete = true
+	projectComplete = true
 	var required = get_selected_option_inputs()
 	for resourceName in required.keys():
 		var neededResourceAmt = required[resourceName]
@@ -69,19 +81,29 @@ func consume_resources():
 			var consumedResourceAmt = min(remainingResourceAmt, GameState.resources.get(resourceName))
 			if consumedResourceAmt > 0:
 				GameState.consume_resource(resourceName, consumedResourceAmt, projectName)
-				projectIsComplete = projectIsComplete && (remainingResourceAmt == consumedResourceAmt)
+				appliedResources[resourceName] = appliedResourceAmt + consumedResourceAmt
+				projectComplete = projectComplete && (remainingResourceAmt == consumedResourceAmt)
+	if projectComplete:
+		complete_project()
+
+func complete_project():
+	projectComplete = true
+	print("Project complete: ", projectName)
 
 func get_decree_text():
 	return decreeTextTemplate.format(get_selected_option_flavor_text()).format(get_selected_option_outputs()).format(GameState.settings)
 
 func serialize():
-	return {'cmd':'decree', 'f':filename, 'so':selectedOptions, 'ar':appliedResources, 'in':baseInputResources}
+	var retval = {'cmd':'decree', 'f':filename, 'so':selectedOptions, 'ar':appliedResources, 'in':baseInputResources, 'dt':Util.DATATYPE_DECREE}
+	if projectComplete: retval['!'] = true
+	return retval
 
 func deserialize(data):
 	init_from_file(data['f'])
 	projectName = data.get('name', 'Generic project')
 	selectedOptions = data.get('so', {})
 	appliedResources = data.get('ar', {})
+	projectComplete = data.get('!', false)
 
 func init_from_file(filename):
 	self.filename = filename

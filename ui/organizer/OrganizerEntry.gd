@@ -11,8 +11,11 @@ export var labelText = ''
 var id
 var label
 var editNameButton
-var data:Dictionary
+var data
 var blinkCount = 0
+
+var entryFlags:int = 0
+
 
 var editBox:OrganizerLabelEdit
 var containingOrganizer
@@ -27,32 +30,39 @@ func _ready():
 	label.toggle_mode = get_is_toggle()
 	if get_no_edit(): editNameButton.visible = false
 
-func get_no_drag(): return data.get('noDrag', false)
-func get_is_toggle(): return data.get('isToggle', false)
-func get_no_delete(): return data.get('noDelete', false)
-func get_no_edit(): return data.get('noEdit')
-func get_is_project(): return data.get('isProject', false)
+func set_data(d):
+	data = d
 
-func set_no_drag(val):
-	if val: data['noDrag'] = true
-	else: data.erase('noDrag')
+func get_no_drag(): return entryFlags & Util.noDrag
+func get_is_toggle(): return entryFlags & Util.isToggle
+func get_no_delete(): return entryFlags & Util.noDelete
+func get_no_edit(): return entryFlags & Util.noEdit
+func get_is_project(): return entryFlags & Util.isProject
 
-func set_no_delete(val):
-	if val: data['noDelete'] = true
-	else: data.erase('noDelete')
+func set_no_drag(val:bool):
+	if val: entryFlags = entryFlags | Util.noDrag
+	else: entryFlags = entryFlags & ~Util.noDrag
+
+func set_no_delete(val:bool):
+	if val: entryFlags = entryFlags | Util.noDelete
+	else: entryFlags = entryFlags & ~Util.noDelete
 
 func set_is_toggle(val):
-	if val: data['isToggle'] = true
-	else: data.erase('isToggle')
+	if val: entryFlags = entryFlags | Util.isToggle
+	else: entryFlags = entryFlags & ~Util.isToggle
 	
 func set_no_edit(val):
-	if val: data['noEdit'] = true
-	else: data.erase('noEdit')
+	if val: entryFlags = entryFlags | Util.noEdit
+	else: entryFlags = entryFlags & ~Util.noEdit
+
+func set_is_project(val):
+	if val: entryFlags = entryFlags | Util.isProject
+	else: entryFlags = entryFlags & ~Util.isProject
 
 func get_label_text(): return label.text
 
 func get_save_data(path):
-	var saveData = OrganizerDataEntry.build(id, get_label_text(), path, data, get_scene_name())
+	var saveData = OrganizerDataEntry.build(id, get_label_text(), path, data, get_scene_name(), entryFlags)
 	return saveData
 	
 func get_scene_name():

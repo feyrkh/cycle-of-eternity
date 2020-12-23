@@ -64,7 +64,7 @@ func buff_debug(f, lab = false, arg0 = null, push_front = false): # For simple d
 	else:
 		_buffer.push_front(b)
 
-func buff_text(text, vel = 0.005, tag = "", push_front = false): # The text for the output, and its printing velocity (per character)
+func buff_text(text, vel = 0, tag = "", push_front = false): # The text for the output, and its printing velocity (per character)
 	var b = {"buff_type":BUFF_TEXT, "buff_text":text, "buff_vel":vel, "buff_tag":tag}
 	if !push_front:
 		_buffer.append(b)

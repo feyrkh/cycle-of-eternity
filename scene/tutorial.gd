@@ -58,13 +58,13 @@ func on_input_player_name(playerName):
 func direct_to_office():
 	
 	var mainOrg = load("res://ui/organizer/OrganizerData.gd").new()
-	mainOrg.add_entry('Settings', {'noDelete':true, 'noDrag':true, 'noEdit':true}, null, 'OrganizerFolder')
-	mainOrg.add_entry('Settings/Quicksave', {'cmd':'quicksave', 'noDelete':true, 'noDrag':true, 'noEdit':true}, 'quicksave')
-	mainOrg.add_entry('Settings/Quickload', {'cmd':'quickload', 'noDelete':true, 'noDrag':true, 'noEdit':true}, 'quickload')
-	mainOrg.add_entry('Locations', {'noEdit':true,'isOpen':true,'noDelete':true}, null, 'OrganizerFolder')
-	mainOrg.add_entry('Locations/Sacred School', {'noEdit':true,'isOpen':true,'noDelete':true}, null, 'OrganizerFolder')
-	mainOrg.add_entry('Locations/Sacred School/'+'{playerName}\'s Office'.format(GameState.settings), 
-		 {'cmd':'scene', 'scene':'office', 'produce':{'laborAdmin':7}}, 'gotoOffice')
+	mainOrg.add_entry('Settings^noDelete^noDrag^noEdit', null, null, 'OrganizerFolder')
+	mainOrg.add_entry('Settings/Quicksave^noDelete^noDrag^noEdit', {'cmd':'quicksave'}, 'quicksave')
+	mainOrg.add_entry('Settings/Quickload^noDelete^noDrag^noEdit', {'cmd':'quickload'}, 'quickload')
+	mainOrg.add_entry('Locations^noEdit^isOpen^noDelete', {}, null, 'OrganizerFolder')
+	mainOrg.add_entry('Locations/Sacred School^noEdit^isOpen^noDelete', {}, null, 'OrganizerFolder')
+	mainOrg.add_entry('Locations/Sacred School/'+'{playerName}\'s Office^noEdit^noDelete'.format(GameState.settings), 
+		 {'cmd':'scene', 'scene':'office'}, 'gotoOffice')
 	
 	GameState.add_organizer('main', mainOrg)
 	UI.leftOrganizer.refresh_organizer_data(GameState.get_organizer_data('main'))

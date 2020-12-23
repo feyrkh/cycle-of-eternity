@@ -44,5 +44,12 @@ func clear_text():
 	textInterface.reset()
 
 func _on_Event_organizer_entry_clicked(organizer, organizerEntryClicked:OrganizerEntry):
-	if organizerEntryClicked && organizerEntryClicked.data && organizerEntryClicked.data.has('cmd'):
+	if !organizerEntryClicked || !organizerEntryClicked.data: 
+		printerr('No data for clicked organizer entry: ', organizerEntryClicked)
+		return
+	if organizerEntryClicked.data is Dictionary and organizerEntryClicked.data.has('cmd'):
 		GameState.run_command(organizerEntryClicked.data['cmd'], organizerEntryClicked.data, organizerEntryClicked)
+	elif organizerEntryClicked.data.has_method('on_organizer_entry_clicked'):
+		organizerEntryClicked.data.on_organizer_entry_clicked(organizerEntryClicked)
+	else: 
+		printerr("Don't know what to do with organizerEntry data that doesn't have 'cmd' or 'on_organizer_entry_clicked'")

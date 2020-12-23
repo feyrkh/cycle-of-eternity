@@ -118,5 +118,5 @@ func update_decree_text():
 	decreeText.text = decreeData.get_decree_text()
 	
 func _on_PopupPanel_popup_hide():
-	if decreeOrganizerNode: decreeOrganizerNode.data = decreeData.serialize()
+	#if decreeOrganizerNode: decreeOrganizerNode.data = decreeData.serialize()
 	queue_free()

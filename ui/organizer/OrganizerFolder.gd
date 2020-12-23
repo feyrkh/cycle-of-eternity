@@ -10,31 +10,41 @@ export var labelText = "folder"
 
 var id
 var data = {}
+var entryFlags:int = 0
 
 var editBox:OrganizerLabelEdit
 var containingOrganizer
 
+const noDrag = 1<<0
+const isOpen = 1<<1
+const noDelete = 1<<2
+const noEdit = 1<<3
 
-func set_no_drag(val):
-	if val: data['noDrag'] = true
-	else: data.erase('noDrag')
+func set_data(d):
+	data = d
 
-func set_no_delete(val):
-	if val: data['noDelete'] = true
-	else: data.erase('noDelete')
-	
+func get_no_drag(): return entryFlags & Util.noDrag
+func get_is_open(): return entryFlags & Util.isOpen
+func get_no_delete(): return entryFlags & Util.noDelete
+func get_no_edit(): return entryFlags & Util.noEdit
+
+func set_no_drag(val:bool):
+	if val: entryFlags = entryFlags | Util.noDrag
+	else: entryFlags = entryFlags & ~Util.noDrag
+
+func set_no_delete(val:bool):
+	if val: entryFlags = entryFlags | Util.noDelete
+	else: entryFlags = entryFlags & ~Util.noDelete
+
 func set_is_open(val):
-	if val: data['isOpen'] = true
-	else: data.erase('isOpen')
-
+	if val: entryFlags = entryFlags | Util.isOpen
+	else: entryFlags = entryFlags & ~Util.isOpen
+	
 func set_no_edit(val):
-	if val: data['noEdit'] = true
-	else: data.erase('noEdit')
+	if val: entryFlags = entryFlags | Util.noEdit
+	else: entryFlags = entryFlags & ~Util.noEdit
 
-func get_no_drag(): return data.get('noDrag', false)
-func get_no_delete(): return data.get('noDelete', false)
-func get_is_open(): return data.get('isOpen', false)
-func get_no_edit(): return data.get('noEdit')
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -53,7 +63,7 @@ func is_organizer_entry(): return true
 func get_label_text(): return label.text
 
 func get_save_data(path):
-	var saveData = OrganizerDataEntry.build(null, get_label_text(), path, data, get_scene_name())
+	var saveData = OrganizerDataEntry.build(null, get_label_text(), path, data, get_scene_name(), entryFlags)
 	return saveData
 
 func get_scene_name():
@@ -71,11 +81,11 @@ func call_attention():
 		
 
 func collapse():
-	data.erase('isOpen')
+	set_is_open(false)
 	update_contents()
 	
 func expand():
-	data['isOpen'] = true
+	set_is_open(true)
 	update_contents()
 
 func add_item_top(item):
@@ -87,7 +97,7 @@ func add_item_bottom(item):
 
 func update_contents():
 	if get_no_edit(): editNameButton.visible = false
-	if data.get('isOpen'):
+	if get_is_open():
 		#print('updating folder icon (open)')
 		folderOpenIcon.set_rotation(deg2rad(90))
 		entryContainer.visible = true
@@ -111,8 +121,8 @@ func _on_Label_pressed():
 
 func toggle_folder():
 	print('toggling folder')
-	if data.get('isOpen'): data.erase('isOpen')
-	else: data['isOpen'] = true
+	if get_is_open(): set_is_open(false)
+	else: set_is_open(true)
 	update_contents()
 
 func _on_OpenIcon_visibility_changed():

@@ -49,10 +49,10 @@ func setup_first_decree():
 	var decreeData = load("res://decree/DecreeData.gd").new()
 	decreeData.init_from_file("res://data/decree/hireWorkCrew.json")
 	var officeOrg = load("res://ui/organizer/OrganizerData.gd").new()
-	officeOrg.add_entry('Outbox:noEdit:isOpen:noDelete/Raise Work Crew', decreeData.serialize(), 'tutorialFirstWorkOrder')
-	officeOrg.add_entry('Inbox:noEdit/From the Emperor/Your mission', {'cmd':'msg', 'msg':"res://data/conv/emperor_your_mission.txt"})
-	officeOrg.add_entry('Inbox:noEdit/History/On Sacred Science', {'cmd':'msg', 'msg':'res://data/conv/on_sacred_science.txt'})
-	officeOrg.add_entry("{playerName}'s desk:noDelete", 'res://data/producer/office_desk.json')
+	officeOrg.add_entry('Outbox^noEdit^isOpen^noDelete/Raise Work Crew', decreeData, 'tutorialFirstWorkOrder')
+	officeOrg.add_entry('Inbox^noEdit/From the Emperor/Your mission', {'cmd':'msg', 'msg':"res://data/conv/emperor_your_mission.txt"})
+	officeOrg.add_entry('Inbox^noEdit/History/On Sacred Science', {'cmd':'msg', 'msg':'res://data/conv/on_sacred_science.txt'})
+	officeOrg.add_entry("{playerName}'s desk^noDelete".format(GameState.settings), 'res://data/producer/office_desk.json')
 	GameState.add_organizer('office', officeOrg)
 	UI.rightOrganizer.refresh_organizer_data(GameState.get_organizer_data('office'))
 	UI.rightOrganizer.visible = true
@@ -81,7 +81,7 @@ func first_decree_clicked():
 	var c = Conversation
 	var workorder = UI.rightOrganizer.get_entry_by_id('tutorialFirstWorkOrder')
 	workorder.disconnect('entry_clicked', self, 'first_decree_clicked')
-	UI.lastPopup.connect('popup_hide', self, 'first_decree_closed')
+	if UI.lastPopup: UI.lastPopup.connect('popup_hide', self, 'first_decree_closed')
 	c.clear()
 	c.speaking('helper')
 	c.text("""
