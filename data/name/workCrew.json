@@ -1,0 +1,8 @@
+{"name":["The {number} {material}{activity}s", "{direction}{descriptor} {village} crew" ],
+"material":["mud", "earth", "sand", "turf", "leaf", "stick", "tree", "wood", "rock", "stone", "pebble", "hill", "mountain", "granite", "land", ],
+"activity":["slinger", "tosser", "thrower", "eater", "biter", "lifter", "builder", "crafter", "seeker", "finder", ],
+"village":["village", "town", "hamlet", "district", "lake", "river", "glen", "wood", "field", ],
+"descriptor": ["placid", "deserted", "silent", "cheerful", "pleasant", "fearful", "shadow", "beast", "mint", "leaf", "sour", "sweet", "grim", ],
+"direction":["north ", "south ", "east ", "west ", "upper ", "lower ", "inner ", "outer ", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+"number":["1st", "primary", "2nd", "secondary", "3rd", "tertiary", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th"] 
+}

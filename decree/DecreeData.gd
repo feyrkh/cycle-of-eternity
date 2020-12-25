@@ -3,14 +3,25 @@ class_name DecreeData
 
 var filename
 var projectName = "Generic project"
-# choice['workers'] = {'l':'Number of Workers', 'o':[{'l':'1', 't':'one work crew', 'in':{'coin':-10}, out':{'numWorkers':1, 'diplomacy':-10}}, 'l':'2', 'out':{'numWorkers':2, 'diplomacy':-25}, ...]}
+# choice['workers'] = {'l':'Number of Workers', 'o':[{'l':'1', 't':'one work crew', 'in':{'coin':-10}, out':{'workCrew':1, 'diplomacy':-10}}, 'l':'2', 'out':{'workCrew':2, 'diplomacy':-25}, ...]}
 var choice = {}
-# selectedOptions['workers'] = {'numWorkers':1, 'diplomacy':-10}
+# selectedOptions['workers'] = {'workCrew':1, 'diplomacy':-10}
 var selectedOptions = {}
 var decreeTextTemplate = 'This is a decree! You selected: {myOptionId}'
 var appliedResources = {}
 var baseInputResources = {}
 var projectComplete = false
+
+func get_is_project(): return true
+func get_is_deleted(): 
+	return projectComplete
+
+func complete_project():
+	projectComplete = true
+	var resources_to_add = get_selected_option_outputs()
+	print("Project complete: ", projectName, '; adding ', resources_to_add)
+	for k in resources_to_add.keys():
+		GameState.add_resource(k, resources_to_add[k], self)
 
 func on_organizer_entry_clicked(entry):
 	cmd_decree(entry)
@@ -85,10 +96,6 @@ func consume_resources():
 				projectComplete = projectComplete && (remainingResourceAmt == consumedResourceAmt)
 	if projectComplete:
 		complete_project()
-
-func complete_project():
-	projectComplete = true
-	print("Project complete: ", projectName)
 
 func get_decree_text():
 	return decreeTextTemplate.format(get_selected_option_flavor_text()).format(get_selected_option_outputs()).format(GameState.settings)

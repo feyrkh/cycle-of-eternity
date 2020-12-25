@@ -63,7 +63,7 @@ func direct_to_office():
 	mainOrg.add_entry('Settings/Quickload^noDelete^noDrag^noEdit', {'cmd':'quickload'}, 'quickload')
 	mainOrg.add_entry('Locations^noEdit^isOpen^noDelete', {}, null, 'OrganizerFolder')
 	mainOrg.add_entry('Locations/Sacred School^noEdit^isOpen^noDelete', {}, null, 'OrganizerFolder')
-	mainOrg.add_entry('Locations/Sacred School/'+'{playerName}\'s Office^noEdit^noDelete'.format(GameState.settings), 
+	mainOrg.add_entry('Locations/Sacred School/'+'{playerName}\'s Office^noEdit^noDelete^isUnread'.format(GameState.settings), 
 		 {'cmd':'scene', 'scene':'office'}, 'gotoOffice')
 	
 	GameState.add_organizer('main', mainOrg)

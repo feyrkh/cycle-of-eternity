@@ -16,7 +16,6 @@ var blinkCount = 0
 
 var entryFlags:int = 0
 
-
 var editBox:OrganizerLabelEdit
 var containingOrganizer
 
@@ -29,6 +28,7 @@ func _ready():
 	label.flat = !get_is_toggle()
 	label.toggle_mode = get_is_toggle()
 	if get_no_edit(): editNameButton.visible = false
+	if get_is_unread(): set_is_unread(true) # trigger visual indicators
 
 func set_data(d):
 	data = d
@@ -38,10 +38,13 @@ func get_is_toggle(): return entryFlags & Util.isToggle
 func get_no_delete(): return entryFlags & Util.noDelete
 func get_no_edit(): return entryFlags & Util.noEdit
 func get_is_project(): return entryFlags & Util.isProject
+func get_is_unread(): return entryFlags & Util.isUnread
 
 func set_no_drag(val:bool):
 	if val: entryFlags = entryFlags | Util.noDrag
 	else: entryFlags = entryFlags & ~Util.noDrag
+	var unreadIcon = find_node('UnreadIcon', true)
+	if unreadIcon: unreadIcon.visible = val
 
 func set_no_delete(val:bool):
 	if val: entryFlags = entryFlags | Util.noDelete
@@ -58,6 +61,25 @@ func set_no_edit(val):
 func set_is_project(val):
 	if val: entryFlags = entryFlags | Util.isProject
 	else: entryFlags = entryFlags & ~Util.isProject
+
+func set_is_unread(val):
+	if val: entryFlags = entryFlags | Util.isUnread
+	else: entryFlags = entryFlags & ~Util.isUnread
+	var unreadIcon = find_node('UnreadIcon', true)
+	if unreadIcon: 
+		unreadIcon.visible = val
+	# update folders above me
+	if val: # unconditionally set folder read-ness
+		var cur = self.get_parent()
+		while cur:
+			if cur.has_method('set_is_unread'): cur.set_is_unread(true)
+			cur = cur.get_parent()
+	else: # tell folders to check their children for read-ness
+		var cur = self.get_parent()
+		while cur:
+			if cur.has_method('update_is_read_from_children'): cur.update_is_read_from_children()
+			cur = cur.get_parent()
+
 
 func get_label_text(): return label.text
 
@@ -138,6 +160,7 @@ func really_delete():
 
 
 func _on_Label_pressed():
+	set_is_unread(false)
 	$"/root/Event".emit_signal("organizer_entry_clicked", containingOrganizer, self)
 	emit_signal('entry_clicked')
 	self.visible = false # easy way to lose focus
@@ -145,6 +168,7 @@ func _on_Label_pressed():
 
 
 func _on_Label_toggled(button_pressed):
+	set_is_unread(false)
 	$"/root/Event".emit_signal("organizer_entry_toggled", containingOrganizer, self, button_pressed)
 	self.visible = false # easy way to lose focus
 	self.visible = true

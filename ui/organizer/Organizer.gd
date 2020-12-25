@@ -47,23 +47,26 @@ func refresh_organizer_data(data):
 		
 	for e in data.entries:
 		var entry:Dictionary = e
+		var entryData = entry['data']
 		if entry.get('!'): continue # deleted by some other process
+		if !(entryData is Dictionary) and entryData.has_method('get_is_deleted') and entryData.get_is_deleted(): continue # internal data (ex: a DecreeData) says to delete this entry
 		var target = self
 		if entry.path.size() > 0: 
 			target = get_or_create_path(entry.path)
 		var item = load('res://ui/organizer/'+entry.scene+'.tscn').instance()
 		item.labelText = entry['name']
-		item.set_data(entry['data'])
+		item.set_data(entryData)
 		item.entryFlags = entry.get('flags', 0)
 		if entry.has('id'): 
 			entryIds[entry.id] = item
 			item.id = entry.id
-		print('adding entry: ', item.labelText, ' with data ', item.data, ' to bottom of ', target.get_path())
+		#print('adding entry: ', item.labelText, ' with data ', item.data, ' to bottom of ', target.get_path())
 		target.add_item_bottom(item)
 		connect_drag_events_for_tree(item)
+		
 
 func save(target=self, path=''):
-	print('Saving data for path=', path)
+	#print('Saving data for path=', path)
 	var saveData = []
 	for child in target.entryContainer.get_children():
 		if child is OrganizerFolder:
@@ -92,6 +95,8 @@ func clear():
 		child.queue_free()
 		
 func get_entry_by_id(id):
+	if !entryIds.get(id):
+		entryIds.erase(id)
 	return entryIds.get(id)
 
 func get_or_create_path(path:Array):
@@ -288,10 +293,11 @@ func _on_NewFolderButton_pressed():
 	yield(get_tree(),"idle_frame")
 	newFolder.edit_name()
 
-func add_new_entry(label:String, data:Dictionary, id=null):
+func add_new_entry(label:String, data:Dictionary, id=null, entryFlags=0):
 	var newEntry = OrganizerEntryScene.instance()
 	newEntry.labelText = label
 	newEntry.data = data
 	newEntry.id = id
+	newEntry.entryFlags = entryFlags
 	add_item_bottom(newEntry)
 	return newEntry

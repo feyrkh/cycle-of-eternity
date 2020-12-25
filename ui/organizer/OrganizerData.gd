@@ -83,7 +83,7 @@ func collect_projects():
 	var results = []
 	for entry in entries:
 		var pathChunks = entry.get('path', [])
-		if pathChunks.size() > 0 and pathChunks[0] == 'Outbox' and entry.get('data',{}).get('in', {}).size() > 0:
+		if pathChunks.size() > 0 and pathChunks[0] == 'Outbox' and entry.get('data',{}).has_method('get_is_project') and entry.get('data').get_is_project():
 			results.append(entry)
 	return results
 

@@ -30,6 +30,7 @@ func _ready():
 	if rightOrganizerName: load_right_organizer(rightOrganizerName)
 
 func on_pass_time(timeAmt:int):
+	save_organizers()
 	ProjectProcessor.process_projects()
 
 func on_show_character(charImgPath):
@@ -67,16 +68,20 @@ func on_msg_popup(data, sourceNode):
 	var popup = msgPopupScene.instance()
 	add_popup(popup)
 	popup.set_text(msg)
-	popup.popup_centered(OS.get_window_size()/3*2)
+	if data.get('img'): popup.set_image(data.get('img'))
+	popup.popup()
+	#popup.popup_centered(OS.get_window_size()/3*2)
 
 func load_right_organizer(organizerName, skipSave=false):
 	load_organizer(organizerName, rightOrganizer, skipSave)
+	GameState.settings['rightOrganizerName'] = organizerName
 
 func load_left_organizer(organizerName, skipSave=false):
 	load_organizer(organizerName, leftOrganizer, skipSave)
+	GameState.settings['leftOrganizerName'] = organizerName
 
 func load_organizer(organizerName, organizer, skipSave=false):
-	if !skipSave and organizer.organizerDataName and organizer.organizerDataName != organizerName:
+	if !skipSave:
 		var oldData = organizer.save()
 		GameState.add_organizer(organizer.organizerDataName, oldData)
 	var organizerData = GameState.get_organizer_data(organizerName)

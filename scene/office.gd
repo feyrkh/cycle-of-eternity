@@ -28,6 +28,7 @@ func setup_quest()->bool:
 
 func tutorial_office_intro():
 	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_OFFICE:
+		UI.leftOrganizer.visible = true
 		UI.rightOrganizer.visible = false
 		UI.controlsContainer.visible = false
 		UI.timePassContainer.visible = false
@@ -49,10 +50,10 @@ func setup_first_decree():
 	var decreeData = load("res://decree/DecreeData.gd").new()
 	decreeData.init_from_file("res://data/decree/hireWorkCrew.json")
 	var officeOrg = load("res://ui/organizer/OrganizerData.gd").new()
-	officeOrg.add_entry('Outbox^noEdit^isOpen^noDelete/Raise Work Crew', decreeData, 'tutorialFirstWorkOrder')
-	officeOrg.add_entry('Inbox^noEdit/From the Emperor/Your mission', {'cmd':'msg', 'msg':"res://data/conv/emperor_your_mission.txt"})
-	officeOrg.add_entry('Inbox^noEdit/History/On Sacred Science', {'cmd':'msg', 'msg':'res://data/conv/on_sacred_science.txt'})
-	officeOrg.add_entry("{playerName}'s desk^noDelete".format(GameState.settings), 'res://data/producer/office_desk.json')
+	officeOrg.add_entry('Outbox^noEdit^isOpen^noDelete/Raise Work Crew^isUnread', decreeData, 'tutorialFirstWorkOrder')
+	officeOrg.add_entry('Inbox^noEdit/From the Emperor/Your mission^isUnread', {'cmd':'msg', 'msg':"res://data/conv/emperor_your_mission.txt"})
+	officeOrg.add_entry('Inbox^noEdit/History/On Sacred Science^isUnread', {'cmd':'msg', 'msg':'res://data/conv/on_sacred_science.txt'})
+	officeOrg.add_entry("{playerName}'s desk^noDelete^isUnread".format(GameState.settings), 'res://data/producer/office_desk.json')
 	GameState.add_organizer('office', officeOrg)
 	UI.rightOrganizer.refresh_organizer_data(GameState.get_organizer_data('office'))
 	UI.rightOrganizer.visible = true
@@ -62,6 +63,7 @@ func setup_first_decree():
 	
 
 func tutorial_first_decree():
+	UI.leftOrganizer.visible = true
 	UI.rightOrganizer.visible = true
 	UI.controlsContainer.visible = false
 	UI.timePassContainer.visible = false
@@ -94,11 +96,14 @@ func first_decree_closed():
 	setup_quest()
 
 func create_rubbish():
-	return UI.rightOrganizer.add_new_entry('Discarded decrees', {'cmd':'msg', 'msg':"Greetings, peasants! Your labor is required by the Emperor! ...no, that's terrible.\n\nBehold the words of the Emperor's duly appointed... hm.\n\nSalutations, dear villagers. If it isn't too much trouble, would you consider reporting to...arrrgh!"}, 'tutorial_rubbish')
+	return UI.rightOrganizer.add_new_entry('Discarded decrees', {'cmd':'msg', 'msg':"Greetings, peasants! Your labor is required by the Emperor! ...no, that's terrible.\n\nBehold the words of the Emperor's duly appointed... hm.\n\nSalutations, dear villagers. If it isn't too much trouble, would you consider reporting to...arrrgh!"}, 'tutorial_rubbish', 
+		Util.build_entry_flags(['isUnread']))
 
 func tutorial_discard_rubbish():
 	var existingRubbish = UI.rightOrganizer.get_entry_by_id('tutorial_rubbish')
 	if !existingRubbish: existingRubbish = create_rubbish()
+	UI.leftOrganizer.visible = true
+	UI.rightOrganizer.visible = true
 	UI.controlsContainer.visible = false
 	UI.timePassContainer.visible = false
 	var c = Conversation
@@ -118,8 +123,10 @@ func rubbish_deleted():
 	setup_quest()
 
 func tutorial_pass_time():
-	UI.controlsContainer.visible = false
+	UI.leftOrganizer.visible = true
+	UI.rightOrganizer.visible = true
 	UI.timePassContainer.visible = true
+	UI.controlsContainer.visible = false
 	var c = Conversation
 	c.clear()
 	c.speaking('helper')
@@ -131,3 +138,11 @@ Well, no sense in waiting - let's get started!
 	c.text("Remember, although you are of course free to organize your documents as you see fit, you must leave any decrees you want processed in your Outbox before the end of the day!")
 	yield(c.run(), 'completed')
 	UI.call_attention_from_left(UI.timePassContainer)
+	Event.connect("pass_time", self, "on_pass_time")
+
+func on_pass_time(timeAmt):
+	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_PASS_TIME:
+		var workorder = UI.rightOrganizer.get_entry_by_id('tutorialFirstWorkOrder')
+		if !workorder: # player passed time and the workorder is completed, now we should have at least one work crew
+			Event.disconnect("pass_time", self, "on_pass_time")
+			

@@ -21,9 +21,9 @@ func _ready():
 		decreeData = load("res://decree/DecreeData.gd").new()
 		decreeData.baseInputResources = {'laborAdmin':3}
 		decreeData.add_choice('workers', 'Number of Crews', [
-			{'l':'one', 'out':{'numWorkers':1, 'villageDiplomacy':-10}, 'in':{'laborAdmin':1}},
-			{'l':'two', 'out':{'numWorkers':2, 'villageDiplomacy':-25}, 'in':{'laborAdmin':2}},
-			{'l':'three', 'out':{'numWorkers':3, 'villageDiplomacy':-65}, 'in':{'laborAdmin':3}}
+			{'l':'one', 'out':{'workCrew':1, 'villageDiplomacy':-10}, 'in':{'laborAdmin':1}},
+			{'l':'two', 'out':{'workCrew':2, 'villageDiplomacy':-25}, 'in':{'laborAdmin':2}},
+			{'l':'three', 'out':{'workCrew':3, 'villageDiplomacy':-65}, 'in':{'laborAdmin':3}}
 		])
 		decreeData.add_choice('giftSize', 'Size of Gift', [
 			{'l':'nominal', 'in':{'coin':-1}},

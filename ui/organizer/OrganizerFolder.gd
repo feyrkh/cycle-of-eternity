@@ -5,7 +5,7 @@ onready var folderOpenIcon = $VBoxContainer/HBoxContainer/OpenIcon
 onready var entryContainer = $VBoxContainer/EntryContainer
 onready var label = $VBoxContainer/HBoxContainer/Label
 onready var editNameButton = $VBoxContainer/HBoxContainer/EditNameButton
-
+onready var unreadIcon = $VBoxContainer/HBoxContainer/UnreadIcon
 export var labelText = "folder"
 
 var id
@@ -27,6 +27,7 @@ func get_no_drag(): return entryFlags & Util.noDrag
 func get_is_open(): return entryFlags & Util.isOpen
 func get_no_delete(): return entryFlags & Util.noDelete
 func get_no_edit(): return entryFlags & Util.noEdit
+func get_is_unread(): return entryFlags & Util.isUnread
 
 func set_no_drag(val:bool):
 	if val: entryFlags = entryFlags | Util.noDrag
@@ -44,7 +45,17 @@ func set_no_edit(val):
 	if val: entryFlags = entryFlags | Util.noEdit
 	else: entryFlags = entryFlags & ~Util.noEdit
 
+func set_is_unread(val):
+	if val: entryFlags = entryFlags | Util.isUnread
+	else: entryFlags = entryFlags & ~Util.isUnread
+	update_contents()
 
+func update_is_read_from_children():
+	for child in entryContainer.get_children():
+		if child.has_method('get_is_unread') and child.get_is_unread():
+			set_is_unread(true)
+			return
+	set_is_unread(false)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -57,6 +68,7 @@ func _ready():
 		if child.has_method('is_organizer_entry') && child.is_organizer_entry():
 			self.remove_child(child)
 			entryContainer.add_child(child)
+	get_tree().create_timer(0.01).connect('timeout', self, 'update_contents')
 
 func is_organizer_entry(): return true
 
@@ -96,14 +108,17 @@ func add_item_bottom(item):
 	entryContainer.add_child(item)
 
 func update_contents():
+	if unreadIcon: unreadIcon.visible = get_is_unread() and !get_is_open()
 	if get_no_edit(): editNameButton.visible = false
 	if get_is_open():
 		#print('updating folder icon (open)')
-		folderOpenIcon.set_rotation(deg2rad(90))
+		#folderOpenIcon.set_rotation(deg2rad(90))
+		folderOpenIcon.texture = preload("res://img/carat_icon_down.png")
 		entryContainer.visible = true
 	else: 
 		#print('updating folder icon (closed)')
-		folderOpenIcon.set_rotation(deg2rad(0))
+		#folderOpenIcon.set_rotation(deg2rad(0))
+		folderOpenIcon.texture = preload("res://img/carat_icon.png")
 		entryContainer.visible = false
 
 func on_dropped():

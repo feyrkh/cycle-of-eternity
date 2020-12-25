@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://ui/organizer/OrganizerFolder.gd" type="Script" id=1]
 [ext_resource path="res://ui/organizer/OrganizerEditNameButton.tscn" type="PackedScene" id=2]
 [ext_resource path="res://img/carat_icon.png" type="Texture" id=3]
+[ext_resource path="res://img/unread_icon.png" type="Texture" id=4]
 
 [node name="New Folder" type="PanelContainer"]
 margin_right = 274.0
@@ -30,6 +31,18 @@ rect_pivot_offset = Vector2( 10, 10 )
 mouse_filter = 0
 size_flags_vertical = 3
 texture = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="UnreadIcon" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
+visible = false
+modulate = Color( 1, 1, 1, 0.309804 )
+margin_left = 216.0
+margin_right = 236.0
+margin_bottom = 22.0
+texture = ExtResource( 4 )
+stretch_mode = 6
 __meta__ = {
 "_edit_use_anchors_": false
 }

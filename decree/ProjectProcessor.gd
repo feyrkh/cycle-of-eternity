@@ -10,6 +10,7 @@ func complete_decree_project(decreeData:DecreeData):
 	print('completed project: ', decreeData.projectName)
 
 func process_projects():
+	GameState.save_organizers()
 	needToRefresh = false
 	GameState.produce_resources()
 	collect_projects()
@@ -19,12 +20,12 @@ func process_projects():
 			printerr('Expected data to be a resource consumer, but was not: ', organizerDataEntry)
 			return
 		resourceConsumer.consume_resources()
-
-		#organizerDataEntry['data'] = resourceConsumer.serialize()
+		needToRefresh = true
 		
+		#organizerDataEntry['data'] = resourceConsumer.serialize()
 		print('dataEntry: ', organizerDataEntry['data'])
 	GameState.reset_transient_resources()
-	if needToRefresh: # some projects must have been completed!
+	if needToRefresh: # at least one project may have been updated
 		GameState.refresh_organizers()
 		needToRefresh = false
 

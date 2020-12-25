@@ -10,15 +10,21 @@ const noDelete = 1<<2
 const noEdit = 1<<3
 const isProject = 1<<4
 const isOpen = 1<<5
+const isUnread = 1<<6
 
 const flagNameMap = {
 	'noDrag': noDrag,
 	'isToggle': isToggle,
+	'toggle': isToggle,
 	'noDelete': noDelete,
 	'noDel': noDelete,
 	'noEdit': noEdit,
 	'isProject': isProject,
-	'isOpen': isOpen
+	'project': isProject,
+	'isOpen': isOpen,
+	'open': isOpen,
+	'isUnread': isUnread,
+	'unread': isUnread
 }
 
 static func build_entry_flags(flagNameArr:Array):
@@ -38,12 +44,18 @@ static func clear_children(node:Node):
 static func load_text_file(filename:String)->String:
 	if !filename.begins_with('res://') and !filename.begins_with('user://'): return filename
 	var file = File.new()
-	file.open(filename, File.READ)
+	var err = file.open(filename, File.READ)
+	if err: 
+		printerr('Error opening ', filename, ': ', err)
+		return ''
 	var content = file.get_as_text()
 	file.close()
 	return content
 
-static func load_json_file(filename:String)->Dictionary:
+static func load_json_file(filename:String):
 	var content = load_text_file(filename)
-	return parse_json(content)
+	if content: return parse_json(content)
+	else:
+		printerr("Can't parse empty content in ", filename)
+		return null
 

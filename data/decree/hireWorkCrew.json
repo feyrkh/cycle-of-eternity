@@ -11,7 +11,7 @@
           "t": "one work crew",
 	  "in": {"laborAdmin":1},
           "out": {
-            "numWorkers": 1,
+            "workCrew": 1,
             "villageDiplomacy": -10
           }
         },
@@ -20,7 +20,7 @@
           "t": "two work crews",
 	  "in": {"laborAdmin":2},
           "out": {
-            "numWorkers": 2,
+            "workCrew": 2,
             "villageDiplomacy": -25
           }
         },
@@ -29,7 +29,7 @@
           "t": "three work crews",
 	  "in": {"laborAdmin":3},
           "out": {
-            "numWorkers": 3,
+            "workCrew": 3,
             "villageDiplomacy": -65
           }
         }

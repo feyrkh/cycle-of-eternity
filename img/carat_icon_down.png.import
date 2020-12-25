@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/workCrew.jpg-cf6415f13e5483e0c3be091782c72759.stex"
+path="res://.import/carat_icon_down.png-81747f0bccb1beef0c900c5dc2b04956.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://img/people/workCrew.jpg"
-dest_files=[ "res://.import/workCrew.jpg-cf6415f13e5483e0c3be091782c72759.stex" ]
+source_file="res://img/carat_icon_down.png"
+dest_files=[ "res://.import/carat_icon_down.png-81747f0bccb1beef0c900c5dc2b04956.stex" ]
 
 [params]
 

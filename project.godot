@@ -34,6 +34,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://scene/LocationScene.gd"
 }, {
+"base": "Node",
+"class": "NameGenerator",
+"language": "GDScript",
+"path": "res://NameGenerator.gd"
+}, {
 "base": "PanelContainer",
 "class": "Organizer",
 "language": "GDScript",
@@ -90,6 +95,7 @@ _global_script_class_icons={
 "Ki": "",
 "KiUtil": "",
 "LocationScene": "",
+"NameGenerator": "",
 "Organizer": "",
 "OrganizerData": "",
 "OrganizerDataEntry": "",
