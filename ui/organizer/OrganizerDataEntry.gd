@@ -9,7 +9,8 @@ static func build(id, name:String, path, data, scene:String, entryFlags:int)->Di
 	if path is String:
 		path = (path).trim_prefix('/').split('/', false)
 	var result = {'name':name, 'path':path, 'data':data, 'scene':scene, 'flags':entryFlags}
-	if id: result['id'] = id
+	if id: 
+		result['id'] = id
 	return result
 
 #static func serialize(entry:Dictionary):

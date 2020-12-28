@@ -28,9 +28,15 @@ static func generate_name(nameData):
 	return capitalize(nameChoices['name'].format(nameChoices))
 	
 static func capitalize(name:String):
+	name = name.replace('  ', ' ')
 	var c=' '
-	for i in name.length():
+	if name.begins_with("The"):
+		pass
+	for i in range(name.length()):
 		if c == ' ':
-			name[i] = name[i].capitalize()
-		c = name[i]
+			var newChar = name[i].capitalize()
+			if name[i].length() > 0:
+				name[i] = newChar
+		if i < name.length(): 
+			c = name[i]
 	return name

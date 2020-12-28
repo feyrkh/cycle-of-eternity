@@ -12,9 +12,11 @@ var dropContainer:Control = null
 
 var organizerDataName
 var entryIds = {}
+var uiEnabled = true
 
 const OrganizerFolderScene = preload('./OrganizerFolder.tscn')
 const OrganizerEntryScene = preload('./OrganizerEntry.tscn')
+const ProgressBar = preload("res://ui/organizer/ProgressBar.tscn")
 
 func _ready():
 	if entryContainer == null:
@@ -37,6 +39,25 @@ func _input(event):
 	if draggingEntry:
 		update_drag_indicator()
 
+func disable_on_conversation(state):
+	set_enabled(state == 0)
+	
+func set_enabled(uiEnabled):
+	if !uiEnabled: # text output is happening, disable
+		print('disabling ', name)
+		uiEnabled = false
+		self.modulate = Color.darkgray
+		stop_dropping()
+	else: 
+		print('enabling ', name)
+		uiEnabled = true
+		self.modulate = Color.white
+	
+func reenable():
+	set_enabled(true)
+
+func disable():
+	set_enabled(false)
 	
 func refresh_organizer_data(data):
 	var d = data
@@ -60,8 +81,14 @@ func refresh_organizer_data(data):
 		if entry.has('id'): 
 			entryIds[entry.id] = item
 			item.id = entry.id
-		#print('adding entry: ', item.labelText, ' with data ', item.data, ' to bottom of ', target.get_path())
 		target.add_item_bottom(item)
+		if !(entryData is Dictionary) and entryData.has_method('get_percent_complete'):
+			var progressBar = ProgressBar.instance()
+			item.add_child(progressBar)
+			item.move_child(progressBar, 0)
+			Event.connect("pass_time", progressBar, 'update_from_organizer_entry', [item], CONNECT_DEFERRED)
+			progressBar.update_from_organizer_entry(0, item)
+		#print('adding entry: ', item.labelText, ' with data ', item.data, ' to bottom of ', target.get_path())
 		connect_drag_events_for_tree(item)
 		
 
@@ -137,6 +164,7 @@ func get_or_create_folder(folderId, folderName, folderOptions, folderParent):
 		folder = OrganizerFolderScene.instance()
 		folder.labelText = folderName
 		folder.data = folderOptions
+		folder.id = folderId
 		folderParent.add_item_bottom(folder)
 
 func stop_dropping():
@@ -241,12 +269,15 @@ func connect_drag_events_for_tree(entry):
 		connect_drag_events_for_tree(child)
 
 func can_drop_data(position, data):
+	if !uiEnabled: return null
 	return (data is OrganizerEntry) or (data is OrganizerFolder)
 
 func can_drop_data_fw(position, data, from_control):
+	if !uiEnabled: return null
 	return (data is OrganizerEntry) or (data is OrganizerFolder)
 
 func drop_data_fw(position, data, from_control):
+	if !uiEnabled: return null
 	if dropTarget == null || dropContainer == null || data == null: return
 #	print('checking drop at position ', position)
 	# Check if dropTarget is a descendant of the item we're dropping
@@ -276,6 +307,8 @@ func drop_data_fw(position, data, from_control):
 	stop_dropping()
 
 func get_drag_data_fw(position, from_control):
+	print('enabled: ', uiEnabled)
+	if !uiEnabled: return null
 	while from_control && !(from_control is OrganizerEntry) && !(from_control is OrganizerFolder):
 		from_control = from_control.get_parent()
 	if !from_control || from_control.get_no_drag(): return null

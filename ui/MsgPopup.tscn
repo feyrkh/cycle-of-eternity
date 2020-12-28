@@ -3,12 +3,11 @@
 [ext_resource path="res://ui/MsgPopup.gd" type="Script" id=1]
 
 [node name="MsgPopup" type="PopupPanel"]
-visible = true
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -1808.0
-margin_bottom = -1038.0
-rect_min_size = Vector2( 400, 300 )
+margin_right = -1269.0
+margin_bottom = -591.0
+rect_min_size = Vector2( 600, 400 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
 script = ExtResource( 1 )
@@ -19,8 +18,8 @@ __meta__ = {
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 margin_left = 4.0
 margin_top = 4.0
-margin_right = 396.0
-margin_bottom = 296.0
+margin_right = 647.0
+margin_bottom = 485.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 __meta__ = {
@@ -28,17 +27,19 @@ __meta__ = {
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 647.0
+margin_bottom = 485.0
 
 [node name="ItemImage" type="TextureRect" parent="VBoxContainer"]
-margin_right = 300.0
+margin_right = 643.0
 stretch_mode = 6
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
 margin_top = 4.0
-margin_right = 300.0
-margin_bottom = 254.0
+margin_right = 643.0
+margin_bottom = 481.0
 rect_min_size = Vector2( 300, 250 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -47,8 +48,8 @@ __meta__ = {
 }
 
 [node name="ItemText" type="Label" parent="VBoxContainer/ScrollContainer"]
-margin_right = 300.0
-margin_bottom = 250.0
+margin_right = 643.0
+margin_bottom = 477.0
 rect_min_size = Vector2( 300, 250 )
 size_flags_horizontal = 3
 size_flags_vertical = 3

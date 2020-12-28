@@ -36,7 +36,7 @@ var resourceData = {
 	\"laborAdmin\": {\"n\":\"bureaucratic labor\", \"d\":\"Work performed by professional bureaucrats and functionaries.\", \"labor\":true, \"transient\":true, \"suffix\":\"man-day\"},
 	\"laborScribe\": {\"n\":\"scribe labor\", \"d\":\"Work performed by skilled scribes.\", \"labor\":true, \"transient\":true, \"suffix\":\"day\"},
 	\"laborUnskilled\": {\"n\":\"unskilled labor\", \"d\":\"Unskilled labor provided by work crews.\", \"labor\":true, \"transient\":true, \"suffix\":\"day\"},
-	\"workCrew\": {\"n\":\"workers\", \"entity\":{\"org\":\"main\", \"data\":\"res://data/producer/workCrew.json\", \"mergeId\":null}, \"d\":\"Work crews perform common manual labor that is beneath the station of disciples and examplars - farming, construction, and so forth.\", \"suffix\":\"crew\"},
+	\"workCrew\": {\"n\":\"workers\", \"entity\":{\"org\":\"main\", \"folderId\":\"new\", \"data\":\"res://data/producer/workCrew.json\", \"mergeId\":null}, \"d\":\"Work crews perform common manual labor that is beneath the station of disciples and examplars - farming, construction, and so forth.\", \"suffix\":\"crew\"},
 	\"villageDiplomacy\": {\"n\":\"villager reaction\", \"levels\":[[-60, \"infuriated\"], [-30, \"resentful\"], [-15, \"insulted\"], [-5, \"irritated\"], [5, \"neutral\"], [15, \"pleased\"], [30, \"happy\"], [60, \"honored\"], \"ecstatic\"]},
 }
 
@@ -106,8 +106,9 @@ func add_resource(k, amt, source):
 			var entityCmdJson = Util.load_json_file(entityData.get('data',{}))
 			for i in range(amt):
 				var newName = entityData.get('name')
-				if !newName: newName = NameGenerator.generate(k)
-				org.add_entry(newName, entityData.get('data'), null, entityData.get('entryScene', 'OrganizerEntry'))
+				if !newName:
+					newName = NameGenerator.generate(k)
+				org.add_entry(newName+'^isUnread', entityData.get('data'), null, entityData.get('folderId'), entityData.get('entryScene', 'OrganizerEntry'))
 				
 	resources[k] = resources.get(k, 0) + amt
 
@@ -163,10 +164,13 @@ func save_organizers():
 	UI.save_organizers()
 
 func load_organizers(skipSave=false):
-	var leftOrganizerName = GameState.settings.get('leftOrganizerName')
+	var leftOrganizerName = GameState.settings.get('leftOrganizerName', 'main')
 	var rightOrganizerName = GameState.settings.get('rightOrganizerName')
 	if leftOrganizerName: UI.load_left_organizer(leftOrganizerName, skipSave)
 	if rightOrganizerName: UI.load_right_organizer(rightOrganizerName, skipSave)
+
+func change_right_organizer(organizerName):
+	UI.load_right_organizer(organizerName, false)
 
 func deserialize_world(worldJson):
 	var serializedWorld = parse_json(worldJson)
@@ -210,7 +214,7 @@ func loadScene(newSceneName:String, newSceneData:Dictionary):
 		curScene.shutdown_scene()
 	if curScene: curScene.queue_free()
 	var newScene = load('res://scene/'+newSceneName+'.tscn').instance()
-	if newScene.has_method('startupScene'): newScene.startupScene(newSceneData)
+	if newScene.has_method('startup_scene'): newScene.startup_scene(newSceneData)
 	curScene = newScene
 	settings['curSceneName'] = newSceneName
 	settings['curSceneSettings'] = newSceneData
@@ -231,33 +235,35 @@ func run_command(cmd, data:Dictionary, sourceNode:Node=null):
 			run_command(cmd, data, sourceNode)
 		return
 	match cmd:
+		'decreeGen': cmd_decree_gen(data, sourceNode)
 		'scene': cmd_scene(data, sourceNode)
+		'item': cmd_item(data, sourceNode)
 		'msg': cmd_msg(data, sourceNode)
+		'placeable': cmd_placeable(data, sourceNode)
 		'quicksave': cmd_quicksave()
 		'quickload': cmd_quickload()
-		'item': cmd_producer(data, sourceNode)
 		_: printerr('Invalid command: ', cmd, '; data=', data, '; sourceNode=', sourceNode.name)
 
-# scene - name of the scene (not 'res://scene/office.tscn', but just 'office')
-# deleteSourceNodeAfterTransition - usually for deleting a choice-type item from an Organizer after you click it
-# keepCharacter - don't hide any character portrait that's currently displayed in the UI
-# keepText - don't clear any text buffered in the UI
-func cmd_scene(data:Dictionary, sourceNode):
-#	if settings.get('curSceneName') == data.get('scene'): 
-#		print(\"Not changing scenes, we're already in the right place\")
-#		return
-	if sourceNode && data.get('deleteSourceNodeAfterTransition'): sourceNode.queue_free()
-	if !data.get('keepCharacter'): Event.hide_character()
-	if !data.get('keepText'): Event.clear_text()
-	loadScene(data.get('scene'), data)
-
+func cmd_decree_gen(data:Dictionary, sourceNode):
+	var orgName = data.get('org').format(settings) # assume org is a string, and it might be a string like \"{rightOrganizerName}\" so we can create decrees that target your current location instead of a fixed location
+	var folderId = data.get('folderId') # optional, the ID of the root folder to put this into, if it can be found - ex 'outbox'
+	var entryId = data.get('entryId') # optional, the ID to apply to the new decree...probably need to use a template var for this to be useful
+	if entryId: entryId = entryId.format(settings)
+	var decreeJsonFile = data.get('decreeFile') # JSON file holding the decree we're going to build
+	var decreeData = load(\"res://decree/DecreeData.gd\").new()
+	decreeData.init_from_file(decreeJsonFile)
+	var targetOrg = GameState.get_organizer_data(orgName)
+	targetOrg.add_entry(decreeData.projectName, decreeData, entryId, folderId)
+	refresh_organizers()
+	decreeData.on_organizer_entry_clicked(null) # simulate a click so the decree pops up
+	
 # msg - text to display on the popup
 func cmd_msg(data:Dictionary, sourceNode):
 	Event.emit_signal('msg_popup', data, sourceNode)
 	
 # msg - text to display on the popup
 # produce - list of resources that are produced
-func cmd_producer(data:Dictionary, sourceNode):
+func cmd_item(data:Dictionary, sourceNode):
 	var produces = data.get('produce', {})
 	var friendlyProduces = get_friendly_resource_map(produces)
 
@@ -275,6 +281,12 @@ func cmd_producer(data:Dictionary, sourceNode):
 	
 	Event.emit_signal('msg_popup', popupData, sourceNode)
 
+func cmd_placeable(data, sourceNode):
+	var itemShadow:Sprite = Sprite.new()
+	itemShadow.texture = load(data.get('img'))
+	itemShadow.modulate.a = 0.5
+	Event.emit_signal('place_item', itemShadow, data, sourceNode)
+
 func cmd_quicksave():
 	print('quicksaving')
 	var world = serialize_world()
@@ -285,6 +297,19 @@ func cmd_quickload():
 	print('quickloading')
 	load_world('quicksave')
 	
+
+# scene - name of the scene (not 'res://scene/office.tscn', but just 'office')
+# deleteSourceNodeAfterTransition - usually for deleting a choice-type item from an Organizer after you click it
+# keepCharacter - don't hide any character portrait that's currently displayed in the UI
+# keepText - don't clear any text buffered in the UI
+func cmd_scene(data:Dictionary, sourceNode):
+#	if settings.get('curSceneName') == data.get('scene'): 
+#		print(\"Not changing scenes, we're already in the right place\")
+#		return
+	if sourceNode && data.get('deleteSourceNodeAfterTransition'): sourceNode.queue_free()
+	if !data.get('keepCharacter'): Event.hide_character()
+	if !data.get('keepText'): Event.clear_text()
+	loadScene(data.get('scene'), data)
 "
 
 [node name="GameState" type="Node"]

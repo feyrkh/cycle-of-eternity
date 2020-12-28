@@ -17,7 +17,24 @@ func _process(delta):
 #		set_speed(curLevel+1)
 #	elif Input.is_action_just_released("ui_time_scroll_reverse"):
 #		set_speed(curLevel-1)
-		
+
+func disable_on_conversation(state):
+	set_enabled(state == 0)
+	
+func reenable():
+	set_enabled(true)
+
+func disable():
+	set_enabled(false)
+	
+func set_enabled(enabled):
+	if !enabled: # text output is happening, disable
+		print('disabling ', name)
+		self.modulate = Color.darkgray
+	else: 
+		print('enabling ', name)
+		self.modulate = Color.white
+	
 func set_speed(newLevel):
 	newLevel = newLevel % levels.size()
 	if newLevel < 0: newLevel += levels.size()

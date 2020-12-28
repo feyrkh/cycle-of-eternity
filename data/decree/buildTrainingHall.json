@@ -1,0 +1,7 @@
+{
+  "name": "Build training hall",
+  "t": "Build a dojo!",
+  "in": {"laborAdmin":10, "laborUnskilled":40},
+  "c": {
+  }
+}

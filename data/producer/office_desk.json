@@ -1,1 +1,1 @@
-{"cmd":"item", "msg":"res://data/producer/office_desk.txt", "produce":{"laborAdmin":5}}
+{"cmd":"placeable", "placedCmd": "item", "msg":"res://data/producer/office_desk.txt", "img":"res://img/items/desk.png", "produce":{"laborAdmin":5}}

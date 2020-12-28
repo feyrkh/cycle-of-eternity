@@ -23,7 +23,7 @@ func process_projects():
 		needToRefresh = true
 		
 		#organizerDataEntry['data'] = resourceConsumer.serialize()
-		print('dataEntry: ', organizerDataEntry['data'])
+		#print('dataEntry: ', organizerDataEntry['data'])
 	GameState.reset_transient_resources()
 	if needToRefresh: # at least one project may have been updated
 		GameState.refresh_organizers()

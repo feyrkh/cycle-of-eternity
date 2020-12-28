@@ -11,6 +11,11 @@ var decreeTextTemplate = 'This is a decree! You selected: {myOptionId}'
 var appliedResources = {}
 var baseInputResources = {}
 var projectComplete = false
+var noProgressMade = false
+var percentComplete = 0
+
+func get_percent_complete(): return percentComplete
+func get_progress_made(): return !noProgressMade
 
 func get_is_project(): return true
 func get_is_deleted(): 
@@ -71,6 +76,9 @@ func get_selected_option_outputs():
 func get_selected_option_inputs():
 	return merge_selections_by_key('in', baseInputResources)
 	
+func get_applied_option_inputs():
+	return appliedResources
+	
 func merge_selections_by_key(key, baseResults={}):
 	var mergedSelections = baseResults.duplicate()
 	for optionId in choice.keys():
@@ -83,17 +91,23 @@ func merge_selections_by_key(key, baseResults={}):
 
 func consume_resources():
 	projectComplete = true
+	noProgressMade = true
+	percentComplete = 0
 	var required = get_selected_option_inputs()
+	var percentPerInput = 1.0/required.size()
 	for resourceName in required.keys():
 		var neededResourceAmt = required[resourceName]
 		var appliedResourceAmt = appliedResources.get(resourceName, 0)
 		var remainingResourceAmt = neededResourceAmt - appliedResourceAmt
+		var consumedResourceAmt = 0
 		if remainingResourceAmt > 0:
-			var consumedResourceAmt = min(remainingResourceAmt, GameState.resources.get(resourceName))
+			consumedResourceAmt = min(remainingResourceAmt, GameState.resources.get(resourceName, 0))
 			if consumedResourceAmt > 0:
+				noProgressMade = false
 				GameState.consume_resource(resourceName, consumedResourceAmt, projectName)
 				appliedResources[resourceName] = appliedResourceAmt + consumedResourceAmt
-				projectComplete = projectComplete && (remainingResourceAmt == consumedResourceAmt)
+			projectComplete = projectComplete and (remainingResourceAmt == consumedResourceAmt)
+		percentComplete += percentPerInput * ((appliedResourceAmt+consumedResourceAmt)/neededResourceAmt)
 	if projectComplete:
 		complete_project()
 
@@ -122,3 +136,4 @@ func init_from_file(filename):
 	decreeTextTemplate = baseData['t']
 	choice = baseData['c']
 	baseInputResources = baseData['in'] # base resources just from the decree itself
+	projectName = baseData['name']

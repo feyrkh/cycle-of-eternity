@@ -34,8 +34,6 @@ func update_rect_size():
 	#print('grid.x=', decreeOptionsGrid.rect_global_position.x, '; popup.x=',  rect_global_position.x, '; grid.size.x=', decreeOptionsGrid.rect_size.x)
 	#visible = true
 	update_rect_position()
-	
-
 
 func _on_MsgPopup_about_to_show():
 	update_rect_size()

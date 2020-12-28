@@ -4,6 +4,7 @@ onready var leftOrganizer:Organizer = find_node('Organizer')
 onready var rightOrganizer:Organizer = find_node('Organizer2')
 onready var textInterfaceSplit:VSplitContainer = find_node('VSplitContainer')
 onready var timePassContainer = find_node('TimePassContainer')
+onready var timePassButton = find_node('TimePassButton')
 onready var controlsContainer = find_node('ControlsContainer')
 
 var folderScene = load('res://ui/organizer/OrganizerFolder.tscn')
@@ -16,11 +17,25 @@ var lastPopup
 func _ready():
 	textInterface = $CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE
 	Event.textInterface = textInterface
+#	Conversation.connect("conversation_started", leftOrganizer, 'disable')
+#	Conversation.connect("conversation_started", rightOrganizer, 'disable')
+#	Conversation.connect("conversation_ended", leftOrganizer, 'reenable')
+#	Conversation.connect("conversation_ended", rightOrganizer, 'reenable')
+#	Event.textInterface.connect('state_change', leftOrganizer, 'disable_on_conversation')
+#	Event.textInterface.connect('state_change', rightOrganizer, 'disable_on_conversation')
+#	Event.textInterface.connect('state_change', timePassButton, 'disable_on_conversation')
+#	Event.textInterface.connect('buff_end', leftOrganizer, 'reenable')
+#	Event.textInterface.connect('buff_end', rightOrganizer, 'reenable')
+#	Event.textInterface.connect('buff_end', timePassButton, 'reenable')
+#	Event.textInterface.connect('buff_cleared', leftOrganizer, 'reenable')
+#	Event.textInterface.connect('buff_cleared', rightOrganizer, 'reenable')
+#	Event.textInterface.connect('buff_cleared', timePassButton, 'reenable')
 	Event.connect("show_character", self, 'on_show_character')
 	Event.connect("hide_character", self, 'on_hide_character')
 	Event.connect("msg_popup", self, 'on_msg_popup')
 	Event.connect('new_scene_loaded', self, 'on_new_scene_loaded')
 	Event.connect("pass_time", self, 'on_pass_time')
+
 	_on_DragSurface_resized()
 	_on_TextBoxContainer_resized()
 	GameState.UI = self
@@ -44,7 +59,7 @@ func on_new_scene_loaded(newScene):
 	pass
 
 func _on_TextBoxContainer_resized():
-	$CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/Blinker.position = $CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer.rect_size - $CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/Blinker.get_rect().size - Vector2(5,5)
+	$CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/Blinker.position = $CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer.rect_size - Vector2(0, $CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer.rect_size.y) - $CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/Blinker.get_rect().size - Vector2(10,10)
 
 func _on_DragSurface_resized():
 	$CanvasLayer/Character.rect_global_position = $CanvasLayer/HBoxContainer/VSplitContainer/DragSurface.rect_global_position
@@ -85,6 +100,10 @@ func load_organizer(organizerName, organizer, skipSave=false):
 		var oldData = organizer.save()
 		GameState.add_organizer(organizer.organizerDataName, oldData)
 	var organizerData = GameState.get_organizer_data(organizerName)
+	if !organizerData:
+		organizerData = OrganizerData.new()
+		organizerData.name = organizerName
+		GameState.add_organizer(organizerName, organizerData)
 	if organizerData:
 		organizer.refresh_organizer_data(organizerData)
 
@@ -118,12 +137,22 @@ func deserialize_text_interface(serializedTextInterface):
 	textInterface.reset()
 #	textInterface.refresh_settings(s)
 
+func call_attention_left_organizer(entryId:String):
+	var target = leftOrganizer.get_entry_by_id(entryId)
+	if target: call_attention_from_right(target)
+
+func call_attention_right_organizer(entryId:String):
+	var target = rightOrganizer.get_entry_by_id(entryId)
+	if target: call_attention_from_left(target)
+
 func call_attention_from_left(target:Control):
 	var pointer = load("res://ui/CallAttention.tscn").instance()
+	pointer.target = target
 	add_popup(pointer)
 	pointer.call_attention_from_left(target)
 
 func call_attention_from_right(target:Control):
 	var pointer = load("res://ui/CallAttention.tscn").instance()
+	pointer.target = target
 	add_popup(pointer)
 	pointer.call_attention_from_right(target)

@@ -1,5 +1,8 @@
 extends Object
 
+signal conversation_started()
+signal conversation_ended()
+
 var characters={}
 var buffer = []
 
@@ -11,10 +14,13 @@ func reset():
 	run_speaking(null)
 
 func run():
+	emit_signal("conversation_started")
 	while buffer.size() > 0:
 		var entry = buffer.pop_front()
 		match entry[0]:
-			'page': yield(run_page(entry[1]), 'completed')
+			'page':
+				var res = run_page(entry[1]) 
+				if res: yield(res, 'completed')
 			'text': yield(run_text(entry[1]), 'completed')
 			'speaking': run_speaking(entry[1])
 			'clear': run_clear()
@@ -23,6 +29,7 @@ func run():
 			'yieldCmd': yield(run_yieldCmd(entry[1], entry[2], entry[3]), 'completed')
 			'input': yield(run_input(entry[1], entry[2], entry[3]), 'completed')
 			_: printerr('Unexpected conversation command: ', entry[0], ' in entry: ', entry)
+	emit_signal("conversation_ended")
 
 
 func character(name, displayName, imgPath):
@@ -47,6 +54,7 @@ func run_page(text):
 	if buffer.size() > 0:
 		Event.textInterface.buff_break()
 		yield(Event.textInterface, 'buff_end')
+	return null
 	
 func text(text):
 	buffer.append(['text', text])

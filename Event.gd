@@ -16,6 +16,10 @@ signal hide_character # () - hide any shown characters
 signal msg_popup(msg, sourceNode) # pop up a scrollable text message
 
 signal pass_time(amt)
+signal place_item(itemShadow, itemData, sourceNode) # place an item into a location
+signal cancel_place_item() # cancelled placement of an item
+signal finalize_place_item(position, scale, rotation, itemData, sourceNode)
+signal restore_item_placement(itemData, hover) # on reloading a scene, add a previously placed item back into the correct layer
 
 var textInterface:TextInterface
 

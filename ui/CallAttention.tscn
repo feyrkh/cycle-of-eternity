@@ -11,6 +11,18 @@ var targetOffset:Vector2
 var selfOffset:Vector2
 var bounceOffset:Vector2
 
+func _ready():
+	Event.connect(\"pass_time\", self, 'hide_myself')
+	Event.connect(\"new_scene_loaded\", self, 'hide_myself')
+	if target and target.has_signal('entry_clicked'): 
+		target.connect('entry_clicked', self, 'hide_myself_noarg')
+
+func hide_myself_noarg():
+	hide_myself(null)
+
+func hide_myself(dummyArg):
+	visible = false
+
 func call_attention_from_left(c:Control, t:float = 8):
 	target = c
 	timer = t

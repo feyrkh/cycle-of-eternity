@@ -1,5 +1,5 @@
 {
-  "name": "Hire workers",
+  "name": "Raise work crew",
   "t": "Workers are required! Send {workers} to {schoolName}. A {giftSize} gift will be provided in return.",
   "in": {"laborAdmin":2},
   "c": {
@@ -27,7 +27,7 @@
         {
           "l": "3",
           "t": "three work crews",
-	  "in": {"laborAdmin":3},
+	  "in": {"laborAdmin":4},
           "out": {
             "workCrew": 3,
             "villageDiplomacy": -65

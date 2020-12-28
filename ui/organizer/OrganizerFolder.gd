@@ -75,7 +75,7 @@ func is_organizer_entry(): return true
 func get_label_text(): return label.text
 
 func get_save_data(path):
-	var saveData = OrganizerDataEntry.build(null, get_label_text(), path, data, get_scene_name(), entryFlags)
+	var saveData = OrganizerDataEntry.build(id, get_label_text(), path, data, get_scene_name(), entryFlags)
 	return saveData
 
 func get_scene_name():
@@ -135,7 +135,7 @@ func _on_Label_pressed():
 	toggle_folder()
 
 func toggle_folder():
-	print('toggling folder')
+	#print('toggling folder')
 	if get_is_open(): set_is_open(false)
 	else: set_is_open(true)
 	update_contents()

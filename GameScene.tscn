@@ -8,4 +8,8 @@ script = ExtResource( 2 )
 
 [node name="CurScene" type="Node2D" parent="."]
 
+[node name="PlacedItems" type="YSort" parent="."]
+
+[node name="HoverItems" type="Node2D" parent="."]
+
 [node name="UI" parent="." instance=ExtResource( 1 )]

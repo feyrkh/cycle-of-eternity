@@ -167,7 +167,8 @@ size_flags_vertical = 3
 FONT = SubResource( 1 )
 
 [node name="Blinker" type="Sprite" parent="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer"]
-position = Vector2( 1282.74, 184.978 )
+position = Vector2( 1276.43, -31.9733 )
+scale = Vector2( 1.5, 1.5 )
 texture = ExtResource( 5 )
 centered = false
 

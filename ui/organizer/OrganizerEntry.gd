@@ -29,6 +29,20 @@ func _ready():
 	label.toggle_mode = get_is_toggle()
 	if get_no_edit(): editNameButton.visible = false
 	if get_is_unread(): set_is_unread(true) # trigger visual indicators
+	Event.connect("finalize_place_item", self, 'on_finalize_place_item')
+
+func on_finalize_place_item(position, scale, rotation, itemData, sourceNode):
+	if sourceNode == self:
+		var placedCmd = itemData.get('placedCmd')
+		itemData['cmd'] = placedCmd
+		itemData.erase('placedCmd')
+		itemData['pos'] = position
+		itemData['posX'] = position.x
+		itemData['posY'] = position.y
+		itemData['scale'] = scale
+		itemData['scaleX'] = scale.x
+		itemData['scaleY'] = scale.y
+		itemData['rot'] = rotation
 
 func set_data(d):
 	data = d

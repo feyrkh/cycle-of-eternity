@@ -58,16 +58,18 @@ func on_input_player_name(playerName):
 func direct_to_office():
 	
 	var mainOrg = load("res://ui/organizer/OrganizerData.gd").new()
-	mainOrg.add_entry('Settings^noDelete^noDrag^noEdit', null, null, 'OrganizerFolder')
-	mainOrg.add_entry('Settings/Quicksave^noDelete^noDrag^noEdit', {'cmd':'quicksave'}, 'quicksave')
-	mainOrg.add_entry('Settings/Quickload^noDelete^noDrag^noEdit', {'cmd':'quickload'}, 'quickload')
-	mainOrg.add_entry('Locations^noEdit^isOpen^noDelete', {}, null, 'OrganizerFolder')
-	mainOrg.add_entry('Locations/Sacred School^noEdit^isOpen^noDelete', {}, null, 'OrganizerFolder')
-	mainOrg.add_entry('Locations/Sacred School/'+'{playerName}\'s Office^noEdit^noDelete^isUnread'.format(GameState.settings), 
-		 {'cmd':'scene', 'scene':'office'}, 'gotoOffice')
+	mainOrg.add_folder('Settings^noDelete^noDrag^noEdit', 'settings')
+	mainOrg.add_entry('Quicksave^noDelete^noDrag^noEdit', {'cmd':'quicksave'}, 'quicksave', 'settings')
+	mainOrg.add_entry('Quickload^noDelete^noDrag^noEdit', {'cmd':'quickload'}, 'quickload', 'settings')
+	mainOrg.add_folder('New Arrivals^noEdit^noDelete', 'new')
+	mainOrg.add_folder('Locations^noEdit^isOpen^noDelete', 'locations')
+	mainOrg.add_folder('Sacred School^noEdit^isOpen^noDelete', 'sacredSchool', 'locations')
+	mainOrg.add_entry('{playerName}\'s Office^noEdit^noDelete^isUnread'.format(GameState.settings), 
+		 {'cmd':'scene', 'scene':'office', 'organizerName':'office'}, 'gotoOffice', 'sacredSchool')
 	
 	GameState.add_organizer('main', mainOrg)
-	UI.leftOrganizer.refresh_organizer_data(GameState.get_organizer_data('main'))
+	UI.load_left_organizer('main', true)
+#	UI.leftOrganizer.refresh_organizer_data(GameState.get_organizer_data('main'))
 	UI.leftOrganizer.visible = true
 	yield(get_tree(), 'idle_frame')
 	var officeItem = UI.leftOrganizer.get_entry_by_id('gotoOffice')

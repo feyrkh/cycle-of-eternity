@@ -44,10 +44,10 @@ func _ready():
 func update_results():
 	Util.clear_children(decreeResultsGrid)
 	Util.clear_children(decreeInputsGrid)
-	render_resource_grid(decreeResultsGrid, decreeResultsLabel, decreeData.get_selected_option_outputs())
-	render_resource_grid(decreeInputsGrid, decreeInputsLabel, decreeData.get_selected_option_inputs())
+	render_resource_grid(decreeResultsGrid, decreeResultsLabel, decreeData.get_selected_option_outputs(), null)
+	render_resource_grid(decreeInputsGrid, decreeInputsLabel, decreeData.get_selected_option_inputs(), decreeData.get_applied_option_inputs())
 	
-func render_resource_grid(grid:GridContainer, sectionLabel:Label, results:Dictionary):
+func render_resource_grid(grid:GridContainer, sectionLabel:Label, results:Dictionary, appliedResources):
 	if results.size() > 0: 
 		grid.visible = true
 		sectionLabel.visible = true
@@ -67,7 +67,10 @@ func render_resource_grid(grid:GridContainer, sectionLabel:Label, results:Dictio
 		label.set_text(k+'    ')
 		var description = GameState.get_resource_description(renamedToOriginal[k])
 		if description: label.hint_tooltip = description
-		value.set_text(GameState.get_resource_level(renamedToOriginal[k], v))
+		var amtText = GameState.get_resource_level(renamedToOriginal[k], v)
+		if appliedResources != null:
+			amtText = str(appliedResources.get(renamedToOriginal[k], '0')) + '/' + amtText
+		value.set_text(amtText)
 		grid.add_child(label)
 		grid.add_child(value)
 
@@ -84,7 +87,10 @@ func update_rect_size():
 		decreeOptionsLabel.visible = true
 		decreeOptionsGrid.visible = true
 	yield(get_tree(), 'idle_frame')
-	self.rect_size.x = decreeOptionsGrid.rect_global_position.x - rect_global_position.x + decreeOptionsGrid.rect_size.x+6
+	var optionsGridSize = decreeOptionsGrid.rect_global_position.x - rect_global_position.x + decreeOptionsGrid.rect_size.x+6
+	var inputsGridSize = decreeInputsGrid.rect_global_position.x - rect_global_position.x + decreeInputsGrid.rect_size.x+6
+	var resultsGridSize = decreeResultsGrid.rect_global_position.x - rect_global_position.x + decreeResultsGrid.rect_size.x+6
+	self.rect_size.x = max(resultsGridSize, max(optionsGridSize, inputsGridSize))
 	#print('grid.x=', decreeOptionsGrid.rect_global_position.x, '; popup.x=',  rect_global_position.x, '; grid.size.x=', decreeOptionsGrid.rect_size.x)
 	#visible = true
 	update_rect_position()

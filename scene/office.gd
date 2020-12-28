@@ -4,6 +4,10 @@ extends LocationScene
 func setup_base():
 	.setup_base()
 	UI.load_right_organizer('office')
+	Event.connect("pass_time", self, "on_pass_time")
+	Event.connect("finalize_place_item", self, "on_finalize_place_item")
+	Event.connect("place_item", self, "on_place_item")
+	Event.connect("cancel_place_item", self, "on_cancel_place_item")
 
 # Any setup commands for the room if there is no active quest that's overriding things - 
 func setup_default():
@@ -15,6 +19,9 @@ func setup_quest()->bool:
 		Quest.Q_TUTORIAL_OFFICE: 
 			tutorial_office_intro()
 			return true
+		Quest.Q_TUTORIAL_PLACE_DESK: 
+			tutorial_place_desk()
+			return true
 		Quest.Q_TUTORIAL_FIRST_DECREE: 
 			tutorial_first_decree()
 			return true
@@ -24,42 +31,98 @@ func setup_quest()->bool:
 		Quest.Q_TUTORIAL_PASS_TIME:
 			tutorial_pass_time()
 			return true
+		Quest.Q_TUTORIAL_BUILD_TRAINING:
+			tutorial_build_training_hall()
+			return true
 	return false
 
+
+func on_pass_time(timeAmt):
+	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_PASS_TIME:
+		Conversation.clear()
+		Conversation.run()
+		var workorder = GameState._organizers['office'].get_entry_by_id('tutorialFirstWorkOrder')
+		if !workorder or workorder.get('data').projectComplete: # player passed time and the workorder is completed, now we should have at least one work crew; now we need to create a training hall
+			GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_BUILD_TRAINING
+			setup_construction_decrees()
+			setup_quest()
+
+func on_place_item(itemShadow, itemData, sourceNode):
+	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
+		Conversation.clear()
+		Conversation.speaking(null)
+		Conversation.text("Placing items: resize with mouse wheel, flip with middle mouse button, cancel with right-click, confirm placement with left-click.")
+		Conversation.run()
+
+
+func on_finalize_place_item(position, scale, rotation, itemData, sourceNode):
+	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
+		Conversation.clear()
+		Conversation.run()
+		setup_first_decree()
+
+func on_cancel_place_item():
+	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
+		Conversation.clear()
+		Conversation.run()
+
+
 func tutorial_office_intro():
-	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_OFFICE:
+	UI.leftOrganizer.visible = true
+	UI.rightOrganizer.visible = false
+	UI.controlsContainer.visible = false
+	UI.timePassContainer.visible = false
+
+	var officeOrg = load("res://ui/organizer/OrganizerData.gd").new()
+	officeOrg.add_folder('Outbox^noEdit^isOpen^noDelete', 'outbox')
+	officeOrg.add_folder('Inbox^noEdit', 'inbox')
+	officeOrg.add_folder('Furniture^isOpen', 'furniture')
+	officeOrg.add_entry("{playerName}'s desk^noDelete^isUnread".format(GameState.settings), 'res://data/producer/office_desk.json', 'office_desk', 'furniture')
+	GameState.add_organizer('office', officeOrg)
+	UI.rightOrganizer.refresh_organizer_data(GameState.get_organizer_data('office'))
+	UI.rightOrganizer.visible = true
+	yield(get_tree(), "idle_frame")
+	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_PLACE_DESK
+	setup_quest()
+
+func tutorial_place_desk():
+	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK:
 		UI.leftOrganizer.visible = true
-		UI.rightOrganizer.visible = false
+		UI.rightOrganizer.visible = true
 		UI.controlsContainer.visible = false
 		UI.timePassContainer.visible = false
 		var c = Conversation
 		c.speaking('helper')
 		c.text("""
-This will be your office, {playerName}. From here you will administer the new school of the sacred arts - making personnel decisions, reviewing resource allocations, sending decrees, and receiving updates from your subordinates.
+This will be your office, {playerName}. From here you will administer the new school of the sacred science - making personnel decisions, reviewing resource allocations, sending decrees, and receiving updates from your subordinates.
 
-I have taken the liberty of drawing up your first decree - the drafting of a work party from the nearby villages. With these workers we can get started on the infrastructure we need to support our studies into the sacred arts.
-
-Please take a look at your outbox, where you will find the decree. Any decrees in your outbox at the end of the week will be carried out!'
+If you take a look to your right, I've procured a desk for your paperwork. If you'll just point out where you would like it, I will see to it immediately!
 """)
-		c.cmd(self, 'setup_first_decree')
+		c.speaking(null)
+		UI.call_attention_right_organizer('office_desk')
 		yield(c.run(), 'completed')
-		GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_FIRST_DECREE
-		setup_quest()
 
 func setup_first_decree():
 	var decreeData = load("res://decree/DecreeData.gd").new()
 	decreeData.init_from_file("res://data/decree/hireWorkCrew.json")
-	var officeOrg = load("res://ui/organizer/OrganizerData.gd").new()
-	officeOrg.add_entry('Outbox^noEdit^isOpen^noDelete/Raise Work Crew^isUnread', decreeData, 'tutorialFirstWorkOrder')
-	officeOrg.add_entry('Inbox^noEdit/From the Emperor/Your mission^isUnread', {'cmd':'msg', 'msg':"res://data/conv/emperor_your_mission.txt"})
-	officeOrg.add_entry('Inbox^noEdit/History/On Sacred Science^isUnread', {'cmd':'msg', 'msg':'res://data/conv/on_sacred_science.txt'})
-	officeOrg.add_entry("{playerName}'s desk^noDelete^isUnread".format(GameState.settings), 'res://data/producer/office_desk.json')
-	GameState.add_organizer('office', officeOrg)
+	var officeOrg = GameState.get_organizer_data('office')
+	officeOrg.add_entry('Raise Work Crew^isUnread', decreeData, 'tutorialFirstWorkOrder', 'outbox')
+	officeOrg.add_entry('From the Emperor/Your mission^isUnread', {'cmd':'msg', 'msg':"res://data/conv/emperor_your_mission.txt"}, null, 'inbox')
+	officeOrg.add_entry('Library/History of the Shadow Aegis^isUnread', {'cmd':'msg', 'msg':'res://data/conv/shadow_aegis.txt'}, null, 'inbox')
+	officeOrg.add_entry('Library/Sacred Science/On Souls^isUnread', {'cmd':'msg', 'msg':'res://data/conv/sacred_science_1.txt'}, null, 'inbox')
+	officeOrg.add_entry('Library/Sacred Science/On Essence^isUnread', {'cmd':'msg', 'msg':'res://data/conv/sacred_science_2.txt'}, null, 'inbox')
+	officeOrg.add_entry('Library/Sacred Science/Exemplars^isUnread', {'cmd':'msg', 'msg':'res://data/conv/sacred_science_3.txt'}, null, 'inbox')
+	officeOrg.add_entry('Library/Sacred Science/Condensing Essence^isUnread', {'cmd':'msg', 'msg':'res://data/conv/sacred_science_4.txt'}, null, 'inbox')
+	officeOrg.add_entry('Library/Sacred Science/Storing Aura^isUnread', {'cmd':'msg', 'msg':'res://data/conv/sacred_science_5.txt'}, null, 'inbox')
+	officeOrg.add_entry('Library/Sacred Science/Using Aura^isUnread', {'cmd':'msg', 'msg':'res://data/conv/sacred_science_6.txt'}, null, 'inbox')
+	officeOrg.add_entry('Library/Sacred Science/Advancement^isUnread', {'cmd':'msg', 'msg':'res://data/conv/sacred_science_7.txt'}, null, 'inbox')
 	UI.rightOrganizer.refresh_organizer_data(GameState.get_organizer_data('office'))
 	UI.rightOrganizer.visible = true
 	UI.rightOrganizer.get_entry_by_id('tutorialFirstWorkOrder').set_no_drag(true)
 	UI.rightOrganizer.get_entry_by_id('tutorialFirstWorkOrder').set_no_delete(true)
 	yield(get_tree(), 'idle_frame')
+	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_FIRST_DECREE
+	setup_quest()
 	
 
 func tutorial_first_decree():
@@ -70,11 +133,12 @@ func tutorial_first_decree():
 	var c = Conversation
 	c.clear()
 	c.speaking('helper')
-	c.text("""
-{playerName}, please review the workorder in your outbox and make any changes as you see fit!
+	c.page("""
+I have taken the liberty of drawing up your first decree - the drafting of a work party from the nearby villages. With these workers we can get started on the infrastructure we need to support our studies into the sacred arts.
+
+{playerName}, please review the workorder in your outbox and make any changes as you see fit! Any decrees in your outbox at the end of the week will be carried out!'
 """)
 	var workorder = UI.rightOrganizer.get_entry_by_id('tutorialFirstWorkOrder')
-	workorder.call_attention()
 	UI.call_attention_from_left(workorder)
 	workorder.connect('entry_clicked', self, 'first_decree_clicked')
 	c.run()
@@ -138,11 +202,33 @@ Well, no sense in waiting - let's get started!
 	c.text("Remember, although you are of course free to organize your documents as you see fit, you must leave any decrees you want processed in your Outbox before the end of the day!")
 	yield(c.run(), 'completed')
 	UI.call_attention_from_left(UI.timePassContainer)
-	Event.connect("pass_time", self, "on_pass_time")
 
-func on_pass_time(timeAmt):
-	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_PASS_TIME:
-		var workorder = UI.rightOrganizer.get_entry_by_id('tutorialFirstWorkOrder')
-		if !workorder: # player passed time and the workorder is completed, now we should have at least one work crew
-			Event.disconnect("pass_time", self, "on_pass_time")
-			
+func setup_construction_decrees():
+	var org = GameState._organizers['main']
+	org.add_folder('Decrees^noDelete^isOpen', 'decreeGen')
+	var decreeGen = {'cmd':'decreeGen', 'decreeFile':"res://data/decree/buildTrainingHall.json", 'org':'office', 'folderId':'outbox'}
+	org.add_entry('Build training hall^isUnread^noEdit^noDelete', decreeGen, 'decree_buildTrainingHall', 'decreeGen')
+	decreeGen = {'cmd':'decreeGen', 'decreeFile':"res://data/decree/hireWorkCrew.json", 'org':'office', 'folderId':'outbox'}
+	org.add_entry('Hire work crew^noEdit^noDelete', decreeGen, 'decree_hireWorkCrew', 'decreeGen')
+	GameState.refresh_organizers()
+
+func tutorial_build_training_hall():
+	UI.leftOrganizer.visible = true
+	UI.rightOrganizer.visible = true
+	UI.timePassContainer.visible = true
+	UI.controlsContainer.visible = false
+	var c = Conversation
+	c.clear()
+	c.speaking('helper')
+	UI.call_attention_from_right(UI.leftOrganizer.get_entry_by_id('new'))
+	c.page("""
+Now that you have some workers we can begin construction of a training hall. When that is finished we'll be able to start a training regimen.
+While I hope you find me worthy to be the first sacred scientist to start their training, you may also search for other candidates if you wish.
+I will return when the training hall is complete.""")
+	c.clear()
+	c.speaking(null)
+	yield(c.run(), "completed")
+	UI.call_attention_left_organizer('decree_buildTrainingHall')
+	
+	
+	

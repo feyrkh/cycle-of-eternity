@@ -2,8 +2,17 @@ extends Resource
 class_name OrganizerData
 
 var name
-var entries = []
+var entries = [] setget set_entries
+var entryIds = {}
 var organizer
+
+func set_entries(val):
+	entryIds = {}
+	if !val: entries = []
+	entries = val
+	for entry in val:
+		if entry.get('id'):
+			entryIds[entry.get('id')] = entry
 
 func serialize():
 	var serializedEntries = Array()
@@ -44,19 +53,23 @@ func deserialize(dict:Dictionary)->OrganizerData:
 	
 func get_entry_by_path(entryPath):
 	for entry in entries:
-		if entryPath == entry.path: return entry
+		if entryPath == '/'+PoolStringArray(entry.path).join('/')+entry.name: return entry
 	return null
 
-func remove_entry_by_path(entryPath):
-	var entry = get_entry_by_path(entryPath)
-	if entry: entries.remove(entry)
+func get_entry_by_id(entryId):
+	return entryIds.get(entryId)
 
-func add_entry(path:String, data, id=null, entrySceneName:String='OrganizerEntry', position=-1):
+func add_entry(path:String, data, id=null, folderId=null, entrySceneName:String='OrganizerEntry', position=-1):
 	if data && data is String && data.begins_with('res:'):
 		data = Util.load_json_file(data)
 	if data == null: data = {}
 	var pathChunks:Array = path.split('/', false)
 	var name = pathChunks.pop_back()
+	pathChunks = Array(pathChunks) # it's actually a PoolStringArray at this point, which causes problems for concating later
+	if folderId != null: 
+		var fldr = entryIds.get(folderId)
+		if fldr: 
+			pathChunks = Array(fldr.get('path', [])) + [fldr.get('name')] + pathChunks
 	var nameChunks = name.split('^', false)
 	name = nameChunks[0]
 	nameChunks.remove(0)
@@ -64,20 +77,41 @@ func add_entry(path:String, data, id=null, entrySceneName:String='OrganizerEntry
 	var entry = OrganizerDataEntry.build(id, name, pathChunks, data, entrySceneName, entryFlags)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 	if position < 0 or position > entries.size(): position = entries.size()
 	entries.insert(position, entry)
+	if id: entryIds[id] = entry
 
-func add_folder(path:String, data:Dictionary):
+func add_folder(path:String, id=null, folderId=null, data:Dictionary={}):
+	if get_entry_by_id(id): return
 	var pathChunks:Array = path.split('/', false)
+	if folderId != null: 
+		var fldr = entryIds.get(folderId)
+		if fldr: 
+			pathChunks = fldr.get('path', []) + [fldr.get('name')] + pathChunks
 	var curPathChunks = []
+	var finalPathChunk = pathChunks.pop_back()
 	for pathChunk in pathChunks:
-		var curPath = curPathChunks.join('/')+'/'+pathChunk
+		var pathConfig = pathChunk.split('^', false)
+		var n = pathConfig[0]
+		pathConfig.remove(0)
+		var curPath = (PoolStringArray(curPathChunks).join('/'))+'/'+n
 		if get_entry_by_path(curPath) == null:
-			var pathConfig = pathChunk.split('^', false)
-			var name = pathConfig[0]
-			pathConfig.remove(0)
 			var entryFlags = Util.build_entry_flags(pathConfig)
-			var entry = OrganizerDataEntry.build(null, pathChunk, curPathChunks, data, 'OrganizerFolder', entryFlags)
+			var entry = OrganizerDataEntry.build(null, n, curPathChunks.duplicate(), data, 'OrganizerFolder', entryFlags)
 			entries.append(entry)
-		curPathChunks.append(pathChunk)
+		curPathChunks.append(n)
+	# Build the final folder, which is basically the same as above but has an ID...
+	#TODO: Refactor this so it's a recursive buildup instead of copy/paste...should be easy, but I can't focus right now thanks to dogs and just want to move on -_-
+	var pathConfig = finalPathChunk.split('^', false)
+	var n = pathConfig[0]
+	pathConfig.remove(0)
+	var curPath = (PoolStringArray(curPathChunks).join('/'))+'/'+n
+	var entryFlags = Util.build_entry_flags(pathConfig)
+	var entry = OrganizerDataEntry.build(id, n, curPathChunks.duplicate(), data, 'OrganizerFolder', entryFlags)
+	if id: 
+		entryIds[id] = entry
+	entries.append(entry)
+	
+	
+	
 	
 func collect_projects():
 	var results = []
@@ -90,6 +124,7 @@ func collect_projects():
 func collect_produced_resources():
 	var results = {}
 	for entry in entries:
+		if !entry.get('data',{}).get('active'): continue
 		var products = entry.get('data',{}).get('produce')
 		if products and products.size() > 0:
 			for resource in products.keys():
