@@ -4,6 +4,7 @@ const DecreeOption = preload("res://decree/DecreeOption.tscn")
 
 var decreeData
 var decreeOrganizerNode
+var decreeInProgress = false
 
 onready var decreeOptionsGrid:GridContainer = find_node('DecreeOptions')
 onready var decreeResultsGrid:GridContainer = find_node('DecreeResults')
@@ -33,9 +34,10 @@ func _ready():
 			{'l':'enormous', 'in':{'coin':-500},'out':{'villageDiplomacy':70}},
 		])
 		decreeData.decreeTextTemplate = 'Workers are required! Send {workers} work crews to the {schoolName}. A {giftSize} gift will be provided in return.\n\n---\n\nCoins: {coin}\nVillage diplomacy change: {diplomacy}'
+	decreeInProgress = decreeData.get_applied_option_inputs().size() > 0
 	var choiceData = decreeData.get_choice_data()
 	for choiceId in choiceData.keys():
-		add_choice(choiceId, choiceData[choiceId]['l'], choiceData[choiceId]['o'])
+		add_choice(choiceId, choiceData[choiceId]['l'], choiceData[choiceId]['o'], !decreeInProgress)
 	update_decree_text()
 	update_results()
 	##visible = false
@@ -96,7 +98,7 @@ func update_rect_size():
 	update_rect_position()
 	
 # choice format: [{'l':'Option 1', 'v':'1'}, {'l':'Option 2', 'v':'2'}, ...]
-func add_choice(id:String, label:String, options:Array):
+func add_choice(id:String, label:String, options:Array, editable:bool):
 	var newLabel:Label = Label.new()
 	newLabel.text = label+'    '
 	decreeOptionsGrid.add_child(newLabel)
@@ -112,7 +114,10 @@ func add_choice(id:String, label:String, options:Array):
 		if value == null: value = labelText
 		optionBtn.add_item(labelText)
 	optionBtn.select(decreeData.get_selected_option(id).get('i', 0))
-	optionBtn.connect("option_changed", self, 'option_changed')
+	if editable:
+		optionBtn.connect("option_changed", self, 'option_changed')
+	else:
+		optionBtn.disabled = true
 
 func option_changed(optionId, optionIdx):
 	decreeData.set_selected_option(optionId, optionIdx)

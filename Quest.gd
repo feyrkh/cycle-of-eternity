@@ -8,3 +8,4 @@ const Q_TUTORIAL_FIRST_DECREE='2' # first decree has been drafted
 const Q_TUTORIAL_DISCARD_RUBBISH='3' # asked to discard trash
 const Q_TUTORIAL_PASS_TIME='5' # asked to pass time
 const Q_TUTORIAL_BUILD_TRAINING='6' # build a training hall
+const Q_TUTORIAL_TRAIN_DISCIPLE='7'

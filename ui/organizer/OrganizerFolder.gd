@@ -14,6 +14,7 @@ var entryFlags:int = 0
 
 var editBox:OrganizerLabelEdit
 var containingOrganizer
+func set_containing_organizer(org): containingOrganizer = org
 
 const noDrag = 1<<0
 const isOpen = 1<<1

@@ -82,7 +82,7 @@ func refresh_organizer_data(data):
 			entryIds[entry.id] = item
 			item.id = entry.id
 		target.add_item_bottom(item)
-		if !(entryData is Dictionary) and entryData.has_method('get_percent_complete'):
+		if (!(entryData is Dictionary) and entryData.has_method('get_percent_complete')) or ((entryData is Dictionary) and !entryData.get('active', true)):
 			var progressBar = ProgressBar.instance()
 			item.add_child(progressBar)
 			item.move_child(progressBar, 0)
@@ -262,7 +262,7 @@ func update_drag_indicator():
 
 func connect_drag_events_for_tree(entry):
 	if entry is Control and !entry.name.ends_with('Target'):
-		if entry.has_meta('containingOrganizer'): entry.containingOrganizer = self
+		if entry.has_method('set_containing_organizer'): entry.set_containing_organizer(self)
 #		print('setting up drag for ', entry)
 		entry.set_drag_forwarding(self)
 	for child in entry.get_children():

@@ -1,7 +1,6 @@
 {
   "name": "Build training hall",
-  "t": "Build a dojo!",
+  "t": "A training hall shall be constructed, that our disciples might train their bodies to the level required of exemplars.",
   "in": {"laborAdmin":10, "laborUnskilled":40},
-  "c": {
-  }
+  "out": {"facility_trainingHall":1}
 }

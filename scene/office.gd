@@ -46,6 +46,11 @@ func on_pass_time(timeAmt):
 			GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_BUILD_TRAINING
 			setup_construction_decrees()
 			setup_quest()
+	elif GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_BUILD_TRAINING:
+		if GameState.settings.get('id_trainingHall', 0) >= 1: 
+			GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_TRAIN_DISCIPLE
+			setup_disciple_decrees()
+			setup_quest()
 
 func on_place_item(itemShadow, itemData, sourceNode):
 	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
@@ -206,9 +211,9 @@ Well, no sense in waiting - let's get started!
 func setup_construction_decrees():
 	var org = GameState._organizers['main']
 	org.add_folder('Decrees^noDelete^isOpen', 'decreeGen')
-	var decreeGen = {'cmd':'decreeGen', 'decreeFile':"res://data/decree/buildTrainingHall.json", 'org':'office', 'folderId':'outbox'}
+	var decreeGen = {'cmd':'decreeGen', 'decreeFile':"res://data/decree/buildTrainingHall.json", 'org':'office', 'folderId':'outbox', 'gotoScene':'office'}
 	org.add_entry('Build training hall^isUnread^noEdit^noDelete', decreeGen, 'decree_buildTrainingHall', 'decreeGen')
-	decreeGen = {'cmd':'decreeGen', 'decreeFile':"res://data/decree/hireWorkCrew.json", 'org':'office', 'folderId':'outbox'}
+	decreeGen = {'cmd':'decreeGen', 'decreeFile':"res://data/decree/hireWorkCrew.json", 'org':'office', 'folderId':'outbox', 'gotoScene':'office'}
 	org.add_entry('Hire work crew^noEdit^noDelete', decreeGen, 'decree_hireWorkCrew', 'decreeGen')
 	GameState.refresh_organizers()
 
@@ -230,5 +235,13 @@ I will return when the training hall is complete.""")
 	yield(c.run(), "completed")
 	UI.call_attention_left_organizer('decree_buildTrainingHall')
 	
-	
+func setup_disciple_decrees():
+	var org = GameState._organizers['main']
+	var decreeGen = {'cmd':'decreeGen', 'decreeFile':"res://data/decree/hireDisciple.json", 'org':'office', 'folderId':'outbox', 'gotoScene':'office'}
+	org.add_entry('Seek disciples^noEdit^noDelete', decreeGen, 'decree_hireDisciple', 'decreeGen')
+	GameState.refresh_organizers()
+
+
+func tutorial_train_disciple():
+	pass
 	

@@ -1,5 +1,7 @@
 extends Node
 
+var foundErrors = false
+
 func validate_all():
 	print("Validating all data files")
 	var startTime = OS.get_system_time_msecs()
@@ -10,7 +12,10 @@ func validate_all():
 func validate_json():
 	print('Validating json...')
 	dir_contents('res://data', '.json', 'check_json_loadable')
-	print('Finished validating json')
+	if !foundErrors:
+		print('Finished validating json - OK!')
+	else:
+		print('!!!ERROR - Finished validating json - ERROR!!!')
 	
 func dir_contents(path, fileSuffix, validationCmd):
 	var dir = Directory.new()
@@ -29,11 +34,14 @@ func dir_contents(path, fileSuffix, validationCmd):
 			file_name = dir.get_next()
 	else:
 		print("An error occurred when trying to access the path.")
+		foundErrors = true
 
 func check_json_loadable(file):
 	var json = Util.load_text_file(file)
 	if json == null: 
 		printerr(file, ": JSON couldn't be loaded - does the file exist?")
+		foundErrors = true
 	var err = validate_json(json)
 	if err:
 		printerr(file, ": JSON couldn't be parsed - is it valid?  (", err, ")")
+		foundErrors = true

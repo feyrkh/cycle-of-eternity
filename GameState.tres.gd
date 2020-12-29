@@ -1,9 +1,6 @@
-[gd_scene load_steps=2 format=2]
+extends Node
 
-[sub_resource type="GDScript" id=1]
-script/source = "extends Node
-
-var OrganizerData = load(\"res://ui/organizer/OrganizerData.gd\")
+var OrganizerData = load("res://ui/organizer/OrganizerData.gd")
 
 var UI
 var curScene = null
@@ -12,7 +9,7 @@ var loadingSaveFile = null # Name of the save file to load at the start of GameS
 
 var settings = {
 	'playerName': 'Master',
-	'schoolName': \"Heaven's Shadow\",
+	'schoolName': "Heaven's Shadow",
 	'helperName': 'Ren Xiu',
 }
 
@@ -21,7 +18,7 @@ var quest = {
 }
 
 var resources = {
-	\"coin\": 500
+	"coin": 500
 }
 
 # Translation from resources (ex: from the results of decrees) into human-friendly names
@@ -29,28 +26,28 @@ var resources = {
 # d: description
 # hide: (should this be hidden from decree results)
 # levels: [[-50, 'extremely low'], [-25, 'very low'], [-10, 'low'], [10, 'neutral'], [25, 'high'], [50, 'very high'], 'extremely high']
-# transient: If true, this resource disappears after time passes - it must be used immediately. For example, \"unskilled labor\" or a temporary weather phenomenon.
-# suffix: optional, added after a numerical count of the resource if present; ex \"suffix\":\"man-day\" will print \"3 man-days\" instead of \"3\" when printing an amount of the resource
-# psuffix: optional, added after a numerical count of the resource if present; normally the \"suffix\" is made plural by adding 's' to the end, but if that's incorrect you can
-#		   provide psuffix to indicate. Ex: \"suffix\":\"vortex\",\"psuffix\":\"vortices\" will result in \"1 vortex\" but \"3 vortices\"
+# transient: If true, this resource disappears after time passes - it must be used immediately. For example, "unskilled labor" or a temporary weather phenomenon.
+# suffix: optional, added after a numerical count of the resource if present; ex "suffix":"man-day" will print "3 man-days" instead of "3" when printing an amount of the resource
+# psuffix: optional, added after a numerical count of the resource if present; normally the "suffix" is made plural by adding 's' to the end, but if that's incorrect you can
+#		   provide psuffix to indicate. Ex: "suffix":"vortex","psuffix":"vortices" will result in "1 vortex" but "3 vortices"
 # entity: optional, if present then this resource represents some entity that will be spawned rather than a numerical value to be incremented. 
 #		org: name of the organizer to spawn the entity into
 #		folderId: id of the folder within the organizer; if not provided or the folder doesn't exist it will just spawn at the bottom of the organizer 
 #		data: path to a JSON file containing the OrganizerDataEntry.data that should be loaded when this resource is received, or a .gd class that will be instantiated instead
-#		idSeries: if provided, adds a new entry like \"id_{idSeries}\" to the global settings, and increments it by 1 every time an entity is created. Mainly for use in nameTemplate and organizerNames
+#		idSeries: if provided, adds a new entry like "id_{idSeries}" to the global settings, and increments it by 1 every time an entity is created. Mainly for use in nameTemplate and organizerNames
 #					when the entity is a location that requires its own location
 var resourceData = {
-	\"coin\": {\"n\":\"jade chips\", \"d\":\"The coin of the common folk. While the Emperor's mandate suffices to requisition anything you truly need, gifts of jade will help avoid ill feelings.\"},
-	\"disciple\": {\"n\":\"disciple\", \"d\":\"A newly recruited disciple\",
-		\"entity\":{\"org\":\"main\", \"folderId\":\"new\", \"data\":\"res://exemplar/Exemplar.gd\", \"idSeries\":\"exemplar\"}},
-	\"facility_trainingHall\": {\"n\":\"training hall\", \"d\":\"A facility for strengthening the body with physical training or combat practice.\", 
-		\"entity\":{\"org\":\"main\", \"folderId\":\"sacredSchool\",\"data\":\"res://data/location/trainingHall.json\", \"idSeries\":\"trainingHall\", \"nameTemplate\":\"Training Hall {id_trainingHall}\"}},
-	\"laborAdmin\": {\"n\":\"bureaucratic labor\", \"d\":\"Work performed by professional bureaucrats and functionaries.\", \"transient\":true, \"suffix\":\"man-day\"},
-	\"laborScribe\": {\"n\":\"scribe labor\", \"d\":\"Work performed by skilled scribes.\", \"transient\":true, \"suffix\":\"man-day\"},
-	\"laborUnskilled\": {\"n\":\"unskilled labor\", \"d\":\"Unskilled labor provided by work crews.\", \"transient\":true, \"suffix\":\"man-day\"},
-	\"workCrew\": {\"n\":\"workers\", \"d\":\"Work crews perform common manual labor that is beneath the station of disciples and examplars - farming, construction, and so forth.\", \"suffix\":\"crew\",
-		\"entity\":{\"org\":\"main\", \"folderId\":\"new\", \"data\":\"res://data/producer/workCrew.json\"} },
-	\"villageDiplomacy\": {\"n\":\"villager reaction\", \"levels\":[[-60, \"infuriated\"], [-30, \"resentful\"], [-15, \"insulted\"], [-5, \"irritated\"], [5, \"neutral\"], [15, \"pleased\"], [30, \"happy\"], [60, \"honored\"], \"ecstatic\"]},
+	"coin": {"n":"jade chips", "d":"The coin of the common folk. While the Emperor's mandate suffices to requisition anything you truly need, gifts of jade will help avoid ill feelings."},
+	"disciple": {"n":"disciple", "d":"A newly recruited disciple",
+		"entity":{"org":"main", "folderId":"new", "data":"res://exemplar/Exemplar.gd", "idSeries":"exemplar"}},
+	"facility_trainingHall": {"n":"training hall", "d":"A facility for strengthening the body with physical training or combat practice.", 
+		"entity":{"org":"main", "folderId":"sacredSchool","data":"res://data/location/trainingHall.json", "idSeries":"trainingHall", "nameTemplate":"Training Hall {id_trainingHall}"}},
+	"laborAdmin": {"n":"bureaucratic labor", "d":"Work performed by professional bureaucrats and functionaries.", "transient":true, "suffix":"man-day"},
+	"laborScribe": {"n":"scribe labor", "d":"Work performed by skilled scribes.", "transient":true, "suffix":"man-day"},
+	"laborUnskilled": {"n":"unskilled labor", "d":"Unskilled labor provided by work crews.", "transient":true, "suffix":"man-day"},
+	"workCrew": {"n":"workers", "d":"Work crews perform common manual labor that is beneath the station of disciples and examplars - farming, construction, and so forth.", "suffix":"crew",
+		"entity":{"org":"main", "folderId":"new", "data":"res://data/producer/workCrew.json"} },
+	"villageDiplomacy": {"n":"villager reaction", "levels":[[-60, "infuriated"], [-30, "resentful"], [-15, "insulted"], [-5, "irritated"], [5, "neutral"], [15, "pleased"], [30, "happy"], [60, "honored"], "ecstatic"]},
 }
 
 var _organizers = {}
@@ -91,12 +88,12 @@ func get_resource_level(resourceId, value):
 	if suffix: value = str(value)+' '+suffix
 	return str(value)
 
-# Returns like: {\"workers\": {amt: 1, f_amt: \"1 work crew\", k: \"numWorkers\"}}
+# Returns like: {"workers": {amt: 1, f_amt: "1 work crew", k: "numWorkers"}}
 # Good for getting the human-friendly sortable keys for displaying resources in alphabetical order
 func get_friendly_resource_map(resourceMap:Dictionary)->Dictionary:
 	var retval = {}
 	for k in resourceMap.keys():
-		retval[get_resource_name(k)] = {\"amt\":resourceMap[k], \"f_amt\": get_resource_level(k, resourceMap[k]), \"k\": k}
+		retval[get_resource_name(k)] = {"amt":resourceMap[k], "f_amt": get_resource_level(k, resourceMap[k]), "k": k}
 	return retval
 
 func reset_transient_resources():
@@ -113,7 +110,7 @@ func add_resource(k, amt, source, opts={}):
 			amt = int(amt)
 			if amt < 1: amt = 0
 			if amt > 10: 
-				printerr(\"Sorry, can't add more than 10 entities of a single type at a time...surely this must have been caused by a bug! type=\", k, \"; amt=\", amt, \"; src=\", source)
+				printerr("Sorry, can't add more than 10 entities of a single type at a time...surely this must have been caused by a bug! type=", k, "; amt=", amt, "; src=", source)
 				amt = 10
 			var org = get_organizer_data(entityData.get('org', 'main'))
 			#var entityCmdJson = Util.load_json_file(entityData.get('data',{}))
@@ -223,14 +220,14 @@ func save_world(saveSlot, serializedWorld):
 	var dir:Directory = Directory.new()
 	dir.make_dir('user://save')
 	var file = File.new()
-	file.open(\"user://save/%s.dat\"%saveSlot, File.WRITE)
+	file.open("user://save/%s.dat"%saveSlot, File.WRITE)
 	file.store_string(serializedWorld)
 	file.close()
 
 func load_world(saveSlot):
 	randomize()
 	var file = File.new()
-	file.open(\"user://save/%s.dat\"%saveSlot, File.READ)
+	file.open("user://save/%s.dat"%saveSlot, File.READ)
 	var content = file.get_as_text()
 	file.close()
 	deserialize_world(content)
@@ -250,7 +247,7 @@ func loadScene(newSceneName:String, newSceneData:Dictionary):
 	curScene = newScene
 	settings['curSceneName'] = newSceneName
 	settings['curSceneSettings'] = newSceneData
-	Event.emit_signal(\"new_scene_loaded\", newScene)
+	Event.emit_signal("new_scene_loaded", newScene)
 
 func get_organizer_data(organizerName:String):
 	if !_organizers.has(organizerName):
@@ -278,12 +275,12 @@ func run_command(cmd, data:Dictionary, sourceNode:Node=null):
 
 func cmd_decree_gen(data:Dictionary, sourceNode):
 	save_organizers()
-	var orgName = data.get('org').format(settings) # assume org is a string, and it might be a string like \"{rightOrganizerName}\" so we can create decrees that target your current location instead of a fixed location
+	var orgName = data.get('org').format(settings) # assume org is a string, and it might be a string like "{rightOrganizerName}" so we can create decrees that target your current location instead of a fixed location
 	var folderId = data.get('folderId') # optional, the ID of the root folder to put this into, if it can be found - ex 'outbox'
 	var entryId = data.get('entryId') # optional, the ID to apply to the new decree...probably need to use a template var for this to be useful
 	if entryId: entryId = entryId.format(settings)
 	var decreeJsonFile = data.get('decreeFile') # JSON file holding the decree we're going to build
-	var decreeData = load(\"res://decree/DecreeData.gd\").new()
+	var decreeData = load("res://decree/DecreeData.gd").new()
 	decreeData.init_from_file(decreeJsonFile)
 	if data.get('gotoScene'): cmd_scene({'scene':data.get('gotoScene')}, sourceNode)
 	var targetOrg = GameState.get_organizer_data(orgName)
@@ -310,23 +307,23 @@ func cmd_item(data:Dictionary, sourceNode):
 	if consumes.size() > 0:
 		var friendlyKeys = friendlyConsumes.keys()
 		friendlyKeys.sort()
-		var consumeNote = \"Last week's consumption:\\n\"
+		var consumeNote = "Last week's consumption:\n"
 		for k in friendlyKeys:
-			consumeNote += \"%s: %s/%s\\n\" % [k, friendlyConsumed.get(k, {}).get(\"amt\",0), friendlyConsumes[k][\"f_amt\"]]
-		msg = msg + '\\n---\\n' + consumeNote
+			consumeNote += "%s: %s/%s\n" % [k, friendlyConsumed.get(k, {}).get("amt",0), friendlyConsumes[k]["f_amt"]]
+		msg = msg + '\n---\n' + consumeNote
 		
 	if produces.size() > 0: 
 		var friendlyKeys = friendlyProduces.keys()
 		friendlyKeys.sort()
-		var productionNote = \"Weekly production:\\n\"
+		var productionNote = "Weekly production:\n"
 		if !data.get('active', true): 
-			productionNote += \"  --(production inactive, insufficent resources consumed!)--\\n\"
+			productionNote += "  --(production inactive, insufficent resources consumed!)--\n"
 		for k in friendlyKeys:
-			productionNote += \"%s: %s\\n\" % [k, friendlyProduces[k][\"f_amt\"]]
-		msg = msg + '\\n---\\n' + productionNote
+			productionNote += "%s: %s\n" % [k, friendlyProduces[k]["f_amt"]]
+		msg = msg + '\n---\n' + productionNote
 	
 	var popupData =  {
-		\"msg\": msg,
+		"msg": msg,
 	}
 	if data.get('img'): popupData['img'] = data.get('img')
 	
@@ -355,13 +352,9 @@ func cmd_quickload():
 # keepText - don't clear any text buffered in the UI
 func cmd_scene(data:Dictionary, sourceNode):
 	if settings.get('curSceneName') == data.get('scene'): 
-		print(\"Not changing scenes, we're already in the right place\")
+		print("Not changing scenes, we're already in the right place")
 		return
 	if sourceNode && data.get('deleteSourceNodeAfterTransition'): sourceNode.queue_free()
 	if !data.get('keepCharacter'): Event.hide_character()
 	if !data.get('keepText'): Event.clear_text()
 	loadScene(data.get('scene'), data)
-"
-
-[node name="GameState" type="Node"]
-script = SubResource( 1 )

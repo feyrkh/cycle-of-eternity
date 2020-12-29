@@ -1,7 +1,6 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://ui/UI.gd" type="Script" id=1]
-[ext_resource path="res://img/people/secretary.png" type="Texture" id=2]
 [ext_resource path="res://ui/BlinkTimer.gd" type="Script" id=3]
 [ext_resource path="res://ui/PopupLayer.gd" type="Script" id=4]
 [ext_resource path="res://img/carat_icon.png" type="Texture" id=5]
@@ -24,13 +23,16 @@ font_data = ExtResource( 6 )
 [sub_resource type="GDScript" id=2]
 script/source = "extends TextureButton
 
-export var degreesPerSec = 5
+export var degreesPerSec = 15
 var waitingOnConversation = false
 var postClickDelay = 0
+var t = 0
 
 func _physics_process(delta):
 	if !disabled:
-		self.set_rotation(self.get_rotation()+deg2rad(degreesPerSec)*delta)
+		t += delta
+		self.set_rotation(deg2rad(sin(t) * degreesPerSec))
+		 #deg2rad(degreesPerSec)*delta)
 	if postClickDelay > 0: 
 		postClickDelay -= delta
 		update_enabled()
@@ -75,12 +77,6 @@ stretch_mode = 6
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="Character2" type="Sprite" parent="CanvasLayer"]
-visible = false
-position = Vector2( 883.771, 707.374 )
-scale = Vector2( 2, 2 )
-texture = ExtResource( 2 )
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer"]
 anchor_right = 1.0

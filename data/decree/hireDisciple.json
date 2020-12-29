@@ -1,0 +1,181 @@
+{
+  "name": "Recruit disciple",
+  "t": "Search the lands for disciples to learn the ways of the sacred science.\n\n{str}{int}{will}\n{numDisciples}",
+  "in": {
+    "laborAdmin": 5
+  },
+  "c": {
+    "numDisciples": {
+      "l": "Number of disciples",
+      "o": [
+        {
+          "l": "1",
+          "t": "Only the finest candidate will be considered.",
+          "out": {
+            "disciple": 1
+          }
+        },
+        {
+          "l": "2",
+          "t": "The top two candidates will be considered.",
+          "in": {
+            "laborAdmin": 10
+          },
+          "out": {
+            "disciple": 2
+          }
+        },
+        {
+          "l": "3",
+          "t": "The top three candidates will be considered.",
+          "in": {
+            "laborAdmin": 20
+          },
+          "out": {
+            "disciple": 3
+          }
+        }
+      ]
+    },
+    "str": {
+      "l": "Physical strength",
+      "o": [
+        {
+          "l": "unimportant",
+          "t": "",
+          "opt": {
+            "strMed": 50,
+            "strStdev": 16.6
+          }
+        },
+        {
+          "l": "important",
+          "t": "Above average physical strength is desired.\n",
+          "opt": {
+            "strMed": 65,
+            "strStdev": 12
+          },
+          "in": {
+            "laborAdmin": 15
+          }
+        },
+        {
+          "l": "imperative",
+          "t": "A bull's strength and the fortitude of the oak is sought.\n",
+          "opt": {
+            "strMed": 80,
+            "strStdev": 8
+          },
+          "in": {
+            "laborAdmin": 30
+          }
+        }
+      ]
+    },
+    "dex": {
+      "l": "Physical agility",
+      "o": [
+        {
+          "l": "unimportant",
+          "t": "",
+          "opt": {
+            "dexMed": 50,
+            "dexStdev": 16.6
+          }
+        },
+        {
+          "l": "important",
+          "t": "Applicants should be flexible and dextrous.\n",
+          "opt": {
+            "dexMed": 65,
+            "dexStdev": 12
+          },
+          "in": {
+            "laborAdmin": 15
+          }
+        },
+        {
+          "l": "imperative",
+          "t": "Applicants must bend like the reed and flow like water.\n",
+          "opt": {
+            "dexMed": 80,
+            "dexStdev": 8
+          },
+          "in": {
+            "laborAdmin": 30
+          }
+        }
+      ]
+    },
+    "int": {
+      "l": "Intellectual accomplishment",
+      "o": [
+        {
+          "l": "unimportant",
+          "t": "",
+          "opt": {
+            "intMed": 50,
+            "intStdev": 16.6
+          }
+        },
+        {
+          "l": "important",
+          "t": "Applicants should be quick of mind.\n",
+          "opt": {
+            "intMed": 65,
+            "intStdev": 12
+          },
+          "in": {
+            "laborAdmin": 15
+          }
+        },
+        {
+          "l": "imperative",
+          "t": "Applicants must demonstrate unparalleled intellect.\n",
+          "opt": {
+            "intMed": 80,
+            "intStdev": 8
+          },
+          "in": {
+            "laborAdmin": 30
+          }
+        }
+      ]
+    },
+    "will": {
+      "l": "Mental fortitude",
+      "o": [
+        {
+          "l": "unimportant",
+          "t": "",
+          "opt": {
+            "willMed": 50,
+            "willStdev": 16.6
+          }
+        },
+        {
+          "l": "important",
+          "t": "Tests will be performed to assess strength of will and emotional stability.\n",
+          "opt": {
+            "willMed": 65,
+            "willStdev": 12
+          },
+          "in": {
+            "laborAdmin": 15
+          }
+        },
+        {
+          "l": "imperative",
+          "t": "We seek those with a will of iron and a heart of gold.\n",
+          "opt": {
+            "willMed": 80,
+            "willStdev": 8
+          },
+          "in": {
+            "laborAdmin": 30
+          }
+        }
+      ]
+    }
+  }
+}

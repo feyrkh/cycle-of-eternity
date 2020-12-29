@@ -10,6 +10,7 @@ var selectedOptions = {}
 var decreeTextTemplate = 'This is a decree! You selected: {myOptionId}'
 var appliedResources = {}
 var baseInputResources = {}
+var baseOutputResources = {}
 var projectComplete = false
 var noProgressMade = false
 var percentComplete = 0
@@ -71,7 +72,7 @@ func get_selected_option_flavor_text():
 	return mergedSelections
 
 func get_selected_option_outputs():
-	return merge_selections_by_key('out')
+	return merge_selections_by_key('out', baseOutputResources)
 	
 func get_selected_option_inputs():
 	return merge_selections_by_key('in', baseInputResources)
@@ -80,6 +81,7 @@ func get_applied_option_inputs():
 	return appliedResources
 	
 func merge_selections_by_key(key, baseResults={}):
+	if !baseResults: baseResults = {}
 	var mergedSelections = baseResults.duplicate()
 	for optionId in choice.keys():
 		var selectedOption = get_selected_option(optionId)
@@ -115,7 +117,7 @@ func get_decree_text():
 	return decreeTextTemplate.format(get_selected_option_flavor_text()).format(get_selected_option_outputs()).format(GameState.settings)
 
 func serialize():
-	var retval = {'cmd':'decree', 'f':filename, 'so':selectedOptions, 'ar':appliedResources, 'in':baseInputResources, 'dt':Util.DATATYPE_DECREE}
+	var retval = {'cmd':'decree', 'f':filename, 'so':selectedOptions, 'ar':appliedResources, 'in':baseInputResources, 'out':baseOutputResources, 'dt':Util.DATATYPE_DECREE}
 	if projectComplete: retval['!'] = true
 	return retval
 
@@ -134,6 +136,7 @@ func init_from_file(filename):
 	file.close()
 	var baseData = parse_json(text)
 	decreeTextTemplate = baseData['t']
-	choice = baseData['c']
-	baseInputResources = baseData['in'] # base resources just from the decree itself
+	choice = baseData.get('c', {})
+	baseInputResources = baseData.get('in') # base resources just from the decree itself
+	baseOutputResources = baseData.get('out') # base resources just from the decree itself
 	projectName = baseData['name']

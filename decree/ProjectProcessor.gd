@@ -5,14 +5,50 @@ const projectOrganizers = ['office']
 var processingProjects = []
 var needToRefresh = false
 
+func _ready():
+	Event.connect("pass_time", self, 'on_pass_time')
+
+func on_pass_time(amt):
+	reset()
+	GameState.save_organizers()
+	GameState.produce_resources()
+	ProjectProcessor.reset()
+	ProjectProcessor.process_consumers()
+	ProjectProcessor.process_projects()
+
+func reset():
+	needToRefresh = false
+
 func complete_decree_project(decreeData:DecreeData):
 	needToRefresh = true
 	print('completed project: ', decreeData.projectName)
 
+func process_consumers():
+	var consumers
+	for organizerName in GameState._organizers:
+		if organizerName == null: continue
+		var organizerData:OrganizerData = GameState.get_organizer_data(organizerName)
+		consumers = organizerData.collect_resource_consumers()
+		for consumer in consumers:
+			consume_resources(consumer)
+
+func consume_resources(consumer):
+	consumer['consumed'] = {}
+	var wasActive = consumer.get('active', true)
+	consumer.erase('active')
+	var resourcesNeeded = consumer.get('consume', {})
+	for k in resourcesNeeded:
+		var amtNeeded = resourcesNeeded.get(k, 0)
+		if amtNeeded <= 0: continue
+		var amtAvailable = GameState.resources.get(k, 0)
+		var amtConsumed = min(amtNeeded, amtAvailable)
+		GameState.resources[k] = amtAvailable - amtConsumed
+		if amtConsumed < amtNeeded:
+			consumer['active'] = false
+		consumer['consumed'][k] = amtConsumed
+	needToRefresh = needToRefresh or (wasActive != consumer.get('active', true))
+	
 func process_projects():
-	GameState.save_organizers()
-	needToRefresh = false
-	GameState.produce_resources()
 	collect_projects()
 	for organizerDataEntry in processingProjects:
 		var resourceConsumer = get_as_resource_consumer(organizerDataEntry.get('data'))

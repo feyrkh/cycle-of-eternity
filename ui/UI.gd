@@ -45,8 +45,7 @@ func _ready():
 	if rightOrganizerName: load_right_organizer(rightOrganizerName)
 
 func on_pass_time(timeAmt:int):
-	save_organizers()
-	ProjectProcessor.process_projects()
+	pass
 
 func on_show_character(charImgPath):
 	$CanvasLayer/Character.visible = true
@@ -108,10 +107,12 @@ func load_organizer(organizerName, organizer, skipSave=false):
 		organizer.refresh_organizer_data(organizerData)
 
 func save_organizers():
-	var leftData = leftOrganizer.save()
-	GameState.add_organizer(leftOrganizer.organizerDataName, leftData)
-	var rightData = rightOrganizer.save()
-	GameState.add_organizer(rightOrganizer.organizerDataName, rightData)
+	if leftOrganizer.organizerDataName:
+		var leftData = leftOrganizer.save()
+		GameState.add_organizer(leftOrganizer.organizerDataName, leftData)
+	if rightOrganizer.organizerDataName:
+		var rightData = rightOrganizer.save()
+		GameState.add_organizer(rightOrganizer.organizerDataName, rightData)
 	
 func clear_organizer():
 	rightOrganizer.clear()

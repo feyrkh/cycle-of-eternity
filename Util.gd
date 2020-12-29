@@ -3,6 +3,7 @@ class_name Util
 
 const DATATYPE_DICT = 0
 const DATATYPE_DECREE = 1
+const DATATYPE_EXEMPLAR = 2
 
 const noDrag = 1<<0
 const isToggle = 1<<1
@@ -59,3 +60,33 @@ static func load_json_file(filename:String):
 		printerr("Can't parse empty content in ", filename)
 		return null
 
+# Given a mean, standard deviation and a percentile from 0 to 1, give the value of a bell-shaped distribution at that percentile 
+static func bell_curve(mean, stdev, percentile):
+	# See: view-source:https://www.tribology-abc.com/calculators/t1_2b.htm
+	var m = mean
+	var s = stdev
+	var p = percentile
+	var prob1 = (s<=0)
+	var prob2 = (p<=0)||(p>=1)
+	if prob1:
+		printerr('stdev must be >= 0')
+		return mean
+	if p<0: p = 0
+	if p>1: p = 1
+	
+	var a1=2.30753; 
+	var a2=.27061;
+	var a3=.99229;
+	var a4=.04481;
+	var q0=.5-abs(p-.5);
+	var w=sqrt(-2*log(q0));
+	var w1=a1+a2*w;
+	var w2=1+w*(a3+w*a4);
+	var z=w-w1/w2;
+	if p<0.5: z = -z
+	var x=s*z+m;
+	return round(100*x)/100
+
+static func rand_choice(arr):
+	if !arr or !arr.size(): return null
+	return arr[randi()%arr.size()]

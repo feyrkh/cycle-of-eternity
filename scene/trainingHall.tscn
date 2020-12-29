@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://img/location/empty-dojo.jpg" type="Texture" id=1]
+[ext_resource path="res://scene/trainingHall.gd" type="Script" id=2]
+
+[node name="Location" type="Node2D"]
+position = Vector2( -394.12, -108.065 )
+script = ExtResource( 2 )
+
+[node name="Background" type="Sprite" parent="."]
+position = Vector2( 1363.86, 686.764 )
+scale = Vector2( 2.62174, 2.59965 )
+texture = ExtResource( 1 )

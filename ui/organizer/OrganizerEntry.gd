@@ -18,6 +18,7 @@ var entryFlags:int = 0
 
 var editBox:OrganizerLabelEdit
 var containingOrganizer
+func set_containing_organizer(org): containingOrganizer = org
 
 func _ready():
 	label = find_node('Label')

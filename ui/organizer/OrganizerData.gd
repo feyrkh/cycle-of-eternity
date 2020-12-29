@@ -37,6 +37,10 @@ func deserialize_organizer_entry(valData):
 				var deserData = DecreeData.new()
 				deserData.deserialize(valData)
 				valData = deserData
+			Util.DATATYPE_EXEMPLAR:
+				var deserData = ExemplarData.new()
+				deserData.deserialize(valData)
+				valData = deserData
 	return valData
 	
 func deserialize(dict:Dictionary)->OrganizerData:
@@ -61,7 +65,10 @@ func get_entry_by_id(entryId):
 
 func add_entry(path:String, data, id=null, folderId=null, entrySceneName:String='OrganizerEntry', position=-1):
 	if data && data is String && data.begins_with('res:'):
-		data = Util.load_json_file(data)
+		if data.ends_with('.json'):
+			data = Util.load_json_file(data)
+		elif data.ends_with('.gd'):
+			data = load(data).new()
 	if data == null: data = {}
 	var pathChunks:Array = path.split('/', false)
 	var name = pathChunks.pop_back()
@@ -78,6 +85,7 @@ func add_entry(path:String, data, id=null, folderId=null, entrySceneName:String=
 	if position < 0 or position > entries.size(): position = entries.size()
 	entries.insert(position, entry)
 	if id: entryIds[id] = entry
+	return entry
 
 func add_folder(path:String, id=null, folderId=null, data:Dictionary={}):
 	if get_entry_by_id(id): return
@@ -110,8 +118,14 @@ func add_folder(path:String, id=null, folderId=null, data:Dictionary={}):
 		entryIds[id] = entry
 	entries.append(entry)
 	
-	
-	
+func collect_resource_consumers():
+	var results = []
+	for entry in entries:
+		if !(entry is Dictionary) or !entry.has('data') or !(entry['data'] is Dictionary): 
+			continue
+		if entry.get('data', {}).has('consume'):
+			results.append(entry['data'])
+	return results
 	
 func collect_projects():
 	var results = []
@@ -124,7 +138,8 @@ func collect_projects():
 func collect_produced_resources():
 	var results = {}
 	for entry in entries:
-		if !entry.get('data',{}).get('active'): continue
+		if !entry.get('data') or !(entry.get('data') is Dictionary): continue # don't produce resources from non-Dictionary entries
+		if !entry.get('data',{}).get('active', true): continue
 		var products = entry.get('data',{}).get('produce')
 		if products and products.size() > 0:
 			for resource in products.keys():
