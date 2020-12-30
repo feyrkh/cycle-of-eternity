@@ -45,7 +45,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer"]
+[node name="Stats" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
@@ -53,11 +53,11 @@ margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
 
-[node name="PowerLevelContainer" type="HBoxContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer"]
+[node name="PowerLevelContainer" type="HBoxContainer" parent="ExemplarCharSheet/TabContainer/Stats"]
 margin_right = 336.0
 margin_bottom = 40.0
 
-[node name="PowerLevelLabel" type="Label" parent="ExemplarCharSheet/TabContainer/VBoxContainer/PowerLevelContainer"]
+[node name="PowerLevelLabel" type="Label" parent="ExemplarCharSheet/TabContainer/Stats/PowerLevelContainer"]
 margin_right = 336.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 0, 40 )
@@ -66,26 +66,26 @@ text = "Power Level: "
 align = 1
 valign = 1
 
-[node name="Stats" type="HBoxContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer"]
+[node name="VBoxContainer" type="HBoxContainer" parent="ExemplarCharSheet/TabContainer/Stats"]
 margin_top = 44.0
 margin_right = 336.0
 margin_bottom = 108.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="GridVSeparator" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats" instance=ExtResource( 2 )]
+[node name="GridVSeparator" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer" instance=ExtResource( 2 )]
 margin_right = 8.0
 margin_bottom = 64.0
 rect_min_size = Vector2( 8, 0 )
 
-[node name="StrContainer" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats"]
+[node name="StrContainer" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer"]
 margin_left = 12.0
 margin_right = 101.0
 margin_bottom = 64.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/StrContainer"]
+[node name="Label" type="Label" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/StrContainer"]
 margin_right = 89.0
 margin_bottom = 36.0
 size_flags_horizontal = 7
@@ -93,13 +93,13 @@ custom_fonts/font = ExtResource( 3 )
 text = "Strength"
 align = 1
 
-[node name="HSeparator" type="MarginContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/StrContainer"]
+[node name="HSeparator" type="MarginContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/StrContainer"]
 margin_top = 40.0
 margin_right = 89.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 0, 20 )
 
-[node name="StrStats" type="GridContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/StrContainer"]
+[node name="StrStats" type="GridContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/StrContainer"]
 margin_top = 64.0
 margin_right = 89.0
 margin_bottom = 64.0
@@ -107,20 +107,20 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 2
 
-[node name="GridVSeparator5" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats" instance=ExtResource( 2 )]
+[node name="GridVSeparator5" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer" instance=ExtResource( 2 )]
 margin_left = 105.0
 margin_right = 113.0
 margin_bottom = 64.0
 rect_min_size = Vector2( 8, 0 )
 
-[node name="AgiContainer" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats"]
+[node name="AgiContainer" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer"]
 margin_left = 117.0
 margin_right = 181.0
 margin_bottom = 64.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/AgiContainer"]
+[node name="Label" type="Label" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/AgiContainer"]
 margin_right = 64.0
 margin_bottom = 36.0
 size_flags_horizontal = 3
@@ -128,13 +128,13 @@ custom_fonts/font = ExtResource( 3 )
 text = "Agility"
 align = 1
 
-[node name="HSeparator2" type="MarginContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/AgiContainer"]
+[node name="HSeparator2" type="MarginContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/AgiContainer"]
 margin_top = 40.0
 margin_right = 64.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 0, 20 )
 
-[node name="AgiStats" type="GridContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/AgiContainer"]
+[node name="AgiStats" type="GridContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/AgiContainer"]
 margin_top = 64.0
 margin_right = 64.0
 margin_bottom = 64.0
@@ -142,20 +142,20 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 2
 
-[node name="GridVSeparator2" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats" instance=ExtResource( 2 )]
+[node name="GridVSeparator2" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer" instance=ExtResource( 2 )]
 margin_left = 185.0
 margin_right = 193.0
 margin_bottom = 64.0
 rect_min_size = Vector2( 8, 0 )
 
-[node name="MindContainer" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats"]
+[node name="MindContainer" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer"]
 margin_left = 197.0
 margin_right = 249.0
 margin_bottom = 64.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/MindContainer"]
+[node name="Label" type="Label" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/MindContainer"]
 margin_right = 52.0
 margin_bottom = 36.0
 size_flags_horizontal = 3
@@ -163,13 +163,13 @@ custom_fonts/font = ExtResource( 3 )
 text = "Mind"
 align = 1
 
-[node name="HSeparator3" type="MarginContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/MindContainer"]
+[node name="HSeparator3" type="MarginContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/MindContainer"]
 margin_top = 40.0
 margin_right = 52.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 0, 20 )
 
-[node name="IntStats" type="GridContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/MindContainer"]
+[node name="IntStats" type="GridContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/MindContainer"]
 margin_top = 64.0
 margin_right = 52.0
 margin_bottom = 64.0
@@ -177,20 +177,20 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 2
 
-[node name="GridVSeparator3" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats" instance=ExtResource( 2 )]
+[node name="GridVSeparator3" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer" instance=ExtResource( 2 )]
 margin_left = 253.0
 margin_right = 261.0
 margin_bottom = 64.0
 rect_min_size = Vector2( 8, 0 )
 
-[node name="WillContainer" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats"]
+[node name="WillContainer" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer"]
 margin_left = 265.0
 margin_right = 324.0
 margin_bottom = 64.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/WillContainer"]
+[node name="Label" type="Label" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/WillContainer"]
 margin_right = 59.0
 margin_bottom = 36.0
 size_flags_horizontal = 3
@@ -198,7 +198,7 @@ custom_fonts/font = ExtResource( 3 )
 text = "Spirit"
 align = 1
 
-[node name="HSeparator4" type="MarginContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/WillContainer"]
+[node name="HSeparator4" type="MarginContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/WillContainer"]
 margin_top = 40.0
 margin_right = 59.0
 margin_bottom = 60.0
@@ -207,7 +207,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="WillStats" type="GridContainer" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats/WillContainer"]
+[node name="WillStats" type="GridContainer" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer/WillContainer"]
 margin_top = 64.0
 margin_right = 59.0
 margin_bottom = 64.0
@@ -215,16 +215,27 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 2
 
-[node name="GridVSeparator4" parent="ExemplarCharSheet/TabContainer/VBoxContainer/Stats" instance=ExtResource( 2 )]
+[node name="GridVSeparator4" parent="ExemplarCharSheet/TabContainer/Stats/VBoxContainer" instance=ExtResource( 2 )]
 margin_left = 328.0
 margin_right = 336.0
 margin_bottom = 64.0
 rect_min_size = Vector2( 8, 0 )
 
+[node name="Training" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -300.0
+margin_bottom = -72.0
+
 [node name="CloseButton" type="TextureButton" parent="."]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 351.0
-margin_bottom = 169.0
+margin_right = 27.0
+margin_bottom = 28.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
 texture_normal = ExtResource( 4 )
 [connection signal="pressed" from="CloseButton" to="." method="_on_CloseButton_pressed"]

@@ -147,6 +147,11 @@ func update_name_lost_focus():
 	label.visible = true
 	editNameButton.visible = true
 	editBox.queue_free()
+	if data and data is Dictionary:
+		data['f_name'] = label.text
+	elif data and data.has_method('set_entity_name'):
+		data.set_entity_name(label.text)
+	updateOrganizerDataFriendlyName()
 
 func update_name_entered(newText):
 	update_name_lost_focus()
@@ -175,6 +180,7 @@ func really_delete():
 
 
 func _on_Label_pressed():
+	updateOrganizerDataFriendlyName()
 	set_is_unread(false)
 	$"/root/Event".emit_signal("organizer_entry_clicked", containingOrganizer, self)
 	emit_signal('entry_clicked')
@@ -183,7 +189,17 @@ func _on_Label_pressed():
 
 
 func _on_Label_toggled(button_pressed):
+	updateOrganizerDataFriendlyName()
 	set_is_unread(false)
 	$"/root/Event".emit_signal("organizer_entry_toggled", containingOrganizer, self, button_pressed)
 	self.visible = false # easy way to lose focus
 	self.visible = true
+
+func updateOrganizerDataFriendlyName():
+	if data is Dictionary and data.has('cmd') and data.has('organizerName') and data['cmd'] == 'scene':
+		var organizerData = GameState.get_organizer_data(data['organizerName'])
+		if organizerData and organizerData.friendlyName != label.text:
+			organizerData.friendlyName = label.text
+	elif !(data is Dictionary) and data.has_method('set_entity_name'): 
+		data.set_entity_name(label.text)
+

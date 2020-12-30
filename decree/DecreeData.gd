@@ -17,6 +17,8 @@ var percentComplete = 0
 
 func get_percent_complete(): return percentComplete
 func get_progress_made(): return !noProgressMade
+func set_entity_name(newName): projectName = newName
+func get_entity_name(): return projectName
 
 func get_is_project(): return true
 func get_is_deleted(): 

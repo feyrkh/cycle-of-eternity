@@ -149,6 +149,7 @@ const statsMetadata = {
 	"spiritFatigue": "Spiritual endurance",
 	"spiritRecover": "Spiritual recovery",
 	"resistDomination": "Resist domination",
+	"determination": "Determination",
 }
 static func get_stat_friendly_name(statName):
 	return statsMetadata.get(statName, statName)

@@ -25,7 +25,7 @@ const statsTree = {
 			'resistManipulation', 'resistConfusion'], # resist mental
 		'body': ['resistFatigue', 'resistDisorient'], # resist physical
 		'soul': ['spiritFatigue', 'spiritRecover', 
-			'resistDomination'] # resist spiritual
+			'resistDomination', ''] # resist spiritual
 	}
 }
 
@@ -34,6 +34,12 @@ var entityName
 var stats = {}
 var gender
 var organizerData
+
+func set_entity_name(newName): 
+	entityName = newName
+	organizerData.friendlyName = newName
+
+func get_entity_name(): return entityName
 
 func get_organizer_name():
 	return 'exemplar_'+str(entityId)
@@ -50,11 +56,9 @@ func deserialize(data):
 	stats = data.get('stats', {})
 	gender = data.get('g', 'f')
 	for statsTreeName in statsTree:
-		var avgStats = get_stats_summary(statsTree.get(statsTreeName))
-		#checkMissingStats(statsTree.get(statsTreeName))
+		var avgStats = get_stats_summary(statsTree.get(statsTreeName))['mean']
+		checkMissingStats(statsTree.get(statsTreeName), avgStats)
 
-func get_entity_name():
-	return entityName
 
 func on_resource_create(newName, createOpts, entityId):
 	self.entityId = entityId

@@ -3,11 +3,12 @@ class_name LocationScene
 
 var UI
 var GameScene
-
+var sceneData
 var rightOrganizerName
 
 func startup_scene(sceneData):
 	if !sceneData: return
+	self.sceneData = sceneData
 	rightOrganizerName = sceneData.get('organizerName')
 
 func _ready():
@@ -15,13 +16,13 @@ func _ready():
 	if !setup_quest(): setup_default()
 
 func setup_base():
-	if rightOrganizerName:
-		GameState.change_right_organizer(rightOrganizerName)
 	var organizerData
 	if rightOrganizerName:
 		organizerData = GameState.get_organizer_data(rightOrganizerName)
 	else:
 		organizerData = GameState.get_organizer_data(GameState.settings.get('rightOrganizerName'))
+	if rightOrganizerName:
+		GameState.change_right_organizer(rightOrganizerName)
 	for organizerDataEntry in organizerData.entries:
 		if organizerDataEntry is Dictionary:
 			var itemData = organizerDataEntry.get('data')

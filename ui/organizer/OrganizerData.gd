@@ -2,6 +2,7 @@ extends Resource
 class_name OrganizerData
 
 var name
+var friendlyName
 var entries = [] setget set_entries
 var entryIds = {}
 var organizer
@@ -14,10 +15,19 @@ func set_entries(val):
 		if entry.get('id'):
 			entryIds[entry.get('id')] = entry
 
+func cloneFromActiveOrg(orgName):
+	var otherOrg = GameState.get_organizer_data(orgName)
+	if !otherOrg: return
+	name =  otherOrg.name
+	friendlyName = otherOrg.friendlyName
+	entries = otherOrg.entries
+	entryIds = otherOrg.entryIds
+
 func serialize():
 	var serializedEntries = Array()
 	var result = {
 		'name':name,
+		'f_name':friendlyName,
 		'entries':serializedEntries
 	}
 	for entry in entries:
@@ -46,6 +56,7 @@ func deserialize_organizer_entry(valData):
 func deserialize(dict:Dictionary)->OrganizerData:
 	var retval = get_script().new()
 	retval.name = dict.name
+	retval.friendlyName = dict.get('f_name', dict.name)
 	var deserializedEntries = Array()
 	for entry in dict.entries:
 		var valData = entry.get('data',{})

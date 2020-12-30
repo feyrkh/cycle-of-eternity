@@ -1,6 +1,73 @@
 {
-  "name": "Build training hall",
-  "t": "A training hall shall be constructed, that our disciples might train their bodies to the level required of exemplars.",
-  "in": {"laborAdmin":10, "laborUnskilled":40},
-  "out": {"facility_trainingHall":1}
+ "name": "Build training hall",
+ "t": "A {size} shall be constructed, that our disciples might train their bodies to the level required of exemplars.",
+ "in": {
+  "laborAdmin": 1,
+  "laborUnskilled": 5
+ },
+ "out": {
+  "facility_trainingHall": 1
+ },
+ "c": {
+  "size": {
+   "l": "Size",
+   "o": [
+    {
+     "l": "tiny",
+     "t": "tiny training hall with minimal space for equipment",
+     "opt": {
+      "equipSpace": 10
+     }
+    },
+    {
+     "l": "small",
+     "t": "small training hall with limited space for equipment",
+     "in": {
+      "laborAdmin": 1,
+      "laborUnskilled": 10,
+      "coin": 20
+     },
+     "opt": {
+      "equipSpace": 25
+     }
+    },
+    {
+     "l": "medium",
+     "t": "medium training hall with adequate space for equipment",
+     "in": {
+      "laborAdmin": 5,
+      "laborUnskilled": 40,
+      "coin": 100
+     },
+     "opt": {
+      "equipSpace": 50
+     }
+    },
+    {
+     "l": "large",
+     "t": "large training hall with ample space for equipment",
+     "in": {
+      "laborAdmin": 15,
+      "laborUnskilled": 100,
+      "coin": 300
+     },
+     "opt": {
+      "equipSpace": 75
+     }
+    },
+    {
+     "l": "cavernous",
+     "t": "cavernous training hall with abundant space for equipment",
+     "in": {
+      "laborAdmin": 40,
+      "laborUnskilled": 300,
+      "coin": 1000
+     },
+     "opt": {
+      "equipSpace": 200
+     }
+    }
+   ]
+  }
+ }
 }

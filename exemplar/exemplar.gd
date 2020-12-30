@@ -79,6 +79,7 @@ func _ready():
 		add_stats(grid, 'will.body.resistFatigue')
 		add_stats(grid, 'will.body.resistDisorient')
 		add_stats(grid, 'will.soul')
+		add_stats(grid, 'will.soul.determination')
 		add_stats(grid, 'will.soul.spiritFatigue')
 		add_stats(grid, 'will.soul.spiritRecover')
 		add_stats(grid, 'will.soul.resistDomination')

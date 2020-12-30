@@ -62,7 +62,10 @@ func disable():
 func refresh_organizer_data(data):
 	var d = data
 	organizerDataName = data.name
-	find_node('OrganizerNameLabel').text = organizerDataName
+	var label = find_node('OrganizerNameLabel')
+	var friendlyName = data.friendlyName
+	if !friendlyName: friendlyName = organizerDataName
+	if label: label.text = friendlyName
 	for child in entryContainer.get_children():
 		child.queue_free()
 		entryContainer.remove_child(child)
@@ -113,6 +116,7 @@ func save(target=self, path=''):
 	if target == self: # we've loaded all our child entry data
 		print('Finished serializing children, saving')
 		var orgData:OrganizerData = OrganizerData.new()
+		orgData.cloneFromActiveOrg(organizerDataName)
 		orgData.name = organizerDataName
 		orgData.entries = saveData
 		return orgData
