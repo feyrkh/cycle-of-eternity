@@ -39,7 +39,7 @@ var resources = {
 var resourceData = {
 	"coin": {"n":"jade chips", "d":"The coin of the common folk. While the Emperor's mandate suffices to requisition anything you truly need, gifts of jade will help avoid ill feelings."},
 	"disciple": {"n":"disciple", "d":"A newly recruited disciple",
-		"entity":{"org":"main", "folderId":"new", "data":"res://exemplar/Exemplar.gd", "idSeries":"exemplar"}},
+		"entity":{"org":"main", "folderId":"new", "data":"res://exemplar/ExemplarData.gd", "idSeries":"exemplar"}},
 	"facility_trainingHall": {"n":"training hall", "d":"A facility for strengthening the body with physical training or combat practice.", 
 		"entity":{"org":"main", "folderId":"sacredSchool","data":"res://data/location/trainingHall.json", "idSeries":"trainingHall", "nameTemplate":"Training Hall {id_trainingHall}"}},
 	"laborAdmin": {"n":"bureaucratic labor", "d":"Work performed by professional bureaucrats and functionaries.", "transient":true, "suffix":"man-day"},
@@ -115,8 +115,9 @@ func add_resource(k, amt, source, opts={}):
 			var org = get_organizer_data(entityData.get('org', 'main'))
 			#var entityCmdJson = Util.load_json_file(entityData.get('data',{}))
 			for i in range(amt):
+				var nextId = randi()
 				if entityData.get('idSeries'):
-					var nextId = settings.get('id_'+entityData.get('idSeries'), 0) + 1
+					nextId = settings.get('id_'+entityData.get('idSeries'), 0) + 1
 					settings['id_'+entityData.get('idSeries')] = nextId
 				var newName = entityData.get('nameTemplate', '').format(settings)
 				if !newName or newName.length() == 0:
@@ -129,12 +130,13 @@ func add_resource(k, amt, source, opts={}):
 				var loadedData = newEntry.get('data')
 				if loadedData is Dictionary:
 					loadedData['name'] = newName
+					if loadedData.has('organizerName'): loadedData['organizerName'] = loadedData['organizerName'].format(settings)
 					# our loadedData is a dictionary, let's merge any additional options that were passed into it...I guess!
 					if opts:
 						for opt in opts:
 							loadedData[opt] = opts[opt]
 				elif loadedData.has_method('on_resource_create'):
-					loadedData.on_resource_create(newName, opts)
+					loadedData.on_resource_create(newName, opts, nextId)
 					var updatedName = loadedData.get_entity_name()
 					newEntry['name'] = updatedName
 					
@@ -226,7 +228,7 @@ func save_world(saveSlot, serializedWorld):
 
 func load_world(saveSlot):
 	randomize()
-	var file = File.new()
+	var file:File = File.new()
 	file.open("user://save/%s.dat"%saveSlot, File.READ)
 	var content = file.get_as_text()
 	file.close()
@@ -236,8 +238,9 @@ func add_organizer(organizerName, organizerData):
 	organizerData.name = organizerName
 	_organizers[organizerName] = organizerData
 
-func loadScene(newSceneName:String, newSceneData:Dictionary):
+func loadScene(newSceneName:String, newSceneData):
 	Conversation.reset()
+	UI.clear_inner_panel()
 	if UI && UI.textInterface: UI.textInterface.reset()
 	if curScene && curScene.has_method('shutdown_scene'): 
 		curScene.shutdown_scene()
@@ -257,12 +260,17 @@ func get_organizer_data(organizerName:String):
 
 func add_popup(popup):
 	UI.add_popup(popup)
+	
+func add_inner_panel_popup(popup):
+	UI.add_inner_panel_popup(popup)
 
 func run_command(cmd, data:Dictionary, sourceNode:Node=null):
 	if cmd is Array:
 		for c in cmd:
 			run_command(cmd, data, sourceNode)
 		return
+	if cmd != 'item' and cmd != 'msg': 
+		UI.clear_inner_panel()
 	match cmd:
 		'decreeGen': cmd_decree_gen(data, sourceNode)
 		'scene': cmd_scene(data, sourceNode)
@@ -351,9 +359,6 @@ func cmd_quickload():
 # keepCharacter - don't hide any character portrait that's currently displayed in the UI
 # keepText - don't clear any text buffered in the UI
 func cmd_scene(data:Dictionary, sourceNode):
-	if settings.get('curSceneName') == data.get('scene'): 
-		print("Not changing scenes, we're already in the right place")
-		return
 	if sourceNode && data.get('deleteSourceNodeAfterTransition'): sourceNode.queue_free()
 	if !data.get('keepCharacter'): Event.hide_character()
 	if !data.get('keepText'): Event.clear_text()

@@ -62,6 +62,7 @@ func disable():
 func refresh_organizer_data(data):
 	var d = data
 	organizerDataName = data.name
+	find_node('OrganizerNameLabel').text = organizerDataName
 	for child in entryContainer.get_children():
 		child.queue_free()
 		entryContainer.remove_child(child)

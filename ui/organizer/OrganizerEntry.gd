@@ -153,7 +153,7 @@ func update_name_entered(newText):
 
 func ask_to_delete():
 	if get_no_delete():
-		var noDeletePopup = preload("res://ui/organizer/OrganizerDeleteRejectDialog.tscn").instance()
+		var noDeletePopup = load("res://ui/organizer/OrganizerDeleteRejectDialog.tscn").instance()
 		noDeletePopup.dialog_text = "You may not delete "+label.text+"."
 		var addLayer = self
 		while addLayer.get_parent() && !(addLayer is CanvasLayer): addLayer = addLayer.get_parent()
@@ -161,7 +161,7 @@ func ask_to_delete():
 		noDeletePopup.popup()
 		return
 		
-	var confirm:OrganizerDeleteConfirmationDialog = preload("res://ui/organizer/OrganizerDeleteConfirmDialog.tscn").instance()
+	var confirm:OrganizerDeleteConfirmationDialog = load("res://ui/organizer/OrganizerDeleteConfirmDialog.tscn").instance()
 	confirm.dialog_text = "Are you sure you want to delete "+label.text+"?\n\nThis is irreversible."
 	confirm.connect("confirmed", self, 'really_delete')
 	var addLayer = self

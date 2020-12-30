@@ -20,9 +20,14 @@ margin_top = 7.0
 margin_right = 293.0
 margin_bottom = 293.0
 
-[node name="ToolContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="OrganizerNameLabel" type="Label" parent="VBoxContainer"]
 margin_right = 286.0
-margin_bottom = 20.0
+margin_bottom = 14.0
+
+[node name="ToolContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 18.0
+margin_right = 286.0
+margin_bottom = 38.0
 
 [node name="NewFolderButton" type="Button" parent="VBoxContainer/ToolContainer"]
 margin_right = 84.0
@@ -40,7 +45,7 @@ texture = ExtResource( 1 )
 script = ExtResource( 3 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
-margin_top = 24.0
+margin_top = 42.0
 margin_right = 286.0
 margin_bottom = 286.0
 size_flags_horizontal = 3
@@ -50,7 +55,7 @@ scroll_horizontal_enabled = false
 
 [node name="EntryContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
 margin_right = 286.0
-margin_bottom = 262.0
+margin_bottom = 244.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 

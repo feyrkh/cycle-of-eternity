@@ -6,6 +6,7 @@ onready var textInterfaceSplit:VSplitContainer = find_node('VSplitContainer')
 onready var timePassContainer = find_node('TimePassContainer')
 onready var timePassButton = find_node('TimePassButton')
 onready var controlsContainer = find_node('ControlsContainer')
+onready var dragSurface = find_node('DragSurface')
 
 var folderScene = load('res://ui/organizer/OrganizerFolder.tscn')
 var entryScene = load('res://ui/organizer/OrganizerEntry.tscn')
@@ -63,6 +64,16 @@ func _on_TextBoxContainer_resized():
 func _on_DragSurface_resized():
 	$CanvasLayer/Character.rect_global_position = $CanvasLayer/HBoxContainer/VSplitContainer/DragSurface.rect_global_position
 	$CanvasLayer/Character.rect_size = $CanvasLayer/HBoxContainer/VSplitContainer/DragSurface.rect_size
+
+func add_inner_panel_popup(item):
+	if item.get_parent(): item.get_parent().remove_child(item)
+	dragSurface.add_child(item)
+	lastPopup = item
+
+func clear_inner_panel():
+	for child in dragSurface.get_children():
+		if child.has_method('on_close'): child.on_close()
+		child.queue_free()
 
 func add_popup(item):
 	if item.get_parent(): item.get_parent().remove_child(item)

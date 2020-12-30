@@ -34,11 +34,11 @@ func deserialize_organizer_entry(valData):
 		match dataType:
 			Util.DATATYPE_DICT: pass 
 			Util.DATATYPE_DECREE:
-				var deserData = DecreeData.new()
+				var deserData = load('res://decree/DecreeData.gd').new()
 				deserData.deserialize(valData)
 				valData = deserData
 			Util.DATATYPE_EXEMPLAR:
-				var deserData = ExemplarData.new()
+				var deserData = load('res://exemplar/ExemplarData.gd').new()
 				deserData.deserialize(valData)
 				valData = deserData
 	return valData

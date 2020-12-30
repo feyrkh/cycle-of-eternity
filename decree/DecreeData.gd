@@ -25,15 +25,16 @@ func get_is_deleted():
 func complete_project():
 	projectComplete = true
 	var resources_to_add = get_selected_option_outputs()
+	var extra_options = get_selected_option_opts()
 	print("Project complete: ", projectName, '; adding ', resources_to_add)
 	for k in resources_to_add.keys():
-		GameState.add_resource(k, resources_to_add[k], self)
+		GameState.add_resource(k, resources_to_add[k], self, extra_options)
 
 func on_organizer_entry_clicked(entry):
 	cmd_decree(entry)
 
 func cmd_decree(sourceNode):
-	var decreePopup = preload("res://decree/Decree.tscn").instance()
+	var decreePopup = load("res://decree/Decree.tscn").instance()
 	decreePopup.decreeData = self
 	if sourceNode: decreePopup.decreeOrganizerNode = sourceNode
 	GameState.add_popup(decreePopup)
@@ -71,6 +72,9 @@ func get_selected_option_flavor_text():
 
 	return mergedSelections
 
+func get_selected_option_opts():
+	return merge_selections_by_key('opt')
+
 func get_selected_option_outputs():
 	return merge_selections_by_key('out', baseOutputResources)
 	
@@ -87,7 +91,7 @@ func merge_selections_by_key(key, baseResults={}):
 		var selectedOption = get_selected_option(optionId)
 		for resourceName in selectedOption.get(key, {}).keys():
 			var resourceValue = selectedOption[key][resourceName]
-			var mergedValue = mergedSelections.get(resourceName, 0) + resourceValue
+			var mergedValue = mergedSelections.get(resourceName, 0) + float(resourceValue)
 			mergedSelections[resourceName] = mergedValue
 	return mergedSelections
 

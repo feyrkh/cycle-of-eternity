@@ -1,7 +1,7 @@
 extends Object
 class_name OrganizerDataEntry
 
-#var uuid=preload("res://addons/uuid.gd")
+#var uuid=load("res://addons/uuid.gd")
 
 
 static func build(id, name:String, path, data, scene:String, entryFlags:int)->Dictionary:

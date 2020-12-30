@@ -1,8 +1,8 @@
 {
   "name": "Recruit disciple",
-  "t": "Search the lands for disciples to learn the ways of the sacred science.\n\n{str}{int}{will}\n{numDisciples}",
+  "t": "Search the lands for disciples to learn the ways of the sacred science. {rigor}\n{str}{dex}{int}{will}\n{numDisciples}",
   "in": {
-    "laborAdmin": 5
+    "laborAdmin": 0
   },
   "c": {
     "numDisciples": {
@@ -10,33 +10,44 @@
       "o": [
         {
           "l": "1",
-          "t": "Only the finest candidate will be considered.",
+          "t": "Only the most powerful will be selected.",
           "out": {
-            "disciple": 1
-          }
+            "disciple": 1,
+          },
+	  "opt": { "rigor": 2 }
         },
         {
           "l": "2",
-          "t": "The top two candidates will be considered.",
+          "t": "Two candidates will be considered.",
           "in": {
             "laborAdmin": 10
           },
           "out": {
             "disciple": 2
-          }
+          },
+	  "opt": { "rigor": 1 }
         },
         {
           "l": "3",
-          "t": "The top three candidates will be considered.",
+          "t": "There are three positions available for new disciples.",
           "in": {
             "laborAdmin": 20
           },
           "out": {
             "disciple": 3
-          }
+          },
+	  "opt": { "rigor": 0 }
         }
       ]
     },
+    "rigor": {"l": "Testing rigor",
+	"o": [
+		{"l": "quick", "t": "Time being of the essence, a single round of tests will be performed.", "opt": { "rigor": 1 }, "in": {"laborAdmin": 5}},
+		{"l": "careful", "t": "Applicants will be pitted against each other in a single-elimination tournament.", "opt": { "rigor": 2 }, "in": {"laborAdmin": 20, "coin":"300"}},
+		{"l": "thorough", "t": "Each potential disciple will be thoroughly examined and compete in a double-elimination tournament.", "opt": { "rigor": 3 }, "in": {"laborAdmin": 60, "coin": "1500"}},
+	],
+    },
+		
     "str": {
       "l": "Physical strength",
       "o": [
@@ -166,7 +177,7 @@
         },
         {
           "l": "imperative",
-          "t": "We seek those with a will of iron and a heart of gold.\n",
+          "t": "We require a will of iron and a heart of gold.\n",
           "opt": {
             "willMed": 80,
             "willStdev": 8
