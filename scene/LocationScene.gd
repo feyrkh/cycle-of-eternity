@@ -7,10 +7,28 @@ var sceneData
 var rightOrganizerName
 
 func startup_scene(sceneData):
-	if !sceneData: return
+	if !sceneData: 
+		return
 	self.sceneData = sceneData
 	rightOrganizerName = sceneData.get('organizerName')
+	if sceneData is Dictionary:
+		initialize_scene_data()
 
+func initialize_scene_data():
+	if !rightOrganizerName: return
+	var organizerData = GameState.get_organizer_data(rightOrganizerName)
+	# Some locations might start with equipment already available for installation
+	for initEntry in sceneData.get('initEntries', []):
+		if initEntry is String:
+			initEntry = Util.load_json_file(initEntry)
+		if initEntry is Dictionary:
+#add_entry(path:String, data, id=null, folderId=null, entrySceneName:String='OrganizerEntry', position=-1):
+			var newEntry = organizerData.add_entry(initEntry.get('initPath', '(unknown item)'), initEntry, initEntry.get('initId', null), initEntry.get('initEntrySceneName', 'OrganizerEntry'))
+	sceneData.erase('initPath')
+	sceneData.erase('initId')
+	sceneData.erase('initEntrySceneName')
+	sceneData.erase('initEntries')
+	
 func _ready():
 	setup_base()
 	if !setup_quest(): setup_default()

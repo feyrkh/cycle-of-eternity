@@ -115,16 +115,21 @@ func add_resource(k, amt, source, opts={}):
 			var org = get_organizer_data(entityData.get('org', 'main'))
 			#var entityCmdJson = Util.load_json_file(entityData.get('data',{}))
 			for i in range(amt):
-				var nextId = randi()
+				var nextId = k+"_"+str(randi())
 				if entityData.get('idSeries'):
 					nextId = settings.get('id_'+entityData.get('idSeries'), 0) + 1
 					settings['id_'+entityData.get('idSeries')] = nextId
-				var newName = entityData.get('nameTemplate', '').format(settings)
+					nextId = entityData.get('idSeries')+'_'+str(nextId)
+				var newName
+				if opts.has('name'): 
+					newName = opts.get('name').format(settings)
+				if !newName or newName.length() == 0:
+					newName = entityData.get('nameTemplate', '').format(settings)
 				if !newName or newName.length() == 0:
 					newName = NameGenerator.generate(k)
 				# Create the OrganizerDataEntry inside the OrganizerData. It will contain a copy of the data from the 
 				# file referenced by entityData.get('data'), and that copy will be returned so we can further manipulate it
-				var newEntry = org.add_entry(newName+'^isUnread', entityData.get('data'), null, entityData.get('folderId'), entityData.get('entryScene', 'OrganizerEntry'))
+				var newEntry = org.add_entry(newName+'^isUnread', entityData.get('data'), opts.get('id', str(nextId)), entityData.get('folderId'), entityData.get('entryScene', 'OrganizerEntry'))
 				if !newEntry or !newEntry.get('data'):
 					return # no need to merge options if no data was returned!
 				var loadedData = newEntry.get('data')
@@ -201,7 +206,7 @@ func load_organizers(skipSave=false):
 	if rightOrganizerName: UI.load_right_organizer(rightOrganizerName, skipSave)
 
 func change_right_organizer(organizerName):
-	UI.load_right_organizer(organizerName, false)
+	if UI: UI.load_right_organizer(organizerName, false)
 
 func deserialize_world(worldJson):
 	var serializedWorld = parse_json(worldJson)
@@ -262,6 +267,7 @@ func add_popup(popup):
 	UI.add_popup(popup)
 	
 func add_inner_panel_popup(popup):
+	UI.clear_inner_panel()
 	UI.add_inner_panel_popup(popup)
 
 func run_command(cmd, data:Dictionary, sourceNode:Node=null):
@@ -279,6 +285,7 @@ func run_command(cmd, data:Dictionary, sourceNode:Node=null):
 		'placeable': cmd_placeable(data, sourceNode)
 		'quicksave': cmd_quicksave()
 		'quickload': cmd_quickload()
+		'train': cmd_item_train(data, sourceNode)
 		_: printerr('Invalid command: ', cmd, '; data=', data, '; sourceNode=', sourceNode.name)
 
 func cmd_decree_gen(data:Dictionary, sourceNode):
@@ -337,6 +344,11 @@ func cmd_item(data:Dictionary, sourceNode):
 	
 	Event.emit_signal('msg_popup', popupData, sourceNode)
 
+func cmd_item_train(data:Dictionary, sourceNode):
+	var msg = Util.load_text_file(data.get('msg', ''))
+	var train = data.get('train', {})
+	
+	
 func cmd_placeable(data, sourceNode):
 	var itemShadow:Sprite = Sprite.new()
 	itemShadow.texture = load(data.get('img'))

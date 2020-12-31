@@ -1,0 +1,18 @@
+{"initPath":"Equipment^isOpen/Metal weights^isUnread",
+"cmd":"placeable", "placedCmd": "train", "msg":"Heavy metal weights, used primarily to train arm strength.", "img":"res://img/items/metal_weights.jpg", "train":[{
+"name":"lift_weights", "description": "Lift weights", 
+"statImprove":{
+	"armBoneStr":{"c":0.2}, 
+	"armStr":{"c":3}, 
+	"coreStr":{"c":1},
+	"armEnd":{"c":1},
+	"coreEnd":{"c":0.8},
+	"determination":{"c":0.01},
+}, 
+"fatigue":{
+	"reactSpd":{"c":1, "d": 30, "r": "determination"},
+	"defendAgi":{"c":1, "d": 50, "r": "determination"},
+	"fatigue":{"c":5, "m": 5, "d":100, "r":"armEnd"},
+}
+}]
+}

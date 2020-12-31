@@ -13,7 +13,7 @@ func setup_base():
 func setup_default():
 	pass
 
-# Check for any important quest states and setup as needed, may call setup_default() manually as well if needed
+# Check for any important quest states and setup as needed, if this returns true then set_default() will be skipped; may call setup_default() manually as well if needed
 func setup_quest()->bool:
 	match GameState.quest.get(Quest.Q_TUTORIAL, ''):
 		Quest.Q_TUTORIAL_OFFICE: 
@@ -34,6 +34,12 @@ func setup_quest()->bool:
 		Quest.Q_TUTORIAL_BUILD_TRAINING:
 			tutorial_build_training_hall()
 			return true
+		Quest.Q_TUTORIAL_WAIT_FOR_TRAINING_HALL:
+			tutorial_wait_training_hall()
+			return true
+		Quest.Q_TUTORIAL_INSTALL_EQUIPMENT:
+			tutorial_install_equipment()
+			return true
 	return false
 
 
@@ -46,11 +52,13 @@ func on_pass_time(timeAmt):
 			GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_BUILD_TRAINING
 			setup_construction_decrees()
 			setup_quest()
-	elif GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_BUILD_TRAINING:
+	elif GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_BUILD_TRAINING or GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_WAIT_FOR_TRAINING_HALL:
 		if GameState.settings.get('id_trainingHall', 0) >= 1: 
-			GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_TRAIN_DISCIPLE
-			setup_disciple_decrees()
+			GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_INSTALL_EQUIPMENT
+			#setup_disciple_decrees()
 			setup_quest()
+		else: 
+			tutorial_wait_training_hall()
 
 func on_place_item(itemShadow, itemData, sourceNode):
 	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
@@ -228,20 +236,24 @@ func tutorial_build_training_hall():
 	UI.call_attention_from_right(UI.leftOrganizer.get_entry_by_id('new'))
 	c.page("""
 Now that you have some workers we can begin construction of a training hall. When that is finished we'll be able to start a training regimen.
-While I hope you find me worthy to be the first sacred scientist to start their training, you may also search for other candidates if you wish.
-I will return when the training hall is complete.""")
+While I hope you find me worthy to be the first sacred scientist to start their training, you may also search for other candidates if you wish. I will return when the training hall is complete.""")
 	c.clear()
 	c.speaking(null)
 	yield(c.run(), "completed")
 	UI.call_attention_left_organizer('decree_buildTrainingHall')
+	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_WAIT_FOR_TRAINING_HALL
+
+func tutorial_wait_training_hall():
+	Conversation.clear()
+	Conversation.text("Reminder: Decree the construction of a training hall, and pass time until it is completed.")
+	Conversation.run()
+
+
+
+func tutorial_install_equipment():
+	Conversation.clear()
+	Conversation.speaking('helper')
+	Conversation.text("Oh good, it's finished! It's a little...small.\nBut no matter, I'm sure it will do for now! I will meet you there.")
+	Conversation.run()
 	
-func setup_disciple_decrees():
-	var org = GameState._organizers['main']
-	var decreeGen = {'cmd':'decreeGen', 'decreeFile':"res://data/decree/hireDisciple.json", 'org':'office', 'folderId':'outbox', 'gotoScene':'office'}
-	org.add_entry('Seek disciples^noEdit^noDelete', decreeGen, 'decree_hireDisciple', 'decreeGen')
-	GameState.refresh_organizers()
-
-
-func tutorial_train_disciple():
-	pass
 	

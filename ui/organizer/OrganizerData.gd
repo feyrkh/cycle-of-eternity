@@ -7,15 +7,46 @@ var entries = [] setget set_entries
 var entryIds = {}
 var organizer
 
+var entryTypeIndex = {}
+const entryTypes = ['exemplar', 'producer', 'training', 'consumer', 'project']
+
+func _init():
+	refresh_entry_type_index()
+
+func refresh_entry_type_index():
+	for entryType in entryTypes:
+		entryTypeIndex[entryType] = []
+	for entry in entries:
+		if entry.get('id'):
+			entryIds[entry.get('id')] = entry
+		index_entry(entry)
+
+func index_entry(entry):
+	# consumers
+	if _get_consumer_data(entry) != null:
+		entryTypeIndex['consumer'].append(entry)
+	if _get_producer_data(entry) != null:
+		entryTypeIndex['producer'].append(entry)
+	if self._get_project_data(entry):
+		entryTypeIndex['project'].append(entry)
+	if entry.data and entry.data is Dictionary and entry.data.has('train') and entry.data.get('cmd','') != 'placeable':
+		entryTypeIndex['training'].append(entry)
+	if entry.data and entry.data is TrainingData:
+		entryTypeIndex['training'].append(entry)
+	if entry.data and entry.data is ExemplarData:
+		entryTypeIndex['exemplar'] = entry
+
+func get_entries_with_type(entryType):
+	return entryTypeIndex.get(entryType)
+
 func set_entries(val):
 	entryIds = {}
 	if !val: entries = []
 	entries = val
-	for entry in val:
-		if entry.get('id'):
-			entryIds[entry.get('id')] = entry
+	refresh_entry_type_index()
 
 func cloneFromActiveOrg(orgName):
+	if !orgName: return
 	var otherOrg = GameState.get_organizer_data(orgName)
 	if !otherOrg: return
 	name =  otherOrg.name
@@ -64,6 +95,7 @@ func deserialize(dict:Dictionary)->OrganizerData:
 		entry['data'] = valData
 		deserializedEntries.append(entry)
 	retval.entries = deserializedEntries
+	refresh_entry_type_index()
 	return retval
 	
 func get_entry_by_path(entryPath):
@@ -93,8 +125,10 @@ func add_entry(path:String, data, id=null, folderId=null, entrySceneName:String=
 	nameChunks.remove(0)
 	var entryFlags = Util.build_entry_flags(nameChunks)
 	var entry = OrganizerDataEntry.build(id, name, pathChunks, data, entrySceneName, entryFlags)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-	if position < 0 or position > entries.size(): position = entries.size()
+	if position < 0 or position > entries.size(): 
+		position = entries.size()
 	entries.insert(position, entry)
+	index_entry(entry)
 	if id: entryIds[id] = entry
 	return entry
 
@@ -116,6 +150,7 @@ func add_folder(path:String, id=null, folderId=null, data:Dictionary={}):
 			var entryFlags = Util.build_entry_flags(pathConfig)
 			var entry = OrganizerDataEntry.build(null, n, curPathChunks.duplicate(), data, 'OrganizerFolder', entryFlags)
 			entries.append(entry)
+			index_entry(entry)
 		curPathChunks.append(n)
 	# Build the final folder, which is basically the same as above but has an ID...
 	#TODO: Refactor this so it's a recursive buildup instead of copy/paste...should be easy, but I can't focus right now thanks to dogs and just want to move on -_-
@@ -128,31 +163,48 @@ func add_folder(path:String, id=null, folderId=null, data:Dictionary={}):
 	if id: 
 		entryIds[id] = entry
 	entries.append(entry)
+	index_entry(entry)
 	
 func collect_resource_consumers():
 	var results = []
-	for entry in entries:
-		if !(entry is Dictionary) or !entry.has('data') or !(entry['data'] is Dictionary): 
-			continue
-		if entry.get('data', {}).has('consume'):
-			results.append(entry['data'])
+	for entry in entryTypeIndex['consumer']:
+		var consumerData = _get_consumer_data(entry)
+		if consumerData: 
+			results.append(consumerData)
 	return results
-	
+
+func _get_consumer_data(entry):
+	if !(entry is Dictionary) or !entry.has('data') or !(entry['data'] is Dictionary): 
+		return null
+	if entry.get('data', {}).has('consume'):
+		return entry['data']
+
 func collect_projects():
 	var results = []
-	for entry in entries:
-		var pathChunks = entry.get('path', [])
-		if pathChunks.size() > 0 and pathChunks[0] == 'Outbox' and entry.get('data',{}).has_method('get_is_project') and entry.get('data').get_is_project():
+	for entry in entryTypeIndex['project']:
+		if _get_project_data(entry):
 			results.append(entry)
 	return results
 
+func _get_project_data(entry):
+	var pathChunks = entry.get('path', [])
+	if pathChunks.size() > 0 and pathChunks[0] == 'Outbox' and entry.get('data',{}).has_method('get_is_project') and entry.get('data').get_is_project():
+		return entry
+	return null
+
 func collect_produced_resources():
 	var results = {}
-	for entry in entries:
-		if !entry.get('data') or !(entry.get('data') is Dictionary): continue # don't produce resources from non-Dictionary entries
-		if !entry.get('data',{}).get('active', true): continue
-		var products = entry.get('data',{}).get('produce')
-		if products and products.size() > 0:
+	for entry in entryTypeIndex['producer']:
+		var products = _get_producer_data(entry)
+		if products:
 			for resource in products.keys():
 				results[resource] = products[resource] + results.get(resource, 0)
 	return results
+
+func _get_producer_data(entry, ignoreActiveFlag=false):
+	if !entry.get('data') or !(entry.get('data') is Dictionary): 
+		return null # don't produce resources from non-Dictionary entries
+	if !ignoreActiveFlag and !entry.get('data',{}).get('active', true): 
+		return null
+	return entry.get('data',{}).get('produce')
+	

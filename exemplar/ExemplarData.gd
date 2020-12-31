@@ -1,6 +1,7 @@
-extends Node
+extends Resource
 class_name ExemplarData
 
+const statsHistoryCount = 7
 const statsTree = {
 	'str':{
 		'bone': ['armBoneStr', 'legBoneStr', 'skullBoneStr', 'coreBoneStr'],  # bone density
@@ -14,17 +15,16 @@ const statsTree = {
 	},
 	'int':{
 		'ability': ['perceive', 'insight', 'synthesis', 'propriception'], # mental abilities
-		'focus': ['thinkSpeed', 'multitask'], # related to mental foci
+		'm_sharpness': ['thinkSpeed', 'multitask', 'focus'], # related to mental foci
 		'skill': ['musicInt', 'mathInt', 'spatialInt', 'languageInt', 'emotionalInt'], # ability in different intellectual domains
 		'm_recover': ['focusRecovery'] # recovery speed
 	},
 	'will':{
 		'mind': [
 			'emptyMind',  # ability to clear your mind, reduce time needed for meditation?
-			'focus', # amount of energy available for mental feats
 			'resistManipulation', 'resistConfusion'], # resist mental
 		'body': ['resistFatigue', 'resistDisorient'], # resist physical
-		'soul': ['spiritFatigue', 'spiritRecover', 
+		'soul': ['determination', 'spiritFatigue', 'spiritRecover', 
 			'resistDomination', ''] # resist spiritual
 	}
 }
@@ -32,20 +32,26 @@ const statsTree = {
 var entityId
 var entityName
 var stats = {}
+var statsHistory = []
 var gender
 var organizerData
 
 func set_entity_name(newName): 
 	entityName = newName
-	organizerData.friendlyName = newName
+	if organizerData: organizerData.friendlyName = newName
 
 func get_entity_name(): return entityName
 
 func get_organizer_name():
 	return 'exemplar_'+str(entityId)
 
+func take_stats_snapshot():
+	statsHistory.push_front(stats.duplicate())
+	while statsHistory.size() > statsHistoryCount:
+		statsHistory.pop_back()
+		
 func serialize():
-	var retval = {'cmd':'exemplar', 'dt':Util.DATATYPE_EXEMPLAR, 'g':gender, 'name':entityName, 'id':entityId, 'stats':stats, }
+	var retval = {'cmd':'exemplar', 'dt':Util.DATATYPE_EXEMPLAR, 'g':gender, 'name':entityName, 'id':entityId, 'stats':stats, 'statsHistory':statsHistory}
 	return retval
 
 func deserialize(data):
@@ -54,6 +60,7 @@ func deserialize(data):
 	organizerData = GameState.get_organizer_data(get_organizer_name())
 	entityName = data.get('name', 'Unnamed Exemplar')
 	stats = data.get('stats', {})
+	statsHistory = data.get('statsHistory', [])
 	gender = data.get('g', 'f')
 	for statsTreeName in statsTree:
 		var avgStats = get_stats_summary(statsTree.get(statsTreeName))['mean']
@@ -71,8 +78,14 @@ func on_resource_create(newName, createOpts, entityId):
 	map_reduce_stats_tree(statsTree['int'], {}, '_generate_stats_array', '_no_op_reduce', '', {'med':createOpts.get('intMed', defaultMed), 'stdev':createOpts.get('intStdev', defaultStdev), 'rigor':createOpts.get('rigor', 1)})
 	map_reduce_stats_tree(statsTree['will'], {}, '_generate_stats_array', '_no_op_reduce', '', {'med':createOpts.get('willMed', defaultMed), 'stdev':createOpts.get('willStdev', defaultStdev), 'rigor':createOpts.get('rigor', 1)})
 	gender = createOpts.get('gender', Util.rand_choice(['m', 'f']))
-	# ignoring newName
-	entityName = NameGenerator.generate('disciple_'+gender)
+	if createOpts.has('name'):
+		entityName = createOpts.get('name').format(GameState.settings)
+	else:
+		# ignoring newName...but why? Oh, because it didn't take gender into account, ugh.
+		entityName = NameGenerator.generate('disciple_'+gender)
+	
+	for i in statsHistoryCount:
+		take_stats_snapshot()
 
 func _generate_stats_array(statNameArray, statPrefix, opts):
 	for statName in statNameArray:
@@ -116,8 +129,14 @@ func map_reduce_stats_tree(tree, baseData:Dictionary, mapFuncName, reduceFuncNam
 		return call(mapFuncName, tree, statPrefix, opts)
 	return summary
 
+func set_stat(statName, amt):
+	stats[statName] = amt
+
 func get_stat(statName):
 	return stats.get(statName, 0)
+
+func get_stat_max(statName):
+	return stats.get('max_'+statName, 0)
 
 func get_stats_summary(statsTree, statPrefix=''):
 	if statsTree is String:
@@ -191,3 +210,18 @@ func init_from_file(filename):
 	file.close()
 	var baseData = parse_json(text)
 
+func get_stats_change_over_time(daysAgo)->Dictionary:
+	if daysAgo > statsHistory.size(): 
+		daysAgo = statsHistory.size()
+	daysAgo -= 1
+	if daysAgo < 0: 
+		return {} # Comparing today with today (or the future) means it's empty
+	var result = {}
+	var history = statsHistory[daysAgo]
+	for k in stats:
+		var today = stats[k]
+		var before = history.get(k, 0)
+		var diff = round((today-before)*100)/100
+		if abs(diff) < 0.1: continue
+		result[k] = diff
+	return result

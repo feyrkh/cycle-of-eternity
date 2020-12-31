@@ -1,6 +1,5 @@
-{"cmd":"scene", "scene":"trainingHall", "organizerName":"trainingHall{id_trainingHall}", "training":[
-{"name":"sparring", "effect":1.1, "diff":0.9},
-{"name":"calisthenics", "effect":1.0, "diff":1.0},
-{"name":"sprinting", "effect":0.7, "diff":1.0},
-{"name":"meditation", "effect":0.3, "diff":1.2},
-]}
+{"cmd":"scene", "scene":"trainingHall", "organizerName":"trainingHall{id_trainingHall}",
+"initEntries":[
+"res://data/locationEquip/metal_weights.json"
+]
+}

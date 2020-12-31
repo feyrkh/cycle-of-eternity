@@ -30,6 +30,7 @@ func _ready():
 	label.toggle_mode = get_is_toggle()
 	if get_no_edit(): editNameButton.visible = false
 	if get_is_unread(): set_is_unread(true) # trigger visual indicators
+	mark_as_placeable()
 	Event.connect("finalize_place_item", self, 'on_finalize_place_item')
 
 func on_finalize_place_item(position, scale, rotation, itemData, sourceNode):
@@ -44,6 +45,14 @@ func on_finalize_place_item(position, scale, rotation, itemData, sourceNode):
 		itemData['scaleX'] = scale.x
 		itemData['scaleY'] = scale.y
 		itemData['rot'] = rotation
+		label.text = label.text.replace(' (unplaced)', '')
+		containingOrganizer.refresh()
+
+func mark_as_placeable():
+	if data is Dictionary and data.get('cmd') == 'placeable':
+		find_node('UnplacedIcon').visible = true
+	else:
+		find_node('UnplacedIcon').queue_free()
 
 func set_data(d):
 	data = d
@@ -83,6 +92,8 @@ func set_is_unread(val):
 	var unreadIcon = find_node('UnreadIcon', true)
 	if unreadIcon: 
 		unreadIcon.visible = val
+		if !val: 
+			unreadIcon.queue_free() # no future need for the unread icon if it's not visible now
 	# update folders above me
 	if val: # unconditionally set folder read-ness
 		var cur = self.get_parent()

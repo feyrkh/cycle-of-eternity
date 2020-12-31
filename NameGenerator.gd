@@ -12,6 +12,7 @@ func deserialize(data):
 		generatedNames[k] = 1
 
 static func generate(entityType):
+	if !File.new().file_exists('res://data/name/%s.json'%entityType): return '(unnamed %s)' % entityType
 	var nameData = Util.load_json_file('res://data/name/%s.json'%entityType)
 	var generatedName
 	if nameData:

@@ -9,11 +9,13 @@ enum {TOP_OF_LIST, BOTTOM_OF_LIST, AFTER_NODE, BEFORE_NODE}
 var dropTargetType
 var dropTarget:Node = null
 var dropContainer:Control = null
+export(bool) var allowNewFolder = true
+export(bool) var ignoreEntryClicks = false
+
 
 var organizerDataName
 var entryIds = {}
 var uiEnabled = true
-
 const OrganizerFolderScene = preload('./OrganizerFolder.tscn')
 const OrganizerEntryScene = preload('./OrganizerEntry.tscn')
 const ProgressBar = preload("res://ui/organizer/ProgressBar.tscn")
@@ -27,6 +29,8 @@ func _ready():
 			self.remove_child(child)
 			entryContainer.add_child(child)
 		connect_drag_events_for_tree(child)
+	
+	if !allowNewFolder: find_node('NewFolderButton').queue_free()
 
 func _process(delta):
 	if !Input.is_mouse_button_pressed(BUTTON_LEFT):
@@ -58,6 +62,9 @@ func reenable():
 
 func disable():
 	set_enabled(false)
+	
+func refresh():
+	refresh_organizer_data(GameState.get_organizer_data(organizerDataName))
 	
 func refresh_organizer_data(data):
 	var d = data
