@@ -8,7 +8,7 @@ var entryIds = {}
 var organizer
 
 var entryTypeIndex = {}
-const entryTypes = ['exemplar', 'producer', 'training', 'consumer', 'project']
+const entryTypes = ['exemplar', 'producer', 'training', 'consumer', 'project', 'location']
 
 func _init():
 	refresh_entry_type_index()
@@ -35,6 +35,8 @@ func index_entry(entry):
 		entryTypeIndex['training'].append(entry)
 	if entry.data and entry.data is ExemplarData:
 		entryTypeIndex['exemplar'] = entry
+	if entry.data and entry.data is Dictionary and entry.data.get('cmd') == 'scene' and entry.data.get('organizerName'):
+		entryTypeIndex['location'] = entry
 
 func get_entries_with_type(entryType):
 	return entryTypeIndex.get(entryType)

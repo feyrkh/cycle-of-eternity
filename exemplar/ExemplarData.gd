@@ -36,6 +36,9 @@ var statsHistory = []
 var gender
 var organizerData
 
+static func get_training_organizer(exemplar:ExemplarData):
+	return GameState.get_organizer_data('train_plan_'+exemplar.entityId)
+
 func set_entity_name(newName): 
 	entityName = newName
 	if organizerData: organizerData.friendlyName = newName
@@ -44,6 +47,9 @@ func get_entity_name(): return entityName
 
 func get_organizer_name():
 	return 'exemplar_'+str(entityId)
+
+func get_organizer_data():
+	return GameState.get_organizer_data(get_organizer_name())
 
 func take_stats_snapshot():
 	statsHistory.push_front(stats.duplicate())
@@ -86,6 +92,10 @@ func on_resource_create(newName, createOpts, entityId):
 	
 	for i in statsHistoryCount:
 		take_stats_snapshot()
+	
+	organizerData = GameState.get_organizer_data(get_organizer_name())
+	organizerData.add_folder('Training^noDelete^isOpen^noEdit', 'training')
+	organizerData.add_entry('Rest^noDelete', 'res://data/train/rest.json', null, 'training')
 
 func _generate_stats_array(statNameArray, statPrefix, opts):
 	for statName in statNameArray:

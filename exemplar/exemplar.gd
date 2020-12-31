@@ -9,8 +9,9 @@ var trainingOrganizerData
 var trainingOptions = [] # transient, refreshed by load_training_options_from_location
 
 onready var trainingMethodSelect:OptionButton = find_node('TrainingMethodSelect')
-onready var repeatCountSelect:OptionButton = find_node('RepeatCountSelect')
-onready var addToPlanButton = find_node("AddToPlanButton")
+onready var countSelect:OptionButton = find_node('CountSelect')
+onready var repeatTrainingButton:CheckBox = find_node("RepeatTraining")
+onready var addToPlanButton:Button = find_node("AddToPlanButton")
 onready var trainingOrganizer = find_node("TrainingOrganizer")
 
 func update_label(labelName, newText):
@@ -37,34 +38,44 @@ func initTrainingTab():
 	initTrainingStatsChange()
 
 func initTrainingOptions():
+	trainingOptions = []
 	var trainingOptionData = load_training_options_from_location()
+	trainingOptionData += load_training_options_from_exemplar()
 	for i in 5:
-		repeatCountSelect.add_item("Repeat x"+str(i+1))
+		countSelect.add_item("x"+str(i+1))
 	update_training_method_description(0)
 
+func load_training_options_from_exemplar():
+	for entry in sourceData.get_organizer_data().get_entries_with_type('training'):
+		var entryPath = entry.get('path', [])
+		if entryPath.size() > 0 and entryPath[0] == 'Training':
+			append_training_options(trainingOptions, entry)
+	return trainingOptions
+	
 func load_training_options_from_location():
 	if !originalOrganizerName: return {}
 	var locationOrgName = originalOrganizerName
 	var locationOrgData = GameState.get_organizer_data(locationOrgName)
-	trainingOptions = []
 	for entry in locationOrgData.get_entries_with_type('training'):
-		if entry.data is TrainingData:
-			trainingOptions.append(entry.data)
-		else:
-			var trainingDataList = entry.data['train']
-			if trainingDataList is Dictionary: 
-				trainingDataList = [trainingDataList]
-			for trainingDataJson in trainingDataList:
-				var trainingData = load('res://exemplar/TrainingData.gd').new()
-				trainingData.deserialize(trainingDataJson)
-				trainingMethodSelect.add_item(trainingData.description)
-				trainingOptions.append(trainingData)
+		append_training_options(trainingOptions, entry)
+	return trainingOptions
 	
-	
+func append_training_options(trainingOptions, entry):
+	if entry.data is TrainingData:
+		trainingOptions.append(entry.data)
+	else:
+		var trainingDataList = entry.data['train']
+		if trainingDataList is Dictionary: 
+			trainingDataList = [trainingDataList]
+		for trainingDataJson in trainingDataList:
+			var trainingData = load('res://exemplar/TrainingData.gd').new()
+			trainingData.deserialize(trainingDataJson)
+			trainingMethodSelect.add_item(trainingData.description)
+			trainingOptions.append(trainingData)
 
 func initTrainingOrganizer():
 	if sourceData:
-		trainingOrganizerData = GameState.get_organizer_data('train_plan_'+sourceData.entityId)
+		trainingOrganizerData = ExemplarData.get_training_organizer(sourceData)
 		trainingOrganizerData.friendlyName = sourceData.entityName+"'s Training Plan"
 		find_node('TrainingOrganizer').refresh_organizer_data(trainingOrganizerData)
 
@@ -220,10 +231,14 @@ func _on_AddToPlanButton_pressed():
 	trainingOrganizerData = trainingOrganizer.save() # Get any changes made to ordering or deletion
 	GameState.add_organizer(trainingOrganizer.organizerDataName, trainingOrganizerData)
 	var trainingData = trainingOptions[trainingMethodSelect.get_selected_id()]
-	var repeatCount = repeatCountSelect.get_selected_id()+1
+	var count = countSelect.get_selected_id()+1
+	var repeat = repeatTrainingButton.pressed
+	var repeatStr = ""
+	if repeat: 
+		repeatStr = " (repeat)"
 #func add_entry(path:String, data, id=null, folderId=null, entrySceneName:String='OrganizerEntry', position=-1):
-	var entryName = "%s: %s x%d"%[originalOrganizerData.friendlyName, trainingData.description, repeatCount]
-	var saveData = {"loc":originalOrganizerName, "type":trainingData.name, "repeat": repeatCount}
+	var entryName = "%s: %s x%d%s"%[originalOrganizerData.friendlyName, trainingData.description, count, repeatStr]
+	var saveData = {"loc":originalOrganizerName, "src":originalOrganizerName, "id":trainingData.id, "count": count, "repeat":repeat}
 	trainingOrganizerData.add_entry(entryName+'^noEdit', saveData)
 	trainingOrganizer.refresh_organizer_data(trainingOrganizerData)
 
@@ -235,7 +250,8 @@ func update_training_method_description(index):
 	if trainingOptions.size() == 0: 
 		text = ""
 		trainingMethodSelect.disabled = true
-		repeatCountSelect.disabled = true
+		countSelect.disabled = true
+		repeatTrainingButton.disabled = true
 		addToPlanButton.disabled = true
 	else:
 		var selectedTraining = trainingOptions[index]

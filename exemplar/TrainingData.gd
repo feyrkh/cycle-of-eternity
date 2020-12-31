@@ -1,6 +1,7 @@
 extends Resource
 class_name TrainingData
 
+var id = random_id()
 export(String) var name:String
 export(String) var description:String
 export(Dictionary) var traineeRequirement:Dictionary # {'min':60,'max':1000}
@@ -40,9 +41,14 @@ func get_summary():
 		var friendlyMap = {}
 		for k in statImprove:
 			friendlyMap[Util.get_stat_friendly_name(k)] = statImprove[k]
-		var friendlyKeys = friendlyMap.keys()
-		friendlyKeys.sort()
+		var friendlyKeys = []
+		for k in friendlyMap:
+			var chances = friendlyMap[k].get('c', DEFAULT_CHANCES)
+			var multiplier =  friendlyMap[k].get('m', DEFAULT_MULTIPLIER)
+			friendlyKeys.append([chances*multiplier, k])
+		friendlyKeys.sort_custom(Util, 'sort_priority_array_desc')
 		for k in friendlyKeys:
+			k = k[1]
 			var chanceText
 			var chances = friendlyMap[k].get('c', DEFAULT_CHANCES)
 			if chances < 1: chanceText = 'an occasional chance'
@@ -57,23 +63,29 @@ func get_summary():
 		var friendlyMap = {}
 		for k in fatigue:
 			friendlyMap[Util.get_stat_friendly_name(k)] = fatigue[k]
-		var friendlyKeys = friendlyMap.keys()
-		friendlyKeys.sort()
+		var friendlyKeys = []
+		for k in friendlyMap:
+			var chances = friendlyMap[k].get('c', DEFAULT_CHANCES)
+			var multiplier =  friendlyMap[k].get('m', DEFAULT_MULTIPLIER)
+			friendlyKeys.append([chances*multiplier, k])
+		friendlyKeys.sort_custom(Util, 'sort_priority_array_desc')
 		for k in friendlyKeys:
+			k = k[1]
 			var chanceText
 			var chances = friendlyMap[k].get('c', DEFAULT_CHANCES)
 			if chances < 1: chanceText = 'An occasional chance'
 			elif chances < 2: chanceText = '1 chance'
 			else: chanceText = '%d chances'%chances
-			var line = "   %s to decrease %s by %.1f, resisted with difficulty %d by '%s'\n" % [chanceText, k, friendlyMap[k].get('m', DEFAULT_MULTIPLIER), friendlyMap[k].get('d', DEFAULT_DIFFICULTY), Util.get_stat_friendly_name(friendlyMap[k].get('r', DEFAULT_RESIST_FATIGUE_STAT))]
+			var line = "   %s to decrease %s by %.1f, resisted with difficulty %d by %s\n" % [chanceText, k.to_lower(), friendlyMap[k].get('m', DEFAULT_MULTIPLIER), friendlyMap[k].get('d', DEFAULT_DIFFICULTY), Util.get_stat_friendly_name(friendlyMap[k].get('r', DEFAULT_RESIST_FATIGUE_STAT)).to_lower()]
 			summary += line
 		summary += '\n'
 	
 	return summary
 		
-		
+	
 func serialize():
 	return {
+		'id': id,
 		'name': name,
 		'description': description,
 		'statImprove': statImprove,
@@ -87,28 +99,32 @@ func deserialize(json):
 	self.statImprove = json.get('statImprove', {})
 	self.traineeRequirement = json.get('requirements',{})
 	self.fatigue = json.get('fatigue', {})
+	self.id = json.get('id', random_id())
 
-#func load_location_modifications(locationOrganizerName):
-#	var orgData = GameState.get_organizer_data(locationOrganizerName)
-#	for entry in orgData.entries:
-#		if !entry.data: 
-#			continue
-#		if entry.data is Dictionary:
-#			var entryData = entry.data
-#			if entryData.get('cmd', '') != 'trainEquip': 
-#				continue
-#			var trainData = entryData.get('train')
-#			if !trainData: 
-#				continue
-#			if trainData.get('name') != self.name: 
-#				continue
-#			description += '\n'+trainData.get('trainMsg', "Enhanced with the use of %s.\n"%[entry.name])
-#			var statImprove = trainData.get('statImprove',{})
-#			var traineeRequirement = trainData.get('traineeRequirement', {})
-#			var fatigue = trainData.get('fatigue', {})
-#			Util.merge_maps(self.statImprove, statImprove)
-#			Util.merge_maps(self.traineeRequirement, traineeRequirement)
-#			Util.merge_maps(self.fatigue, fatigue)
+func random_id():
+	return 'train_'+str(randi())
+
+func load_location_modifications(locationOrganizerName):
+	var orgData = GameState.get_organizer_data(locationOrganizerName)
+	for entry in orgData.entries:
+		if !entry.data: 
+			continue
+		if entry.data is Dictionary:
+			var entryData = entry.data
+			if entryData.get('cmd', '') != 'trainBonus': 
+				continue
+			var trainData = entryData.get('trainBonus')
+			if !trainData: 
+				continue
+			if trainData.get('name') != self.name and !trainData.get('affects',[]).has(self.name):
+				continue
+			description += '\n'+trainData.get('trainMsg', "Enhanced with the use of %s.\n"%[entry.name])
+			var statImprove = trainData.get('statImprove',{})
+			var traineeRequirement = trainData.get('traineeRequirement', {})
+			var fatigue = trainData.get('fatigue', {})
+			Util.merge_maps(self.statImprove, statImprove)
+			Util.merge_maps(self.traineeRequirement, traineeRequirement)
+			Util.merge_maps(self.fatigue, fatigue)
 
 func exemplar_can_train(exemplarData):
 	for k in traineeRequirement:

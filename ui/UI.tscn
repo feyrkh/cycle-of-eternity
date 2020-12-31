@@ -50,7 +50,7 @@ func _on_TIE_state_change(state):
 	update_enabled()
 
 func _on_TimePassButton_pressed():
-	postClickDelay = 1
+	postClickDelay = 0.2
 	Event.emit_signal('pass_time', 1)
 "
 

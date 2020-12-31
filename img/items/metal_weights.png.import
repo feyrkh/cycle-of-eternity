@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/metal_weights.jpg-a6e1ca849783fe74cd2844012351a66b.stex"
+path="res://.import/metal_weights.png-00aa4dc7adc8de3b2638afd65661dcb3.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://img/items/metal_weights.jpg"
-dest_files=[ "res://.import/metal_weights.jpg-a6e1ca849783fe74cd2844012351a66b.stex" ]
+source_file="res://img/items/metal_weights.png"
+dest_files=[ "res://.import/metal_weights.png-00aa4dc7adc8de3b2638afd65661dcb3.stex" ]
 
 [params]
 

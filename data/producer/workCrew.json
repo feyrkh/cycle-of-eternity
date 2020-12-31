@@ -1,1 +1,1 @@
-{"cmd":"item", "msg":"res://data/producer/workCrew.txt", "img":"res://img/people/workCrew.png", "produce":{"laborUnskilled":5}, "consume":{"laborAdmin":1}}
+{"cmd":"item", "msg":"res://data/producer/workCrew.txt", "img":"res://img/people/workCrew.png", "produce":{"laborUnskilled":1}, "consume":{"laborAdmin":0.2}}

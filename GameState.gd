@@ -297,7 +297,7 @@ func cmd_decree_gen(data:Dictionary, sourceNode):
 	var decreeJsonFile = data.get('decreeFile') # JSON file holding the decree we're going to build
 	var decreeData = load("res://decree/DecreeData.gd").new()
 	decreeData.init_from_file(decreeJsonFile)
-	if data.get('gotoScene'): cmd_scene({'scene':data.get('gotoScene')}, sourceNode)
+	if data.get('gotoScene'): cmd_scene({'scene':data.get('gotoScene'), 'organizerName':orgName}, sourceNode)
 	var targetOrg = GameState.get_organizer_data(orgName)
 	targetOrg.add_entry(decreeData.projectName, decreeData, entryId, folderId)
 	refresh_organizers()
@@ -330,7 +330,7 @@ func cmd_item(data:Dictionary, sourceNode):
 	if produces.size() > 0: 
 		var friendlyKeys = friendlyProduces.keys()
 		friendlyKeys.sort()
-		var productionNote = "Weekly production:\n"
+		var productionNote = "Daily production:\n"
 		if !data.get('active', true): 
 			productionNote += "  --(production inactive, insufficent resources consumed!)--\n"
 		for k in friendlyKeys:
@@ -347,7 +347,11 @@ func cmd_item(data:Dictionary, sourceNode):
 func cmd_item_train(data:Dictionary, sourceNode):
 	var msg = Util.load_text_file(data.get('msg', ''))
 	var train = data.get('train', {})
-	
+	if train.size():
+		msg += "\n\n---\n\nAllows exemplars to train in the following ways:\n"
+		for trainEntry in train:
+			msg += "   %s\n"%trainEntry.get('description',"(unknown training)")
+	cmd_msg({'msg':msg}, sourceNode)
 	
 func cmd_placeable(data, sourceNode):
 	var itemShadow:Sprite = Sprite.new()

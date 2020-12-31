@@ -65,14 +65,14 @@ func direct_to_office():
 	mainOrg.add_folder('Locations^noEdit^isOpen^noDelete', 'locations')
 	mainOrg.add_folder('Sacred School^noEdit^isOpen^noDelete', 'sacredSchool', 'locations')
 	mainOrg.add_entry('{playerName}\'s Office^noEdit^noDelete^isUnread'.format(GameState.settings), 
-		 {'cmd':'scene', 'scene':'office', 'organizerName':'office'}, 'gotoOffice', 'sacredSchool')
+		 {'cmd':'scene', 'scene':'office', 'organizerName':'office'}, 'office', 'sacredSchool')
 	
 	GameState.add_organizer('main', mainOrg)
 	UI.load_left_organizer('main', true)
 #	UI.leftOrganizer.refresh_organizer_data(GameState.get_organizer_data('main'))
 	UI.leftOrganizer.visible = true
 	yield(get_tree(), 'idle_frame')
-	var officeItem = UI.leftOrganizer.get_entry_by_id('gotoOffice')
+	var officeItem = UI.leftOrganizer.get_entry_by_id('office')
 	officeItem.call_attention()
 	UI.call_attention_from_right(officeItem)
 	officeItem.set_no_delete(true)

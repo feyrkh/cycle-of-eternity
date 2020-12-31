@@ -30,6 +30,12 @@ const flagNameMap = {
 	'unread': isUnread
 }
 
+static func sort_priority_array_desc(a, b):
+	# sort in descending order, where a & b are arrays with the first element being the priority
+	# ex: [ [3, "Three"], [4, "Four"], [1, "One"], [2, "Two"] ].sort_custom(Util, "sort_priority_array_desc")
+	# returns: [[4, "Four"], [3, "Three"], [2, "Two"], [1, "One"] ]
+	return a[0] > b[0]
+	
 static func build_entry_flags(flagNameArr:Array):
 	if !flagNameArr is Array: 
 		printerr('Unexpected flagNameArr, expected an array: ', flagNameArr)
@@ -43,6 +49,7 @@ static func build_entry_flags(flagNameArr:Array):
 static func clear_children(node:Node):
 	for n in node.get_children():
 		n.queue_free()
+		node.remove_child(n)
 
 static func load_text_file(filename:String)->String:
 	if !filename.begins_with('res://') and !filename.begins_with('user://'): return filename
@@ -123,7 +130,7 @@ const statsMetadata = {
 	"legEnd": {"name":"Leg muscle endurance", "desc":"Resist fatigue from using your legs"},
 	"gripEnd": {"name":"Grip endurance", "desc":"Resist fatigue from using your hands"},
 	"coreEnd": {"name":"Core endurance", "desc":"Resist fatigue from using your core"},
-	"fatigue": {"name":"Exertion endurance", "desc":"Resist fatigue through superior training, preventing weakness, loss of balance, loss of focus"},
+	"fatigue": {"name":"Stamina", "desc":"Resist fatigue through superior training, preventing weakness, loss of balance, loss of focus"},
 	"fatigueRecover": {"name":"Fatigue recovery", "desc":"Speed of recovery from exertion and fatigue"},
 	"woundRecover": {"name":"Wound recovery", "desc":"Speed of recovery from physical injury"},
 	"moveSpd": {"name":"Movement speed", "desc":"Speed when covering ground on your feet"},
