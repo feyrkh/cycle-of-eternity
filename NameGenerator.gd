@@ -16,7 +16,7 @@ static func generate(entityType):
 	var nameData = Util.load_json_file('res://data/name/%s.json'%entityType)
 	var generatedName
 	if nameData:
-		for i in range(10):
+		for _i in range(10):
 			generatedName = generate_name(nameData)
 			if generatedName and !generatedNames.has(generatedName):
 				generatedNames[generatedName] = 1

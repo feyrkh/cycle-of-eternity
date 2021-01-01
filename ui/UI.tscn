@@ -51,7 +51,9 @@ func _on_TIE_state_change(state):
 
 func _on_TimePassButton_pressed():
 	postClickDelay = 0.2
+	Event.emit_signal('before_pass_time')
 	Event.emit_signal('pass_time', 1)
+	Event.emit_signal('after_pass_time')
 "
 
 [node name="UI" type="Node2D"]
@@ -188,6 +190,12 @@ blinkTargetPath = NodePath("../../TextBoxContainer/Blinker")
 margin_left = 1620.0
 margin_right = 1920.0
 margin_bottom = 1080.0
+
+[node name="ExtraOrganizer" parent="CanvasLayer/HBoxContainer/VBoxContainer2" instance=ExtResource( 9 )]
+visible = false
+margin_bottom = 429.0
+mouse_filter = 1
+size_flags_horizontal = 8
 
 [node name="Organizer2" parent="CanvasLayer/HBoxContainer/VBoxContainer2" instance=ExtResource( 9 )]
 margin_bottom = 862.0

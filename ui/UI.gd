@@ -74,6 +74,7 @@ func clear_inner_panel():
 	for child in dragSurface.get_children():
 		if child.has_method('on_close'): child.on_close()
 		child.queue_free()
+		dragSurface.remove_child(child)
 
 func add_popup(item):
 	if item.get_parent(): item.get_parent().remove_child(item)
@@ -107,8 +108,7 @@ func load_left_organizer(organizerName, skipSave=false):
 
 func load_organizer(organizerName, organizer, skipSave=false):
 	if !skipSave:
-		var oldData = organizer.save()
-		GameState.add_organizer(organizer.organizerDataName, oldData)
+		organizer.save()
 	var organizerData = GameState.get_organizer_data(organizerName)
 	if !organizerData:
 		organizerData = OrganizerData.new()
@@ -119,11 +119,9 @@ func load_organizer(organizerName, organizer, skipSave=false):
 
 func save_organizers():
 	if leftOrganizer.organizerDataName:
-		var leftData = leftOrganizer.save()
-		GameState.add_organizer(leftOrganizer.organizerDataName, leftData)
+		leftOrganizer.save()
 	if rightOrganizer.organizerDataName:
-		var rightData = rightOrganizer.save()
-		GameState.add_organizer(rightOrganizer.organizerDataName, rightData)
+		rightOrganizer.save()
 	
 func clear_organizer():
 	rightOrganizer.clear()

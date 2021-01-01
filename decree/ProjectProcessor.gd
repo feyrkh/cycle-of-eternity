@@ -27,8 +27,9 @@ func complete_decree_project(decreeData:DecreeData):
 func process_exemplar_training():
 	var exemplarEntries = GameState.get_organizer_data('main').get_entries_with_type('exemplar')
 	for exemplarEntry in exemplarEntries:
-		var exemplarId = exemplarEntry.id
-		var trainingOrganizerData = ExemplarData.get_training_organizer(exemplarEntry)
+		var exemplarData = exemplarEntry.data
+		exemplarData.on_training_start()
+		var trainingOrganizerData = ExemplarData.get_training_organizer(exemplarData)
 		var entriesToRecycle = []
 		while trainingOrganizerData.entries.size() > 0:
 			var trainingPlanEntry = trainingOrganizerData.entries[0]
@@ -37,41 +38,85 @@ func process_exemplar_training():
 			# Make sure the training location still exists - if not, recycle the whole entry and mark it as failed, continue loop
 			var trainingLocationOrganizerData = GameState.get_organizer_data(trainingPointer.get('loc'))
 			if !trainingLocationOrganizerData: 
-				trainingPlanEntry.data['fail'] = "The training location no longer exists - was the location destroyed?"
+				trainingPlanEntry.data['error'] = "The training location no longer exists - was the location destroyed?"
 				entriesToRecycle.append(trainingPlanEntry)
 				trainingOrganizerData.entries.remove(0)
 				continue
 			# Make sure the training still exists in the specified location - it might be either the same location we are training, or the exemplar's organizer. If not, recycle the whole entry and mark it as failed, continue loop
 			var trainingSourceOrganizerData = GameState.get_organizer_data(trainingPointer.get('src'))
 			if !trainingSourceOrganizerData:
-				trainingPlanEntry.data['fail'] = "The source of the training no longer exists - was the location or equipment destroyed?"
+				trainingPlanEntry.data['error'] = "The source of the training no longer exists - was the location or equipment destroyed?"
 				entriesToRecycle.append(trainingPlanEntry)
 				trainingOrganizerData.entries.remove(0)
 				continue
-			var srcTrainingEntries = trainingOrganizerData.get_entries_with_type('training')
+			var srcTrainingEntries = trainingSourceOrganizerData.get_entries_with_type('training')
 			if !srcTrainingEntries: 
 				srcTrainingEntries = []
 			var trainingData
 			for srcTrainingEntry in srcTrainingEntries:
-				if srcTrainingEntry.data is TrainingData and srcTrainingEntry.data.id == trainingPointer.get('id',''):
-					trainingData = srcTrainingEntry.data
-					break
+				var trainOptions = srcTrainingEntry.data.get('train', [])
+				for trainOption in trainOptions:
+					if trainOption is Dictionary and trainOption.get('id') == trainingPointer.get('id',''):
+						trainingData = trainOption
+						break
 			if !trainingData:
-				trainingPlanEntry.data['fail'] = "The equipment used in the training no longer exists - was it destroyed?"
+				trainingPlanEntry.data['error'] = "The equipment used in the training no longer exists - was it destroyed?"
 				entriesToRecycle.append(trainingPlanEntry)
 				trainingOrganizerData.entries.remove(0)
 				continue
+			# Hydrate trainingData
+			var trainingDataObj:TrainingData = TrainingData.new()
+			trainingDataObj.deserialize(trainingData)
+			trainingData = trainingDataObj
 			# Load any training modifiers from the location
 			trainingData.load_location_modifications(trainingPointer.get('loc'))
 			# Check whether the user's stats still allow them to perform the training - if not, recycle the whole entry and mark it as failed, continue loop
-			#if !trainingData.exemplar_can_train(exemplarData):
-			#	pass
+			var trainError = trainingData.exemplar_can_train(exemplarData)
+			if trainError:
+				trainingPlanEntry.data['error'] = trainError
+				entriesToRecycle.append(trainingPlanEntry)
+				trainingOrganizerData.entries.remove(0)
+				continue
 			# Perform the training
+			trainingPlanEntry.data.erase('error')
+			trainingData.train_exemplar(exemplarData)
 			# Decrement the count by 1
+			trainingPointer['count'] = trainingPointer.get('count', 1)-1
 			# If the training is repeatable recycle the entry with a count of 1
+			if trainingPointer.get('repeat', false):
+				var recycled = trainingPlanEntry.duplicate(true)
+				recycled['data']['count'] = 1
+				entriesToRecycle.append(recycled)
 			# If the count <= 0 delete the entry
+			if trainingPointer['count'] <= 0:
+				trainingOrganizerData.entries.remove(0)
 			# break from the loop, as we've done our one training for the day
+			break
 		# handle recycled entries
+		for recycle in entriesToRecycle:
+			var recycleData = recycle.get('data')
+			var finalEntryData = {}
+			if trainingOrganizerData.entries.size() > 0:
+				finalEntryData = trainingOrganizerData.entries[trainingOrganizerData.entries.size()-1].data
+			if finalEntryData.get('loc') == recycleData.get('loc') and finalEntryData.get('src') == recycleData.get('src') and finalEntryData.get('id') == recycleData.get('id') and finalEntryData.get('repeat') == recycleData.get('repeat') and finalEntryData.get('count', 1) + recycleData.get('count', 1) <= 5:
+				# Identical in every way, and the counts are small enough to merge, so do that
+				finalEntryData['count'] = finalEntryData['count'] + recycle.data['count']
+				if recycle.data.get('error'):
+					finalEntryData['error'] = recycle.data.get('error')
+			else:
+				# not identical, just append the entry
+				trainingOrganizerData.entries.append(recycle)
+			# update counters for first/last entries
+		if trainingOrganizerData.entries.size() > 0:
+			update_training_entry_counter_text(trainingOrganizerData.entries[trainingOrganizerData.entries.size()-1])
+			update_training_entry_counter_text(trainingOrganizerData.entries[0])
+		exemplarData.on_training_complete()
+	Event.emit_signal('training_queues_updated')
+
+func update_training_entry_counter_text(entry):
+	var n = entry.get('name','x0')
+	n = n.substr(0, n.length() - 2) + 'x' + str(entry.get('data', {}).get('count', 1))
+	entry['name'] = n
 
 func process_consumers():
 	var consumers

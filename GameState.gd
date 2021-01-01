@@ -114,7 +114,7 @@ func add_resource(k, amt, source, opts={}):
 				amt = 10
 			var org = get_organizer_data(entityData.get('org', 'main'))
 			#var entityCmdJson = Util.load_json_file(entityData.get('data',{}))
-			for i in range(amt):
+			for _i in range(amt):
 				var nextId = k+"_"+str(randi())
 				if entityData.get('idSeries'):
 					nextId = settings.get('id_'+entityData.get('idSeries'), 0) + 1
@@ -209,6 +209,8 @@ func change_right_organizer(organizerName):
 	if UI: UI.load_right_organizer(organizerName, false)
 
 func deserialize_world(worldJson):
+	UI.clear_inner_panel()
+	if curScene: curScene.queue_free()
 	var serializedWorld = parse_json(worldJson)
 	settings = serializedWorld.settings
 	quest = serializedWorld.get('quest', {})
@@ -275,7 +277,7 @@ func run_command(cmd, data:Dictionary, sourceNode:Node=null):
 		for c in cmd:
 			run_command(cmd, data, sourceNode)
 		return
-	if cmd != 'item' and cmd != 'msg': 
+	if cmd != 'item' and cmd != 'msg' and cmd != 'train' and cmd != 'trainBonus': 
 		UI.clear_inner_panel()
 	match cmd:
 		'decreeGen': cmd_decree_gen(data, sourceNode)
@@ -351,7 +353,7 @@ func cmd_item_train(data:Dictionary, sourceNode):
 		msg += "\n\n---\n\nAllows exemplars to train in the following ways:\n"
 		for trainEntry in train:
 			msg += "   %s\n"%trainEntry.get('description',"(unknown training)")
-	cmd_msg({'msg':msg}, sourceNode)
+	cmd_item({'msg':msg, 'img':data.get('img')}, sourceNode)
 	
 func cmd_placeable(data, sourceNode):
 	var itemShadow:Sprite = Sprite.new()

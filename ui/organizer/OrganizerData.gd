@@ -34,9 +34,9 @@ func index_entry(entry):
 	if entry.data and entry.data is TrainingData:
 		entryTypeIndex['training'].append(entry)
 	if entry.data and entry.data is ExemplarData:
-		entryTypeIndex['exemplar'] = entry
+		entryTypeIndex['exemplar'].append(entry)
 	if entry.data and entry.data is Dictionary and entry.data.get('cmd') == 'scene' and entry.data.get('organizerName'):
-		entryTypeIndex['location'] = entry
+		entryTypeIndex['location'].append(entry)
 
 func get_entries_with_type(entryType):
 	return entryTypeIndex.get(entryType)
@@ -159,7 +159,7 @@ func add_folder(path:String, id=null, folderId=null, data:Dictionary={}):
 	var pathConfig = finalPathChunk.split('^', false)
 	var n = pathConfig[0]
 	pathConfig.remove(0)
-	var curPath = (PoolStringArray(curPathChunks).join('/'))+'/'+n
+	#var curPath = (PoolStringArray(curPathChunks).join('/'))+'/'+n
 	var entryFlags = Util.build_entry_flags(pathConfig)
 	var entry = OrganizerDataEntry.build(id, n, curPathChunks.duplicate(), data, 'OrganizerFolder', entryFlags)
 	if id: 

@@ -3,7 +3,7 @@
 [ext_resource path="res://ui/organizer/OrganizerFolder.gd" type="Script" id=1]
 [ext_resource path="res://ui/organizer/OrganizerEditNameButton.tscn" type="PackedScene" id=2]
 [ext_resource path="res://img/carat_icon.png" type="Texture" id=3]
-[ext_resource path="res://img/unread_icon.png" type="Texture" id=4]
+[ext_resource path="res://img/unread.png" type="Texture" id=4]
 
 [node name="New Folder" type="PanelContainer"]
 margin_right = 274.0
@@ -18,7 +18,7 @@ labelText = ""
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 267.0
-margin_bottom = 31.0
+margin_bottom = 32.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_right = 260.0
@@ -38,9 +38,9 @@ __meta__ = {
 [node name="UnreadIcon" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
 visible = false
 modulate = Color( 1, 1, 1, 0.309804 )
-margin_left = 216.0
-margin_right = 236.0
-margin_bottom = 22.0
+margin_left = 24.0
+margin_right = 44.0
+margin_bottom = 20.0
 texture = ExtResource( 4 )
 stretch_mode = 6
 __meta__ = {

@@ -76,7 +76,6 @@ static func bell_curve(mean, stdev, percentile):
 	var s = stdev
 	var p = percentile
 	var prob1 = (s<=0)
-	var prob2 = (p<=0)||(p>=1)
 	if prob1:
 		printerr('stdev must be >= 0')
 		return mean

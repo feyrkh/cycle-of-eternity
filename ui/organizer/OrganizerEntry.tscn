@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://ui/organizer/OrganizerEntry.gd" type="Script" id=1]
 [ext_resource path="res://ui/organizer/OrganizerEditNameButton.tscn" type="PackedScene" id=2]
-[ext_resource path="res://img/unread_icon.png" type="Texture" id=3]
+[ext_resource path="res://img/error.png" type="Texture" id=3]
 [ext_resource path="res://img/crate.png" type="Texture" id=4]
+[ext_resource path="res://img/unread.png" type="Texture" id=5]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -31,6 +32,17 @@ margin_left = 24.0
 margin_right = 44.0
 margin_bottom = 28.0
 rect_min_size = Vector2( 20, 22 )
+hint_tooltip = "(unread)"
+texture = ExtResource( 5 )
+stretch_mode = 6
+
+[node name="ErrorIcon" type="TextureRect" parent="HBoxContainer"]
+visible = false
+margin_left = 48.0
+margin_right = 68.0
+margin_bottom = 28.0
+rect_min_size = Vector2( 20, 22 )
+hint_tooltip = "(unread)"
 texture = ExtResource( 3 )
 stretch_mode = 6
 
@@ -40,6 +52,7 @@ margin_left = 24.0
 margin_right = 44.0
 margin_bottom = 28.0
 rect_min_size = Vector2( 20, 22 )
+hint_tooltip = "(packed equipment - click to place)"
 texture = ExtResource( 4 )
 stretch_mode = 6
 

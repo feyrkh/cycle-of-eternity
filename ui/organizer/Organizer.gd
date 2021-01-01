@@ -21,6 +21,9 @@ const OrganizerEntryScene = preload('./OrganizerEntry.tscn')
 const ProgressBar = preload("res://ui/organizer/ProgressBar.tscn")
 
 func _ready():
+	Event.connect("before_pass_time", self, "save")
+	Event.connect("after_pass_time", self, "refresh")
+	
 	if entryContainer == null:
 		entryContainer = find_node('EntryContainer', true, false)
 		
@@ -67,7 +70,6 @@ func refresh():
 	refresh_organizer_data(GameState.get_organizer_data(organizerDataName))
 	
 func refresh_organizer_data(data):
-	var d = data
 	organizerDataName = data.name
 	var label = find_node('OrganizerNameLabel')
 	var friendlyName = data.friendlyName
@@ -93,6 +95,10 @@ func refresh_organizer_data(data):
 			entryIds[entry.id] = item
 			item.id = entry.id
 		target.add_item_bottom(item)
+		if entryData is Dictionary and entryData.get('error'):
+			var errorIcon = item.find_node('ErrorIcon')
+			errorIcon.visible = true
+			errorIcon.hint_tooltip = entryData.get('error')
 		if (!(entryData is Dictionary) and entryData.has_method('get_percent_complete')) or ((entryData is Dictionary) and !entryData.get('active', true)):
 			var progressBar = ProgressBar.instance()
 			item.add_child(progressBar)
@@ -102,8 +108,11 @@ func refresh_organizer_data(data):
 		#print('adding entry: ', item.labelText, ' with data ', item.data, ' to bottom of ', target.get_path())
 		connect_drag_events_for_tree(item)
 		
-
-func save(target=self, path=''):
+func save():
+	var serializedOrganizer = serialize()
+	GameState.add_organizer(organizerDataName, serializedOrganizer)
+	
+func serialize(target=self, path=''):
 	#print('Saving data for path=', path)
 	var saveData = []
 	for child in target.entryContainer.get_children():
@@ -111,7 +120,7 @@ func save(target=self, path=''):
 			var folderSaveData = child.get_save_data(path)
 			saveData.append(folderSaveData)
 			var childPath = path+'/'+child.get_label_text()
-			var childSaveData = save(child, childPath)
+			var childSaveData = serialize(child, childPath)
 			if childSaveData.size() == 0: 
 				pass #TODO: insert an empty folder instead of doing nothing
 			else: saveData = saveData + childSaveData

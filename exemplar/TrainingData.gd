@@ -2,6 +2,7 @@ extends Resource
 class_name TrainingData
 
 var id = random_id()
+var src
 export(String) var name:String
 export(String) var description:String
 export(Dictionary) var traineeRequirement:Dictionary # {'min':60,'max':1000}
@@ -12,7 +13,7 @@ export(Dictionary) var fatigue:Dictionary # {'c': chances, 'm': multiplier, 'd':
 
 const DEFAULT_CHANCES = 1
 const DEFAULT_MULTIPLIER = 0.1
-const DEFAULT_FATIGUE_MULTIPLIER = 10
+const DEFAULT_FATIGUE_MULTIPLIER = 0.1
 const DEFAULT_DIFFICULTY = 200
 const DEFAULT_RESIST_FATIGUE_STAT = "resistFatigue"
 
@@ -100,6 +101,7 @@ func deserialize(json):
 	self.traineeRequirement = json.get('requirements',{})
 	self.fatigue = json.get('fatigue', {})
 	self.id = json.get('id', random_id())
+	json['id' ] = self.id
 
 func random_id():
 	return 'train_'+str(randi())
@@ -138,7 +140,7 @@ func exemplar_can_train(exemplarData):
 	for k in fatigue:
 		if exemplarData.get_stat(k) <= 0:
 			return '%s is too low - need more than 0 for this training to be effective.'%[Util.get_stat_friendly_name(k)]
-	return true
+	return null
 
 func train_exemplar(exemplarData):
 	for k in statImprove:
@@ -154,7 +156,7 @@ func train_exemplar(exemplarData):
 		for i in trainCount:
 			var chance = randf()*maxLevel
 			if chance > curLevel: 
-				curLevel = curLevel + (0.01*trainMultiplier)
+				curLevel = curLevel + (trainMultiplier)
 		exemplarData.set_stat(k, curLevel)	
 	for k in fatigue:
 		var curLevel = exemplarData.get_stat(k)
@@ -165,11 +167,12 @@ func train_exemplar(exemplarData):
 			else: 
 				continue
 		var fatigueMultiplier = fatigue[k].get('m', DEFAULT_FATIGUE_MULTIPLIER)
-		var fatigueResist = exemplarData.get_stat(fatigue[k].get('r', DEFAULT_RESIST_FATIGUE_STAT), 50)
+		var fatigueResist = exemplarData.get_stat(fatigue[k].get('r', DEFAULT_RESIST_FATIGUE_STAT))
+		if !fatigueResist: fatigueResist = 100
 		var fatigueDifficulty = fatigue[k].get('d', DEFAULT_DIFFICULTY)
 		for i in fatigueCount:
 			var fatigueDmg = randf()*fatigueDifficulty
 			var fatigueHeal = randf()*fatigueResist
 			if fatigueDmg >= fatigueHeal:
-				curLevel = curLevel - (0.01*fatigueMultiplier)
+				curLevel = curLevel - (fatigueMultiplier)
 		exemplarData.set_stat(k, curLevel)

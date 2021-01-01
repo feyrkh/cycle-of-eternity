@@ -31,6 +31,11 @@ func _ready():
 		GameState.change_right_organizer(sourceData.get_organizer_name())
 	initTrainingTab()
 	call_deferred('initStatsTab')
+	Event.connect('training_queues_updated', self, 'on_training_queues_updated')
+
+func on_training_queues_updated():
+	initTrainingTab()
+	initStatsTab()
 
 func initTrainingTab():
 	initTrainingOptions()
@@ -39,8 +44,10 @@ func initTrainingTab():
 
 func initTrainingOptions():
 	trainingOptions = []
-	var trainingOptionData = load_training_options_from_location()
-	trainingOptionData += load_training_options_from_exemplar()
+	trainingMethodSelect.clear()
+	load_training_options_from_location()
+	load_training_options_from_exemplar()
+	countSelect.clear()
 	for i in 5:
 		countSelect.add_item("x"+str(i+1))
 	update_training_method_description(0)
@@ -49,7 +56,7 @@ func load_training_options_from_exemplar():
 	for entry in sourceData.get_organizer_data().get_entries_with_type('training'):
 		var entryPath = entry.get('path', [])
 		if entryPath.size() > 0 and entryPath[0] == 'Training':
-			append_training_options(trainingOptions, entry)
+			append_training_options(trainingOptions, entry, sourceData.get_organizer_name())
 	return trainingOptions
 	
 func load_training_options_from_location():
@@ -57,11 +64,12 @@ func load_training_options_from_location():
 	var locationOrgName = originalOrganizerName
 	var locationOrgData = GameState.get_organizer_data(locationOrgName)
 	for entry in locationOrgData.get_entries_with_type('training'):
-		append_training_options(trainingOptions, entry)
+		append_training_options(trainingOptions, entry, locationOrgName)
 	return trainingOptions
 	
-func append_training_options(trainingOptions, entry):
+func append_training_options(trainingOptions, entry, orgName):
 	if entry.data is TrainingData:
+		entry.data.src = orgName
 		trainingOptions.append(entry.data)
 	else:
 		var trainingDataList = entry.data['train']
@@ -71,6 +79,7 @@ func append_training_options(trainingOptions, entry):
 			var trainingData = load('res://exemplar/TrainingData.gd').new()
 			trainingData.deserialize(trainingDataJson)
 			trainingMethodSelect.add_item(trainingData.description)
+			trainingData.src = orgName
 			trainingOptions.append(trainingData)
 
 func initTrainingOrganizer():
@@ -79,8 +88,21 @@ func initTrainingOrganizer():
 		trainingOrganizerData.friendlyName = sourceData.entityName+"'s Training Plan"
 		find_node('TrainingOrganizer').refresh_organizer_data(trainingOrganizerData)
 
+func add_header(grid, text):
+	var l = Label.new()
+	l.text = text
+	l.align = HALIGN_CENTER
+	l.size_flags_horizontal = SIZE_EXPAND_FILL
+	grid.add_child(l)
+
 func initTrainingStatsChange():
 	var grid = find_node('StatsChangeHistory')
+	Util.clear_children(grid)
+	add_header(grid, 'Stat')
+	add_header(grid, 'Today')
+	add_header(grid, 'Since yesterday')
+	add_header(grid, 'Since last week')
+	
 	var today = sourceData.stats
 	var yesterday = sourceData.get_stats_change_over_time(1)
 	var lastWeek = sourceData.get_stats_change_over_time(7)
@@ -101,18 +123,22 @@ func initTrainingStatsChange():
 		grid.add_child(label)
 		
 		label = Label.new()
-		label.text = str(today.get(k, 0))
+		label.text = "%.1f"%(round(today.get(k, 0)*10)/10)
 		label.align = HALIGN_CENTER
 		grid.add_child(label)
 		
 		label = Label.new()
-		if yesterday.get(k,0) > 0: yesterday[k] = '+'+str(yesterday[k])
+		if yesterday.get(k,0) > 0: yesterday[k] = "+%.1f"%(round(yesterday[k]*10)/10)
+		elif yesterday.get(k,0) < 0: yesterday[k] = "%.1f"%(round(yesterday[k]*10)/10)
+		else: yesterday[k] = ''
 		label.text = str(yesterday.get(k,''))
 		label.align = HALIGN_CENTER
 		grid.add_child(label)
 		
 		label = Label.new()
-		if lastWeek.get(k,0) > 0: lastWeek[k] = '+'+str(lastWeek[k])
+		if lastWeek.get(k,0) > 0: lastWeek[k] = "%.1f"%(round(lastWeek[k]*10)/10)
+		elif lastWeek.get(k,0) < 0: lastWeek[k] = "%.1f"%(round(lastWeek[k]*10)/10)
+		else: lastWeek[k] = ''
 		label.text = str(lastWeek.get(k, ''))
 		label.align = HALIGN_CENTER
 		grid.add_child(label)
@@ -127,6 +153,7 @@ func initStatsTab():
 		update_label('MindLabel', "Mind: "+str(round(sourceData.get_stats_summary('int')['mean']*10)/10))
 		update_label('WillLabel', "Spirit: "+str(round(sourceData.get_stats_summary('will')['mean']*10)/10))
 		var grid = find_node('StrStats')
+		Util.clear_children(grid)
 		add_stats(grid, 'str.bone')
 		add_stats(grid, 'str.bone.armBoneStr')
 		add_stats(grid, 'str.bone.legBoneStr')
@@ -148,6 +175,7 @@ func initStatsTab():
 		add_stats(grid, 'str.b_recover.woundRecover')
 		
 		grid = find_node('AgiStats')
+		Util.clear_children(grid)
 		add_stats(grid, 'agi.speed')
 		add_stats(grid, 'agi.speed.attackSpd')
 		add_stats(grid, 'agi.speed.moveSpd')
@@ -158,6 +186,7 @@ func initStatsTab():
 		add_stats(grid, 'agi.dexterity.jumpAgi')
 		
 		grid = find_node('IntStats')
+		Util.clear_children(grid)
 		add_stats(grid, 'int.ability')
 		add_stats(grid, 'int.ability.insight')
 		add_stats(grid, 'int.ability.perceive')
@@ -176,6 +205,7 @@ func initStatsTab():
 		add_stats(grid, 'int.m_recover.focusRecovery')
 		
 		grid = find_node('WillStats')
+		Util.clear_children(grid)
 		add_stats(grid, 'will.mind')
 		add_stats(grid, 'will.mind.emptyMind')
 		add_stats(grid, 'will.mind.focus')
@@ -199,7 +229,7 @@ func initStatsTab():
 
 func on_close():
 	GameState.change_right_organizer(originalOrganizerName)
-	GameState.add_organizer(trainingOrganizer.organizerDataName, trainingOrganizer.save())
+	trainingOrganizer.save()
 
 func add_stats(grid, statName):
 	var chunks = statName.split('.', false)
@@ -228,7 +258,7 @@ func _on_CloseButton_pressed():
 	queue_free()
 
 func _on_AddToPlanButton_pressed():
-	trainingOrganizerData = trainingOrganizer.save() # Get any changes made to ordering or deletion
+	trainingOrganizerData = trainingOrganizer.serialize() # Get any changes made to ordering or deletion
 	GameState.add_organizer(trainingOrganizer.organizerDataName, trainingOrganizerData)
 	var trainingData = trainingOptions[trainingMethodSelect.get_selected_id()]
 	var count = countSelect.get_selected_id()+1
@@ -237,8 +267,8 @@ func _on_AddToPlanButton_pressed():
 	if repeat: 
 		repeatStr = " (repeat)"
 #func add_entry(path:String, data, id=null, folderId=null, entrySceneName:String='OrganizerEntry', position=-1):
-	var entryName = "%s: %s x%d%s"%[originalOrganizerData.friendlyName, trainingData.description, count, repeatStr]
-	var saveData = {"loc":originalOrganizerName, "src":originalOrganizerName, "id":trainingData.id, "count": count, "repeat":repeat}
+	var entryName = "%s: %s%s x%d"%[originalOrganizerData.friendlyName, trainingData.description, repeatStr, count]
+	var saveData = {"loc":originalOrganizerName, "src":trainingData.src, "id":trainingData.id, "count": count, "repeat":repeat}
 	trainingOrganizerData.add_entry(entryName+'^noEdit', saveData)
 	trainingOrganizer.refresh_organizer_data(trainingOrganizerData)
 

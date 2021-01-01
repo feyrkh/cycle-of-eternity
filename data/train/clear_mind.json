@@ -1,0 +1,10 @@
+{"cmd": "train", "msg": "Restore focus through meditation, clearing your mind of all thought.",
+"img":"res://img/items/meditate.jpg",
+"train":[
+
+{"name":"empty mind", "description": "Restore focus through meditation, clearing your mind of all thought.",
+	"statImprove":{
+		"fatigue":{"c":4, "m":1},
+		"focus": {"c":4, "m":5}
+	}
+}]}

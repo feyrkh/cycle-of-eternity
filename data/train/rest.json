@@ -5,16 +5,6 @@
 {"name":"rest", "description": "Rest and recover",
 	"statImprove":{
 		"fatigue":{"c":4, "m":5},
-		"focus": {"c":4, "m":5}
-	},
-	"fatigue":{
-		"armStr":{"c":1, "d": 100, "r": "determination"},
-		"legStr":{"c":1, "d": 100, "r": "determination"},
-		"coreStr":{"c":1, "d": 100, "r": "determination"},
-		"gripStr":{"c":1, "d": 100, "r": "determination"},
-		"armEnd":{"c":1, "d": 100, "r": "determination"},
-		"legEnd":{"c":1, "d": 100, "r": "determination"},
-		"coreEnd":{"c":1, "d": 100, "r": "determination"},
-		"gripEnd":{"c":1, "d": 100, "r": "determination"},
+		"focus": {"c":4, "m":1}
 	}
 }]}

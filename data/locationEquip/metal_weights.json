@@ -10,9 +10,7 @@
 	"determination":{"c":0.01},
 }, 
 "fatigue":{
-	"reactSpd":{"c":1, "d": 30, "r": "determination"},
-	"defendAgi":{"c":1, "d": 50, "r": "determination"},
-	"fatigue":{"c":5, "m": 5, "d":100, "r":"armEnd"},
+	"fatigue":{"c":10, "m": 1, "d":75, "r":"armEnd"},
 }
 }]
 }

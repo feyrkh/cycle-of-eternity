@@ -55,7 +55,13 @@ func take_stats_snapshot():
 	statsHistory.push_front(stats.duplicate())
 	while statsHistory.size() > statsHistoryCount:
 		statsHistory.pop_back()
-		
+
+func on_training_start():
+	take_stats_snapshot()
+
+func on_training_complete():
+	pass
+	
 func serialize():
 	var retval = {'cmd':'exemplar', 'dt':Util.DATATYPE_EXEMPLAR, 'g':gender, 'name':entityName, 'id':entityId, 'stats':stats, 'statsHistory':statsHistory}
 	return retval
@@ -71,6 +77,7 @@ func deserialize(data):
 	for statsTreeName in statsTree:
 		var avgStats = get_stats_summary(statsTree.get(statsTreeName))['mean']
 		checkMissingStats(statsTree.get(statsTreeName), avgStats)
+	init_builtin_commands()
 
 
 func on_resource_create(newName, createOpts, entityId):
@@ -95,7 +102,14 @@ func on_resource_create(newName, createOpts, entityId):
 	
 	organizerData = GameState.get_organizer_data(get_organizer_name())
 	organizerData.add_folder('Training^noDelete^isOpen^noEdit', 'training')
-	organizerData.add_entry('Rest^noDelete', 'res://data/train/rest.json', null, 'training')
+
+func init_builtin_commands():
+	_builtin_cmd('Rest^noDelete', 'res://data/train/rest.json', 'cmdRest', 'training')
+	_builtin_cmd('Empty mind^noDelete', 'res://data/train/empty_mind.json', 'cmdEmptyMind', 'training')
+
+func _builtin_cmd(entryName, dataJson, entryId, folderId):
+	if !organizerData.get_entry_by_id(entryId):
+		organizerData.add_entry(entryName, dataJson, entryId, folderId)
 
 func _generate_stats_array(statNameArray, statPrefix, opts):
 	for statName in statNameArray:
@@ -141,6 +155,10 @@ func map_reduce_stats_tree(tree, baseData:Dictionary, mapFuncName, reduceFuncNam
 
 func set_stat(statName, amt):
 	stats[statName] = amt
+	var maxVal = stats.get('max_'+statName)
+	if maxVal != null:
+		if stats[statName] > maxVal:
+			stats[statName] = maxVal 
 
 func get_stat(statName):
 	return stats.get(statName, 0)
@@ -211,14 +229,6 @@ func _combine_avg_map(prevSummary, newSummary, statPrefix, opts):
 	
 func checkMissingStats(statsTree, expectedAmt):
 	pass
-
-func init_from_file(filename):
-	self.filename = filename
-	var file = File.new()
-	file.open(filename, file.READ)
-	var text = file.get_as_text()
-	file.close()
-	var baseData = parse_json(text)
 
 func get_stats_change_over_time(daysAgo)->Dictionary:
 	if daysAgo > statsHistory.size(): 
