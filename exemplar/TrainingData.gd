@@ -7,7 +7,7 @@ export(String) var name:String
 export(String) var description:String
 export(Dictionary) var traineeRequirement:Dictionary # {'min':60,'max':1000}
 # for statImprove, choose random number from 0..max(stat)
-export(Dictionary) var statImprove:Dictionary # {'c': chances, 'm': multiplier}
+export(Dictionary) var statImprove:Dictionary # {'f': floor, 'c': chances, 'm': multiplier}
 # for fatigue, choose random number from 0..difficulty. If > 0..resist, then apply 0.1 fatigue * multiplier; repeat 'chances' times
 export(Dictionary) var fatigue:Dictionary # {'c': chances, 'm': multiplier, 'd': difficulty, 'r': resistStatName}
 
@@ -50,12 +50,21 @@ func get_summary():
 		friendlyKeys.sort_custom(Util, 'sort_priority_array_desc')
 		for k in friendlyKeys:
 			k = k[1]
-			var chanceText
+			var chanceText = ""
+			var floorImp = friendlyMap[k].get('f', 0)
+			if floorImp: 
+				chanceText += "+%.1f"%floorImp
 			var chances = friendlyMap[k].get('c', DEFAULT_CHANCES)
-			if chances < 1: chanceText = 'an occasional chance'
-			elif chances < 2: chanceText = '1 chance'
-			else: chanceText = '%d chances'%chances
-			var line = "   %s - %s to increase by %.1f\n" % [k, chanceText, friendlyMap[k].get('m', DEFAULT_MULTIPLIER)]
+			if chances < 1: 
+				if floorImp>0: chanceText += ' plus '
+				chanceText += 'an occasional chance'
+			elif chances < 2: 
+				if floorImp>0: chanceText += ', plus '
+				chanceText += '1 chance'
+			else: 
+				if floorImp>0: chanceText += ', plus '
+				chanceText += '%d chances'%chances
+			var line = "   %s: %s to increase by %.1f\n" % [k, chanceText, friendlyMap[k].get('m', DEFAULT_MULTIPLIER)]
 			summary += line
 		summary += '\n'
 		
@@ -77,7 +86,7 @@ func get_summary():
 			if chances < 1: chanceText = 'An occasional chance'
 			elif chances < 2: chanceText = '1 chance'
 			else: chanceText = '%d chances'%chances
-			var line = "   %s to decrease %s by %.1f, resisted with difficulty %d by %s\n" % [chanceText, k.to_lower(), friendlyMap[k].get('m', DEFAULT_MULTIPLIER), friendlyMap[k].get('d', DEFAULT_DIFFICULTY), Util.get_stat_friendly_name(friendlyMap[k].get('r', DEFAULT_RESIST_FATIGUE_STAT)).to_lower()]
+			var line = "   %s - %s to decrease by %.1f resisted with difficulty %d by %s\n" % [k, chanceText, friendlyMap[k].get('m', DEFAULT_MULTIPLIER), friendlyMap[k].get('d', DEFAULT_DIFFICULTY), Util.get_stat_friendly_name(friendlyMap[k].get('r', DEFAULT_RESIST_FATIGUE_STAT)).to_lower()]
 			summary += line
 		summary += '\n'
 	
@@ -147,6 +156,10 @@ func train_exemplar(exemplarData):
 		var curLevel = exemplarData.get_stat(k)
 		var maxLevel = exemplarData.get_stat_max(k)
 		var trainCount = statImprove[k].get('c', DEFAULT_CHANCES)
+		var floorIncrease = statImprove[k].get('f', 0)
+		
+		curLevel += floorIncrease
+		
 		if trainCount < 1 and trainCount > 0: 
 			if randf()<trainCount: 
 				trainCount = 1
@@ -161,11 +174,13 @@ func train_exemplar(exemplarData):
 	for k in fatigue:
 		var curLevel = exemplarData.get_stat(k)
 		var fatigueCount = fatigue[k].get('c', DEFAULT_CHANCES)
+		var floorDecrease = fatigue[k].get('f', 0)
+		curLevel -= floorDecrease
 		if fatigueCount < 1 and fatigueCount > 0: 
 			if randf()<fatigueCount: 
 				fatigueCount = 1
 			else: 
-				continue
+				fatigueCount = 0
 		var fatigueMultiplier = fatigue[k].get('m', DEFAULT_FATIGUE_MULTIPLIER)
 		var fatigueResist = exemplarData.get_stat(fatigue[k].get('r', DEFAULT_RESIST_FATIGUE_STAT))
 		if !fatigueResist: fatigueResist = 100

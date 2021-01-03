@@ -61,6 +61,31 @@ func _ready():
 	add_child(attentionTimer)
 	attentionTimer.start(0.1)
 
+
+func run_command(cmd, data:Dictionary, sourceNode:Node=null):
+	if cmd is Array:
+		for c in cmd:
+			run_command(cmd, data, sourceNode)
+		return
+	#if cmd != 'item' and cmd != 'msg' and cmd != 'train' and cmd != 'trainBonus': 
+	#	UI.clear_inner_panel()
+	match cmd:
+		'closeCharOrg': 
+			set_char_organizer_visible(false)
+			UI.clear_inner_panel()
+		'combat': cmd_combat(data, sourceNode)
+		'decreeGen': cmd_decree_gen(data, sourceNode)
+		'scene': cmd_scene(data, sourceNode)
+		'item': cmd_item(data, sourceNode)
+		'msg': cmd_msg(data, sourceNode)
+		'placeable': cmd_placeable(data, sourceNode)
+		'quicksave': cmd_quicksave()
+		'quickload': cmd_quickload()
+		'spar': cmd_spar(data, sourceNode)
+		'train': cmd_item_train(data, sourceNode)
+		_: printerr('Invalid command: ', cmd, '; data=', data, '; sourceNode=', sourceNode.name)
+
+
 func get_resource_name(resourceId):
 	var resource = resourceData.get(resourceId, {})
 	return resource.get('n', resourceId)
@@ -181,11 +206,17 @@ func serialize_world()->String:
 	settings['leftOrganizerName'] = UI.leftOrganizer.organizerDataName
 	settings['rightOrganizerName'] = UI.rightOrganizer.organizerDataName
 	settings['uiTextInterface'] = UI.serialize_text_interface()
+	Event.special_event("Saved game - %s"%[Util.formatted_datetime()], 'system')
+	var msgHistory
+	var msgHistoryNode = UI.find_node('MessageLogDisplay')
+	if msgHistoryNode:
+		msgHistory = msgHistoryNode.get_message_history()
 	var retval = {
 		'settings':settings,
 		'quest':quest,
 		'organizers':{},
-		'resources':resources
+		'resources':resources,
+		'msgHistory':msgHistory
 	}
 	for k in _organizers.keys():
 		if k == 'Null': continue
@@ -193,11 +224,25 @@ func serialize_world()->String:
 		retval.organizers[k] = serializedOrganizer
 	return to_json(retval)
 
-func refresh_organizers():
-	load_organizers(true)
+func refresh_organizers(organizerDataName=null):
+	if !organizerDataName: load_organizers(true)
+	else:
+		if UI.leftOrganizer and UI.leftOrganizer.organizerDataName == organizerDataName: UI.leftOrganizer.refresh()
+		if UI.rightOrganizer and UI.rightOrganizer.organizerDataName == organizerDataName: UI.rightOrganizer.refresh()
+		if UI.charOrganizer and UI.charOrganizer.organizerDataName == organizerDataName: UI.charOrganizer.refresh()
 
 func save_organizers():
 	UI.save_organizers()
+
+func save_char_organizer():
+	if UI.charOrganizer: UI.charOrganizer.save()
+
+func set_char_organizer_visible(val):
+	UI.charOrganizer.visible = val
+
+func load_char_organizer(dataName):
+	set_char_organizer_visible(true)
+	UI.load_char_organizer(dataName)
 
 func load_organizers(skipSave=false):
 	var leftOrganizerName = GameState.settings.get('leftOrganizerName', 'main')
@@ -210,9 +255,14 @@ func change_right_organizer(organizerName):
 
 func deserialize_world(worldJson):
 	UI.clear_inner_panel()
+	set_char_organizer_visible(false)
 	if curScene: curScene.queue_free()
 	var serializedWorld = parse_json(worldJson)
 	settings = serializedWorld.settings
+	init_settings_for_new_game()
+	var msgHistoryNode = UI.find_node('MessageLogDisplay')
+	if msgHistoryNode:
+		msgHistoryNode.set_message_history(serializedWorld.get('msgHistory', ''))
 	quest = serializedWorld.get('quest', {})
 	resources = serializedWorld.get('resources', {})
 	_organizers = {}
@@ -224,7 +274,14 @@ func deserialize_world(worldJson):
 		load_organizers(true)
 		UI.deserialize_text_interface(settings.get('uiTextInterface'))
 	loadScene(settings['curSceneName'], settings['curSceneSettings'])
-		
+	Event.emit_signal('save_state_loaded')
+
+	Event.special_event("Save game loaded - %s"%[Util.formatted_datetime()], "system")
+
+func init_settings_for_new_game():
+	if !settings.has('calendarDate'):
+		GameState.settings['calendarDate'] = randi()%360
+
 func save_world(saveSlot, serializedWorld):
 	var dir:Directory = Directory.new()
 	dir.make_dir('user://save')
@@ -247,7 +304,9 @@ func add_organizer(organizerName, organizerData):
 
 func loadScene(newSceneName:String, newSceneData):
 	Conversation.reset()
+	UI.reset_camera()
 	UI.clear_inner_panel()
+	Event.emit_signal("clear_item_placement")
 	if UI && UI.textInterface: UI.textInterface.reset()
 	if curScene && curScene.has_method('shutdown_scene'): 
 		curScene.shutdown_scene()
@@ -272,23 +331,16 @@ func add_inner_panel_popup(popup):
 	UI.clear_inner_panel()
 	UI.add_inner_panel_popup(popup)
 
-func run_command(cmd, data:Dictionary, sourceNode:Node=null):
-	if cmd is Array:
-		for c in cmd:
-			run_command(cmd, data, sourceNode)
-		return
-	if cmd != 'item' and cmd != 'msg' and cmd != 'train' and cmd != 'trainBonus': 
-		UI.clear_inner_panel()
-	match cmd:
-		'decreeGen': cmd_decree_gen(data, sourceNode)
-		'scene': cmd_scene(data, sourceNode)
-		'item': cmd_item(data, sourceNode)
-		'msg': cmd_msg(data, sourceNode)
-		'placeable': cmd_placeable(data, sourceNode)
-		'quicksave': cmd_quicksave()
-		'quickload': cmd_quickload()
-		'train': cmd_item_train(data, sourceNode)
-		_: printerr('Invalid command: ', cmd, '; data=', data, '; sourceNode=', sourceNode.name)
+func get_current_location():
+	var data = {
+		"sceneName": settings.get('curSceneName'),
+		"sceneSettings": settings.get('curSceneSettings')
+	}
+	return data
+
+func cmd_combat(data, sourceNode):
+	if !data.get('postCombatScene'): data['postCombatScene'] = get_current_location()
+	loadScene('combat', data)
 
 func cmd_decree_gen(data:Dictionary, sourceNode):
 	save_organizers()
@@ -381,3 +433,9 @@ func cmd_scene(data:Dictionary, sourceNode):
 	if !data.get('keepCharacter'): Event.hide_character()
 	if !data.get('keepText'): Event.clear_text()
 	loadScene(data.get('scene'), data)
+
+func cmd_spar(data, sourceNode):
+	var sparPrompt = load("res://combat/SparStartPrompt.tscn").instance()
+	sparPrompt.sparCmdData = data
+	add_popup(sparPrompt)
+	sparPrompt.popup_centered()

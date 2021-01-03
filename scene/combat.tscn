@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scene/combat.gd" type="Script" id=1]
+[ext_resource path="res://combat/PlayField.gd" type="Script" id=2]
+
+[node name="Combat" type="Node2D"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="PlayField" type="ColorRect" parent="."]
+margin_left = -3892.0
+margin_top = -2861.0
+margin_right = 5417.0
+margin_bottom = 3972.0
+mouse_filter = 1
+color = Color( 0, 0, 0, 1 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineLayer" type="Control" parent="."]
+mouse_filter = 2
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="EntityLayer" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="FocusLayer" type="Control" parent="."]
+mouse_filter = 2
+__meta__ = {
+"_edit_lock_": true
+}
+[connection signal="gui_input" from="PlayField" to="PlayField" method="_on_PlayField_gui_input"]

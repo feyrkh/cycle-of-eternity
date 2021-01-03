@@ -31,6 +31,8 @@ func process_exemplar_training():
 		exemplarData.on_training_start()
 		var trainingOrganizerData = ExemplarData.get_training_organizer(exemplarData)
 		var entriesToRecycle = []
+		if trainingOrganizerData.entries.size() == 0:
+			Event.special_event("%s has no training program set!"%exemplarData.entityName, 'training_problem')
 		while trainingOrganizerData.entries.size() > 0:
 			var trainingPlanEntry = trainingOrganizerData.entries[0]
 			var trainingPointer = trainingPlanEntry.data
@@ -38,7 +40,8 @@ func process_exemplar_training():
 			# Make sure the training location still exists - if not, recycle the whole entry and mark it as failed, continue loop
 			var trainingLocationOrganizerData = GameState.get_organizer_data(trainingPointer.get('loc'))
 			if !trainingLocationOrganizerData: 
-				trainingPlanEntry.data['error'] = "The training location no longer exists - was the location destroyed?"
+				trainingPlanEntry.data['error'] = "The training location no longer exists - was the location destroyed?"	
+				Event.emit_signal("special_event", "%s failed to train: %s"%[exemplarData.entityName, trainingPlanEntry.data['error']], 'training_problem')
 				entriesToRecycle.append(trainingPlanEntry)
 				trainingOrganizerData.entries.remove(0)
 				continue
@@ -46,6 +49,7 @@ func process_exemplar_training():
 			var trainingSourceOrganizerData = GameState.get_organizer_data(trainingPointer.get('src'))
 			if !trainingSourceOrganizerData:
 				trainingPlanEntry.data['error'] = "The source of the training no longer exists - was the location or equipment destroyed?"
+				Event.emit_signal("special_event", "%s failed to train: %s"%[exemplarData.entityName, trainingPlanEntry.data['error']], 'training_problem')
 				entriesToRecycle.append(trainingPlanEntry)
 				trainingOrganizerData.entries.remove(0)
 				continue
@@ -61,6 +65,7 @@ func process_exemplar_training():
 						break
 			if !trainingData:
 				trainingPlanEntry.data['error'] = "The equipment used in the training no longer exists - was it destroyed?"
+				Event.emit_signal("special_event", "%s failed to train: %s"%[exemplarData.entityName, trainingPlanEntry.data['error']], 'training_problem')
 				entriesToRecycle.append(trainingPlanEntry)
 				trainingOrganizerData.entries.remove(0)
 				continue
@@ -74,6 +79,7 @@ func process_exemplar_training():
 			var trainError = trainingData.exemplar_can_train(exemplarData)
 			if trainError:
 				trainingPlanEntry.data['error'] = trainError
+				Event.emit_signal("special_event", "%s failed to train \"%s\": %s"%[exemplarData.entityName, trainingData.description, trainingPlanEntry.data['error']], 'training_problem')
 				entriesToRecycle.append(trainingPlanEntry)
 				trainingOrganizerData.entries.remove(0)
 				continue

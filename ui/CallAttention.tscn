@@ -23,14 +23,14 @@ func hide_myself_noarg():
 func hide_myself(dummyArg):
 	visible = false
 
-func call_attention_from_left(c:Control, t:float = 8):
+func call_attention_from_left(c:Control, t:float = 4):
 	target = c
 	timer = t
 	targetOffset = Vector2(0, 0.5)
 	selfOffset = Vector2(1, 0.5)
 	bounceOffset = Vector2(-0.25, 0)
 
-func call_attention_from_right(c:Control, t:float = 8):
+func call_attention_from_right(c:Control, t:float = 4):
 	target = c
 	timer = t
 	targetOffset = Vector2(1, 0.5)

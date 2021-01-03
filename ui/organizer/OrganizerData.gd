@@ -20,6 +20,9 @@ func refresh_entry_type_index():
 		if entry.get('id'):
 			entryIds[entry.get('id')] = entry
 		index_entry(entry)
+		
+func refresh_organizer_if_loaded():
+	GameState.refresh_organizers(name)
 
 func index_entry(entry):
 	# consumers
@@ -39,7 +42,7 @@ func index_entry(entry):
 		entryTypeIndex['location'].append(entry)
 
 func get_entries_with_type(entryType):
-	return entryTypeIndex.get(entryType)
+	return entryTypeIndex.get(entryType, [])
 
 func set_entries(val):
 	entryIds = {}
@@ -107,6 +110,11 @@ func get_entry_by_path(entryPath):
 
 func get_entry_by_id(entryId):
 	return entryIds.get(entryId)
+	
+func delete_entry_by_id(entryId):
+	var entry = get_entry_by_id(entryId)
+	if entry:
+		entries.erase(entry)
 
 func add_entry(path:String, data, id=null, folderId=null, entrySceneName:String='OrganizerEntry', position=-1):
 	if data && data is String && data.begins_with('res:'):

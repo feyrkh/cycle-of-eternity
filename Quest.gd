@@ -13,3 +13,4 @@ const Q_TUTORIAL_INSTALL_EQUIPMENT='install_training' # install training equipme
 const Q_TUTORIAL_OBTAIN_DISCIPLE='obtain_disciple' # go to the training hall to get a free disciple
 const Q_TUTORIAL_TRAIN_DISCIPLE='train_disciple' # set up a training program
 const Q_TUTORIAL_QUEUE_TRAINING='queue_training'
+const Q_TUTORIAL_SPAR_ATTACK='spar_attack'

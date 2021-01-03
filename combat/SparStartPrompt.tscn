@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://combat/SparStartPrompt.gd" type="Script" id=1]
+[ext_resource path="res://ui/ExemplarDropdown.tscn" type="PackedScene" id=2]
+
+[node name="SparStartPrompt" type="ConfirmationDialog"]
+margin_right = 200.0
+margin_bottom = 70.0
+popup_exclusive = true
+window_title = "Start sparring?"
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 192.0
+margin_bottom = 46.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label2" type="Label" parent="VBoxContainer"]
+margin_right = 184.0
+margin_bottom = 14.0
+text = "Who is sparring?"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExemplarSelector" parent="VBoxContainer" instance=ExtResource( 2 )]
+[connection signal="confirmed" from="." to="." method="_on_SparStartPrompt_confirmed"]
+[connection signal="exemplar_selected" from="VBoxContainer/ExemplarSelector" to="." method="_on_ExemplarSelector_exemplar_selected"]

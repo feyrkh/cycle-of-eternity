@@ -30,6 +30,7 @@ func _ready():
 	label.toggle_mode = get_is_toggle()
 	if get_no_edit(): editNameButton.visible = false
 	if get_is_unread(): set_is_unread(true) # trigger visual indicators
+	else: set_is_unread(false)
 	mark_as_placeable()
 	Event.connect("finalize_place_item", self, 'on_finalize_place_item')
 
@@ -119,9 +120,7 @@ func get_scene_name():
 func is_organizer_entry(): return true
 
 func call_attention():
-	print('calling attention to myself!')
-	GameState.attentionTimer.connect('timeout', self, 'blink')
-	blinkCount = 10
+	pulse_until_clicked()
 
 func blink():
 	blinkCount = blinkCount - 1
@@ -151,6 +150,8 @@ func edit_name():
 	editBox.select_all()
 	editBox.connect("focus_exited", self, 'update_name_lost_focus')
 	editBox.connect("text_entered", self, 'update_name_entered')
+	Event.emit_signal("time_should_pause")
+	Event.emit_signal("pause_key_mutex", 1)
 	
 func update_name_lost_focus():
 	label.text = editBox.text
@@ -163,6 +164,7 @@ func update_name_lost_focus():
 	elif data and data.has_method('set_entity_name'):
 		data.set_entity_name(label.text)
 	updateOrganizerDataFriendlyName()
+	Event.emit_signal("pause_key_mutex", -1)
 
 func update_name_entered(newText):
 	update_name_lost_focus()
@@ -188,9 +190,14 @@ func ask_to_delete():
 func really_delete():
 	emit_signal('entry_deleted')
 	self.queue_free()
+	if containingOrganizer:
+		containingOrganizer.save()
 
+func pulse_until_clicked():
+	Util.start_pulsing(self)
 
 func _on_Label_pressed():
+	Util.stop_pulsing(self)
 	updateOrganizerDataFriendlyName()
 	set_is_unread(false)
 	$"/root/Event".emit_signal("organizer_entry_clicked", containingOrganizer, self)
@@ -200,6 +207,7 @@ func _on_Label_pressed():
 
 
 func _on_Label_toggled(button_pressed):
+	Util.stop_pulsing(self)
 	updateOrganizerDataFriendlyName()
 	set_is_unread(false)
 	$"/root/Event".emit_signal("organizer_entry_toggled", containingOrganizer, self, button_pressed)
@@ -214,3 +222,11 @@ func updateOrganizerDataFriendlyName():
 	elif !(data is Dictionary) and data.has_method('set_entity_name'): 
 		data.set_entity_name(label.text)
 
+func _on_UnreadIcon_pressed():
+	_on_Label_pressed()
+
+func _on_ErrorIcon_pressed():
+	_on_Label_pressed()
+
+func _on_UnplacedIcon_pressed():
+	_on_Label_pressed()

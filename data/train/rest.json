@@ -4,7 +4,7 @@
 
 {"name":"rest", "description": "Rest and recover",
 	"statImprove":{
-		"fatigue":{"c":4, "m":5},
-		"focus": {"c":4, "m":1}
+		"fatigue":{"f":5, "c":4, "m":5},
+		"focus": {"f":1, "c":4, "m":1}
 	}
 }]}

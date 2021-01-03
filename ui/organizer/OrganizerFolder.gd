@@ -143,7 +143,8 @@ func toggle_folder():
 
 func _on_OpenIcon_visibility_changed():
 	update_contents() # needed when reloading an organizer that has entries which haven't changed
-	yield(get_tree(),"idle_frame")
+	#yield(get_tree(),"idle_frame")
+	call_deferred('update_contents')
 	update_contents() # needed to update the open/closed icon on a folder when a new organizer is added
 
 func highlight():
@@ -163,6 +164,8 @@ func edit_name():
 	editBox.select_all()
 	editBox.connect("focus_exited", self, 'update_name_lost_focus')
 	editBox.connect("text_entered", self, 'update_name_entered')
+	Event.emit_signal("time_should_pause")
+	Event.emit_signal("pause_key_mutex", 1)
 	
 func update_name_lost_focus():
 	label.text = editBox.text
@@ -170,6 +173,7 @@ func update_name_lost_focus():
 	label.visible = true
 	editNameButton.visible = true
 	editBox.queue_free()
+	Event.emit_signal("pause_key_mutex", -1)
 
 func update_name_entered(newText):
 	update_name_lost_focus()

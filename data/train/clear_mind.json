@@ -2,9 +2,9 @@
 "img":"res://img/items/meditate.jpg",
 "train":[
 
-{"name":"empty mind", "description": "Restore focus through meditation, clearing your mind of all thought.",
+{"name":"empty mind", "description": "Empty mind",
 	"statImprove":{
-		"fatigue":{"c":4, "m":1},
-		"focus": {"c":4, "m":5}
+		"fatigue":{"f":1, "c":4, "m":1},
+		"focus": {"f":5, "c":4, "m":5}
 	}
 }]}

@@ -39,6 +39,7 @@ func pause():
 	buffer.append(['pause'])
 
 func run_pause():
+	Event.emit_signal("time_should_pause")
 	if Event.textInterface._buffer.size() > 0:
 		yield(Event.textInterface, 'buff_end')
 
@@ -48,6 +49,7 @@ func page(text:String):
 	yield(Event.textInterface, 'buff_end')
 
 func run_page(text):
+	Event.emit_signal("time_should_pause")
 	if text != null:
 		text = text.trim_prefix('\n')
 		Event.textInterface.buff_text(text.format(GameState.settings))
@@ -61,6 +63,7 @@ func text(text):
 	yield(Event.textInterface, 'buff_end')
 	
 func run_text(text):
+	Event.emit_signal("time_should_pause")
 	text = text.trim_prefix('\n')
 	Event.textInterface.buff_text(text.format(GameState.settings))
 	yield(Event.textInterface, 'buff_end')
@@ -69,6 +72,7 @@ func speaking(name=null):
 	buffer.append(['speaking', name])
 
 func run_speaking(name):
+	Event.emit_signal("time_should_pause")
 	if name && characters.has(name): Event.show_character('res://img/people/%s.png'%characters[name]['imgPath'])
 	else: Event.hide_character()
 
@@ -87,12 +91,14 @@ func cmd(obj, method, args=[], shouldYield=false):
 		buffer.append(['cmd', obj, method, args])
 
 func run_cmd(obj, method, args):
+	Event.emit_signal("time_should_pause")
 	if obj && obj.has_method(method): 
 		#yield(Event.textInterface, 'buff_end')
 		obj.callv(method, args)
 	else: printerr('Tried to call invalid method "', method, '" on ', obj, ' from conversation')
 
 func run_yieldCmd(obj, method, args):
+	Event.emit_signal("time_should_pause")
 	if obj && obj.has_method(method): 
 		yield(obj.callv(method, args), 'completed')
 	else: 
@@ -104,6 +110,7 @@ func input(prompt, obj, method):
 	buffer.append(['input', prompt, obj, method])
 
 func run_input(prompt, obj, method):
+	Event.emit_signal("time_should_pause")
 	Event.textInterface.clear_text()
 	Event.textInterface.buff_text(prompt+'\n\n> ')
 	Event.textInterface.buff_input()

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://exemplar/exemplar.gd" type="Script" id=1]
 [ext_resource path="res://ui/GridVSeparator.tscn" type="PackedScene" id=2]
 [ext_resource path="res://font/KaushanScript-Regular.tres" type="DynamicFont" id=3]
 [ext_resource path="res://img/error.png" type="Texture" id=4]
 [ext_resource path="res://ui/organizer/Organizer.tscn" type="PackedScene" id=5]
+[ext_resource path="res://exemplar/ExemplarStatus.tscn" type="PackedScene" id=6]
 
 [node name="ExemplarCharSheet" type="PanelContainer"]
 margin_left = 797.0
@@ -21,7 +22,7 @@ __meta__ = {
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 798.0
-margin_bottom = 361.0
+margin_bottom = 425.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 __meta__ = {
@@ -39,7 +40,7 @@ align = 1
 [node name="TabContainer" type="TabContainer" parent="ExemplarCharSheet"]
 margin_top = 18.0
 margin_right = 791.0
-margin_bottom = 354.0
+margin_bottom = 418.0
 size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
@@ -57,7 +58,7 @@ size_flags_vertical = 3
 
 [node name="LeftColumn" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/Training"]
 margin_right = 471.0
-margin_bottom = 300.0
+margin_bottom = 364.0
 size_flags_horizontal = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn"]
@@ -66,35 +67,35 @@ margin_bottom = 24.0
 size_flags_horizontal = 3
 size_flags_vertical = 0
 
+[node name="AddToPlanButton" type="Button" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer"]
+margin_right = 87.0
+margin_bottom = 20.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "Add To Plan"
+
 [node name="TrainingMethodSelect" type="OptionButton" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer"]
-margin_right = 256.0
+margin_left = 91.0
+margin_right = 347.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 size_flags_vertical = 0
 text = "No training possible in this location"
 
 [node name="CountSelect" type="OptionButton" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer"]
-margin_left = 260.0
-margin_right = 304.0
+margin_left = 351.0
+margin_right = 395.0
 margin_bottom = 20.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 text = "x1"
 
 [node name="RepeatTraining" type="CheckBox" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer"]
-margin_left = 308.0
-margin_right = 380.0
+margin_left = 399.0
+margin_right = 471.0
 margin_bottom = 24.0
 pressed = true
 text = "Repeat"
-
-[node name="AddToPlanButton" type="Button" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer"]
-margin_left = 384.0
-margin_right = 471.0
-margin_bottom = 20.0
-size_flags_horizontal = 0
-size_flags_vertical = 0
-text = "Add To Plan"
 
 [node name="HSeparator3" type="HSeparator" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn"]
 margin_top = 28.0
@@ -167,10 +168,19 @@ align = 1
 [node name="RightColumn" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/Training"]
 margin_left = 475.0
 margin_right = 775.0
-margin_bottom = 300.0
+margin_bottom = 364.0
 size_flags_horizontal = 3
 
+[node name="ExemplarStatus" parent="ExemplarCharSheet/TabContainer/Training/RightColumn" instance=ExtResource( 6 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 300.0
+margin_bottom = 60.0
+barLength = 250
+
 [node name="TrainingOrganizer" parent="ExemplarCharSheet/TabContainer/Training/RightColumn" instance=ExtResource( 5 )]
+margin_top = 64.0
+margin_bottom = 364.0
 size_flags_horizontal = 3
 allowNewFolder = false
 ignoreEntryClicks = true
@@ -178,7 +188,7 @@ ignoreEntryClicks = true
 [node name="VSeparator" type="VSeparator" parent="ExemplarCharSheet/TabContainer/Training"]
 margin_left = 779.0
 margin_right = 783.0
-margin_bottom = 300.0
+margin_bottom = 364.0
 
 [node name="Stats" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer"]
 visible = false
@@ -363,9 +373,13 @@ margin_left = 7.0
 margin_top = 7.0
 margin_right = 27.0
 margin_bottom = 28.0
+hint_tooltip = "(close character sheet)"
 size_flags_horizontal = 0
 size_flags_vertical = 0
 texture_normal = ExtResource( 4 )
-[connection signal="item_selected" from="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer/TrainingMethodSelect" to="." method="_on_TrainingMethodSelect_item_selected"]
+[connection signal="tab_changed" from="ExemplarCharSheet/TabContainer" to="." method="_on_TabContainer_tab_changed"]
 [connection signal="pressed" from="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer/AddToPlanButton" to="." method="_on_AddToPlanButton_pressed"]
+[connection signal="item_selected" from="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer/TrainingMethodSelect" to="." method="_on_TrainingMethodSelect_item_selected"]
+[connection signal="item_selected" from="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer/CountSelect" to="." method="_on_CountSelect_item_selected"]
+[connection signal="toggled" from="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer/RepeatTraining" to="." method="_on_RepeatTraining_toggled"]
 [connection signal="pressed" from="CloseButton" to="." method="_on_CloseButton_pressed"]

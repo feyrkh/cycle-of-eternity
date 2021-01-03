@@ -1,12 +1,8 @@
 extends TextureButton
 
-export(NodePath) var offsetCameraPath
-var offsetCamera:Camera2D
+onready var offsetCamera:Camera2D = get_tree().root.find_node("Camera2D")
+onready var area2d:Area2D = get_tree().root.find_node("QueryToolCursor")
 
-export(NodePath) var queryToolCursorPath
-export(NodePath) var rootScenePath
-onready var area2d:Area2D = get_node(queryToolCursorPath)
-onready var rootScene = get_node(rootScenePath)
 var drawLayer
 var highlighted = null
 var querying = false
@@ -16,7 +12,6 @@ func _ready():
 	set_process(false)
 	drawLayer = self
 	while drawLayer.get_parent() && !(drawLayer is CanvasLayer): drawLayer = drawLayer.get_parent()
-	offsetCamera = get_node(offsetCameraPath)
 
 func _on_TextureButton_pressed():
 	querying = true

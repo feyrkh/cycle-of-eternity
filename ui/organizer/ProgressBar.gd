@@ -1,10 +1,19 @@
 extends ColorRect
 
+export(Color) var defaultColor = Color.lightgreen
+export(bool) var compact = false
+var parentSize
+
 func _ready():
-	color = Color.lightgreen
+	color = defaultColor
+	update_parent_size()
+	get_parent().connect("resized", self, 'update_parent_size')
+
+func update_parent_size():
+	parentSize = get_parent().rect_size.x 
 
 func set_progress(amt):
-	var maxSize = get_parent().rect_size.x
+	var maxSize = parentSize
 	self.rect_min_size.x = maxSize * amt
 
 func set_progressing(madeProgress):

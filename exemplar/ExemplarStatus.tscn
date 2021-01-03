@@ -1,0 +1,71 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://ui/organizer/ProgressBar.tscn" type="PackedScene" id=1]
+[ext_resource path="res://exemplar/ExemplarStatus.gd" type="Script" id=2]
+[ext_resource path="res://ui/StatusBar.tscn" type="PackedScene" id=3]
+
+[node name="ExemplarStatus" type="HBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridContainer" type="GridContainer" parent="."]
+margin_right = 261.0
+margin_bottom = 1080.0
+custom_constants/vseparation = 0
+custom_constants/hseparation = 10
+columns = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HealthLabel" type="Label" parent="GridContainer"]
+margin_top = 3.0
+margin_right = 51.0
+margin_bottom = 17.0
+text = "Health"
+
+[node name="HealthPanel" parent="GridContainer" instance=ExtResource( 3 )]
+
+[node name="StaminaLabel" type="Label" parent="GridContainer"]
+margin_top = 23.0
+margin_right = 51.0
+margin_bottom = 37.0
+text = "Stamina"
+
+[node name="StaminaPanel" type="PanelContainer" parent="GridContainer"]
+margin_left = 61.0
+margin_top = 20.0
+margin_right = 261.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 200, 20 )
+
+[node name="StaminaBar" parent="GridContainer/StaminaPanel" instance=ExtResource( 1 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 7.0
+margin_bottom = 13.0
+defaultColor = Color( 0.937255, 0.964706, 0.466667, 1 )
+
+[node name="FocusLabel" type="Label" parent="GridContainer"]
+margin_top = 43.0
+margin_right = 51.0
+margin_bottom = 57.0
+text = "Focus"
+
+[node name="FocusPanel" type="PanelContainer" parent="GridContainer"]
+margin_left = 61.0
+margin_top = 40.0
+margin_right = 261.0
+margin_bottom = 60.0
+rect_min_size = Vector2( 200, 20 )
+
+[node name="FocusBar" parent="GridContainer/FocusPanel" instance=ExtResource( 1 )]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 7.0
+margin_bottom = 13.0
+defaultColor = Color( 0.290196, 0.584314, 1, 1 )

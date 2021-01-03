@@ -203,7 +203,7 @@ func tutorial_pass_time():
 	UI.leftOrganizer.visible = true
 	UI.rightOrganizer.visible = true
 	UI.timePassContainer.visible = true
-	UI.controlsContainer.visible = false
+	UI.controlsContainer.visible = true
 	var c = Conversation
 	c.clear()
 	c.speaking('helper')
@@ -229,7 +229,7 @@ func tutorial_build_training_hall():
 	UI.leftOrganizer.visible = true
 	UI.rightOrganizer.visible = true
 	UI.timePassContainer.visible = true
-	UI.controlsContainer.visible = false
+	UI.controlsContainer.visible = true
 	var c = Conversation
 	c.clear()
 	c.speaking('helper')
@@ -244,6 +244,10 @@ While I hope you find me worthy to be the first sacred scientist to start their 
 	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_WAIT_FOR_TRAINING_HALL
 
 func tutorial_wait_training_hall():
+	var decrees = GameState._organizers['office'].get_entries_with_type('project')
+	var trainingHall = GameState._organizers['main'].get_entry_by_id('trainingHall1')
+	if decrees.size() != 0 or trainingHall == null:
+		return
 	Conversation.clear()
 	Conversation.text("Reminder: Decree the construction of a training hall, and pass time until it is completed.")
 	Conversation.run()

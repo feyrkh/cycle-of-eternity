@@ -25,6 +25,8 @@ func get_is_deleted():
 	return projectComplete
 
 func complete_project():
+	Event.emit_signal("time_should_pause")
+	Event.emit_signal("special_event", "Decree completed: "+projectName, 'decree_complete')
 	projectComplete = true
 	var resources_to_add = get_selected_option_outputs()
 	var extra_options = get_selected_option_opts()
@@ -123,7 +125,7 @@ func get_decree_text():
 	return decreeTextTemplate.format(get_selected_option_flavor_text()).format(get_selected_option_outputs()).format(GameState.settings)
 
 func serialize():
-	var retval = {'cmd':'decree', 'f':filename, 'so':selectedOptions, 'ar':appliedResources, 'in':baseInputResources, 'out':baseOutputResources, 'dt':Util.DATATYPE_DECREE}
+	var retval = {'cmd':'decree', 'f':filename, 'name':projectName, 'so':selectedOptions, 'ar':appliedResources, 'dt':Util.DATATYPE_DECREE}
 	if projectComplete: retval['!'] = true
 	return retval
 

@@ -2,6 +2,7 @@ extends Node2D
 
 onready var leftOrganizer:Organizer = find_node('Organizer')
 onready var rightOrganizer:Organizer = find_node('Organizer2')
+onready var charOrganizer:Organizer = find_node('CharOrganizer')
 onready var textInterfaceSplit:VSplitContainer = find_node('VSplitContainer')
 onready var timePassContainer = find_node('TimePassContainer')
 onready var timePassButton = find_node('TimePassButton')
@@ -36,6 +37,7 @@ func _ready():
 	Event.connect("msg_popup", self, 'on_msg_popup')
 	Event.connect('new_scene_loaded', self, 'on_new_scene_loaded')
 	Event.connect("pass_time", self, 'on_pass_time')
+	Event.connect('place_item', self, 'on_place_item')
 
 	_on_DragSurface_resized()
 	_on_TextBoxContainer_resized()
@@ -106,6 +108,9 @@ func load_left_organizer(organizerName, skipSave=false):
 	load_organizer(organizerName, leftOrganizer, skipSave)
 	GameState.settings['leftOrganizerName'] = organizerName
 
+func load_char_organizer(organizerName, skipSave=false):
+	load_organizer(organizerName, charOrganizer, skipSave)
+
 func load_organizer(organizerName, organizer, skipSave=false):
 	if !skipSave:
 		organizer.save()
@@ -122,10 +127,11 @@ func save_organizers():
 		leftOrganizer.save()
 	if rightOrganizer.organizerDataName:
 		rightOrganizer.save()
+	if charOrganizer.visible and charOrganizer.organizerDataName:
+		charOrganizer.save()
 	
 func clear_organizer():
 	rightOrganizer.clear()
-
 
 func _on_TIE_gui_input(event):
 	if event is InputEventMouseButton:
@@ -149,11 +155,17 @@ func deserialize_text_interface(serializedTextInterface):
 
 func call_attention_left_organizer(entryId:String):
 	var target = leftOrganizer.get_entry_by_id(entryId)
-	if target: call_attention_from_right(target)
+	if target: 
+		if target.has_method('pulse_until_clicked'):
+			target.pulse_until_clicked()
+		call_attention_from_right(target)
 
 func call_attention_right_organizer(entryId:String):
 	var target = rightOrganizer.get_entry_by_id(entryId)
-	if target: call_attention_from_left(target)
+	if target: 
+		if target.has_method('pulse_until_clicked'):
+			target.pulse_until_clicked()
+		call_attention_from_left(target)
 
 func call_attention_from_left(target:Control):
 	var pointer = load("res://ui/CallAttention.tscn").instance()
@@ -166,3 +178,29 @@ func call_attention_from_right(target:Control):
 	pointer.target = target
 	add_popup(pointer)
 	pointer.call_attention_from_right(target)
+
+func on_place_item(itemShadow, itemData, sourceNode):
+	clear_inner_panel()
+
+func reset_camera():
+	$Camera2D.offset = Vector2.ZERO
+	$Camera2D.position =  OS.window_size/2
+	$Camera2D.zoom = Vector2.ONE
+
+func enter_combat_mode():
+	leftOrganizer.visible = false
+	charOrganizer.visible = false
+	textInterface.visible = false
+	timePassContainer.visible = false
+	dragSurface.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	find_node("DateLabel").visible = false
+	#find_node("DateProgressBar").visible = false
+
+func leave_combat_mode():
+	leftOrganizer.visible = true
+	textInterface.visible = true
+	timePassContainer.visible = true
+	dragSurface.mouse_filter = Control.MOUSE_FILTER_PASS
+	find_node("DateLabel").visible = true
+	find_node("DateProgressBar").visible = true
+	

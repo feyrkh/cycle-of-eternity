@@ -99,7 +99,18 @@ static func rand_choice(arr):
 	if !arr or !arr.size(): return null
 	return arr[randi()%arr.size()]
 
+static func formatted_datetime():
+	var dt = OS.get_datetime()
+	return "%02d/%02d/%d %02d:%02d:%02d" % [dt['day'], dt['month'], dt['year'], dt['hour'], dt['minute'], dt['second']]
+
 const statsMetadata = {
+	"fatigue": {"name":"Stamina", "noPowerLevel":true, "desc":"Resist fatigue through superior training, preventing weakness, loss of balance, loss of focus"},
+	"spiritFatigue": {"name":"Spiritual endurance", "noPowerLevel":true, "desc":"Resist spiritual fatigue, preventing wasted spiritual energy and sloppy techniques"},
+	"health": {"name": "Health", "noPowerLevel":true, "desc":"Physical well-being"},
+	"focus": {"name":"Mental focus", "noPowerLevel":true, "desc":"Amount of mental exertion you can bring to bear"},
+
+	"balance": {"name": "Balance", "desc":"Sure-footedness, ability to change direction suddenly without stumbling"},
+	"balanceRecover": {"name": "Balance recovery", "desc":"Ability to recover from becoming unbalanced"},
 	"str": {"name":"Strength", "desc":"Strength, endurance"},
 	"agi": {"name":"Agility", "desc":"Speed, dexterity, agility"},
 	"int": {"name":"Mental", "desc":"Mental aptitude, learned skills"},
@@ -129,9 +140,8 @@ const statsMetadata = {
 	"legEnd": {"name":"Leg muscle endurance", "desc":"Resist fatigue from using your legs"},
 	"gripEnd": {"name":"Grip endurance", "desc":"Resist fatigue from using your hands"},
 	"coreEnd": {"name":"Core endurance", "desc":"Resist fatigue from using your core"},
-	"fatigue": {"name":"Stamina", "desc":"Resist fatigue through superior training, preventing weakness, loss of balance, loss of focus"},
 	"fatigueRecover": {"name":"Fatigue recovery", "desc":"Speed of recovery from exertion and fatigue"},
-	"woundRecover": {"name":"Wound recovery", "desc":"Speed of recovery from physical injury"},
+	"healthRecover": {"name":"Health recovery", "desc":"Speed of recovery from physical injury"},
 	"moveSpd": {"name":"Movement speed", "desc":"Speed when covering ground on your feet"},
 	"attackSpd": {"name":"Attack speed", "desc":"Speed when attacking with hands or weapons"},
 	"reactSpd": {"name":"React speed", "desc":"Speed when reacting to enemy actions"},
@@ -142,7 +152,6 @@ const statsMetadata = {
 	"insight": {"name":"Insight", "desc":"Ability to uncover new principles and techniques through meditation"},
 	"synthesis": {"name":"Synthesis", "desc":"Ability to combine principles and techniques to uncover more advanced insights"},
 	"thinkSpeed": {"name":"Mental agility", "desc":"Speed of thought and mental reaction"},
-	"focus": {"name":"Mental focus", "desc":"Amount of mental exertion you can bring to bear"},
 	"multitask": {"name":"Multitasking", "desc":"Skill in juggling multiple mental tasks"},
 	"musicInt": {"name":"Musical skill", "desc":"Skill with musical instruments"},
 	"mathInt": {"name":"Math skill", "desc":"Skill in describing the world through formal math and logic"},
@@ -155,7 +164,6 @@ const statsMetadata = {
 	"resistConfusion": {"name":"Resist confusion", "desc":"Resist confusion"},
 	"resistFatigue": {"name":"Resist fatigue", "desc":"Resist fatigue through sheer willpower, preventing weakness, loss of balance, loss of focus"},
 	"resistDisorient": {"name":"Resist disorentation", "desc":"Resist disorientation and dizziness"},
-	"spiritFatigue": {"name":"Spiritual endurance", "desc":"Resist spiritual fatigue, preventing wasted spiritual energy and sloppy techniques"},
 	"spiritRecover": {"name":"Spiritual recovery", "desc":"Speed of recovery from spiritual strain"},
 	"resistDomination": {"name":"Resist domination", "desc":"Resist domination techniques"},
 	"determination": {"name":"Determination", "desc":"Improve training outcomes by pushing harder, succeed by force of will even in impossible situations"},
@@ -171,3 +179,25 @@ static func merge_maps(destMapToModify, sourceMap):
 	for k in sourceMap:
 		var orig = destMapToModify.get(k, 0)
 		destMapToModify[k] = orig + sourceMap[k]
+		
+
+static func start_pulsing(target:Node, pulseTime=null, pulseSpeed=0.5, pulseColor=Color(2.5, 2.5, 2.5)):
+	var existingPulser = target.get_node_or_null("_AutoPulser_")
+	if !existingPulser:
+		existingPulser = load('res://ui/Pulser.tscn').instance()
+		existingPulser.name = "_AutoPulser_"
+		target.add_child(existingPulser)
+	existingPulser.periodSeconds = pulseSpeed
+	existingPulser.pulseColor = pulseColor
+	existingPulser.start(pulseTime)
+
+static func blink_once(target, blinkSpeed=0.2, blinkColor=Color(1.5, 1.5, 1.5)):
+	start_pulsing(target, blinkSpeed, blinkSpeed, blinkColor)
+	
+static func stop_pulsing(target:Node):
+	var existingPulser = target.get_node_or_null("_AutoPulser_")
+	if existingPulser:
+		existingPulser.stop()
+		existingPulser.queue_free()
+		target.remove_child(existingPulser)
+		

@@ -11,11 +11,13 @@ var dropTarget:Node = null
 var dropContainer:Control = null
 export(bool) var allowNewFolder = true
 export(bool) var ignoreEntryClicks = false
-
+export(bool) var canBeClosed = false
 
 var organizerDataName
 var entryIds = {}
 var uiEnabled = true
+var entryCountAtRefreshTime = 0
+
 const OrganizerFolderScene = preload('./OrganizerFolder.tscn')
 const OrganizerEntryScene = preload('./OrganizerEntry.tscn')
 const ProgressBar = preload("res://ui/organizer/ProgressBar.tscn")
@@ -34,6 +36,8 @@ func _ready():
 		connect_drag_events_for_tree(child)
 	
 	if !allowNewFolder: find_node('NewFolderButton').queue_free()
+	if !canBeClosed: 
+		find_node('CloseButton').queue_free()
 
 func _process(delta):
 	if !Input.is_mouse_button_pressed(BUTTON_LEFT):
@@ -66,8 +70,13 @@ func reenable():
 func disable():
 	set_enabled(false)
 	
+func get_organizer_data():
+	if organizerDataName: return GameState.get_organizer_data(organizerDataName)
+	else: return null
+	
 func refresh():
-	refresh_organizer_data(GameState.get_organizer_data(organizerDataName))
+	if organizerDataName:
+		refresh_organizer_data(GameState.get_organizer_data(organizerDataName))
 	
 func refresh_organizer_data(data):
 	organizerDataName = data.name
@@ -99,6 +108,9 @@ func refresh_organizer_data(data):
 			var errorIcon = item.find_node('ErrorIcon')
 			errorIcon.visible = true
 			errorIcon.hint_tooltip = entryData.get('error')
+		else:
+			var errorIcon = item.find_node('ErrorIcon')
+			if errorIcon: errorIcon.queue_free()
 		if (!(entryData is Dictionary) and entryData.has_method('get_percent_complete')) or ((entryData is Dictionary) and !entryData.get('active', true)):
 			var progressBar = ProgressBar.instance()
 			item.add_child(progressBar)
@@ -107,6 +119,10 @@ func refresh_organizer_data(data):
 			progressBar.update_from_organizer_entry(0, item)
 		#print('adding entry: ', item.labelText, ' with data ', item.data, ' to bottom of ', target.get_path())
 		connect_drag_events_for_tree(item)
+	if data.entries.size() != entryCountAtRefreshTime:
+		Util.blink_once(self)
+	entryCountAtRefreshTime = data.entries.size()
+	data.refresh_entry_type_index()
 		
 func save():
 	var serializedOrganizer = serialize()
@@ -146,6 +162,11 @@ func get_entry_by_id(id):
 	if !entryIds.get(id):
 		entryIds.erase(id)
 	return entryIds.get(id)
+
+func pulse_entry_by_id(id):
+	var entry = get_entry_by_id(id)
+	if entry:
+		entry.pulse_until_clicked()
 
 func get_or_create_path(path:Array):
 	var target = self
@@ -355,3 +376,8 @@ func add_new_entry(label:String, data:Dictionary, id=null, entryFlags=0):
 	newEntry.entryFlags = entryFlags
 	add_item_bottom(newEntry)
 	return newEntry
+
+
+func _on_CloseButton_pressed():
+	save()
+	visible = false

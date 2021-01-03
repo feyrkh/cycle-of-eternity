@@ -1,5 +1,8 @@
 {"cmd":"scene", "scene":"trainingHall", "organizerName":"trainingHall{id_trainingHall}",
+"initFolders":[
+	{"name":"Equipment^isOpen", "id":"equipment"}
+],
 "initEntries":[
-"res://data/locationEquip/metal_weights.json"
+	"res://data/locationEquip/metal_weights.json"
 ]
 }

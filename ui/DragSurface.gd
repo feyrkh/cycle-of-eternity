@@ -1,4 +1,4 @@
-extends MarginContainer
+extends Container
 
 var dragging = null
 var dragStart
@@ -99,11 +99,11 @@ func zoom_in():
 	zoomLevel.y = max(0.1, zoomLevel.y*0.9)
 	moveMultiplier = camera.zoom.x
 	camera.zoom = zoomLevel
-	$'/root/Event'.emit_signal('chakraZoom', zoomLevel)
+	Event.emit_signal('chakraZoom', zoomLevel)
 	
 func zoom_out():
 	zoomLevel.x = min(10, zoomLevel.x*1.1)
 	zoomLevel.y = min(10, zoomLevel.y*1.1)
 	moveMultiplier = camera.zoom.x
 	camera.zoom = zoomLevel
-	$'/root/Event'.emit_signal('chakraZoom', zoomLevel)
+	Event.emit_signal('chakraZoom', zoomLevel)

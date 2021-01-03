@@ -7,15 +7,15 @@ const statsTree = {
 		'bone': ['armBoneStr', 'legBoneStr', 'skullBoneStr', 'coreBoneStr'],  # bone density
 		'muscle': ['armStr', 'legStr', 'gripStr', 'coreStr'], # muscle strength (how much force you can exert)
 		'endurance': ['armEnd', 'legEnd', 'gripEnd', 'coreEnd', 'fatigue'], # muscle endurance (how much muscle fatigue you can handle)
-		'b_recover': ['fatigueRecover', 'woundRecover'], # recovery speed
+		'b_recover': ['fatigueRecover', 'healthRecover'], # recovery speed
 	},
 	'agi':{
 		'speed': ['moveSpd', 'attackSpd', 'reactSpd'], # speed of actions
-		'dexterity': ['jumpAgi', 'attackAgi', 'defendAgi'], # effectiveness of different actions
+		'dexterity': ['balance', 'balanceRecover', 'jumpAgi', 'attackAgi', 'defendAgi'], # effectiveness of different actions
 	},
 	'int':{
 		'ability': ['perceive', 'insight', 'synthesis', 'propriception'], # mental abilities
-		'm_sharpness': ['thinkSpeed', 'multitask', 'focus'], # related to mental foci
+		'm_sharpness': ['thinkSpeed', 'multitask'], # related to mental foci
 		'skill': ['musicInt', 'mathInt', 'spatialInt', 'languageInt', 'emotionalInt'], # ability in different intellectual domains
 		'm_recover': ['focusRecovery'] # recovery speed
 	},
@@ -63,7 +63,7 @@ func on_training_complete():
 	pass
 	
 func serialize():
-	var retval = {'cmd':'exemplar', 'dt':Util.DATATYPE_EXEMPLAR, 'g':gender, 'name':entityName, 'id':entityId, 'stats':stats, 'statsHistory':statsHistory}
+	var retval = {'cmd':'exemplar', 'dt':Util.DATATYPE_EXEMPLAR, 'g':gender, 'name':entityName, 'id':entityId, 'stats':stats, 'statsHistory':statsHistory, 'entryScene':'OrganizerExemplarEntry'}
 	return retval
 
 func deserialize(data):
@@ -101,15 +101,24 @@ func on_resource_create(newName, createOpts, entityId):
 		take_stats_snapshot()
 	
 	organizerData = GameState.get_organizer_data(get_organizer_name())
-	organizerData.add_folder('Training^noDelete^isOpen^noEdit', 'training')
+	init_builtin_commands()
 
 func init_builtin_commands():
+	_builtin_cmd('(view status)^noEdit^noDrag^noDelete', self, 'showCharOrg', null)
+	_builtin_folder('Training Techniques^noDelete^isOpen^noEdit', 'training')
 	_builtin_cmd('Rest^noDelete', 'res://data/train/rest.json', 'cmdRest', 'training')
-	_builtin_cmd('Empty mind^noDelete', 'res://data/train/empty_mind.json', 'cmdEmptyMind', 'training')
+	_builtin_cmd('Empty mind^noDelete', 'res://data/train/clear_mind.json', 'cmdClearMind', 'training')
 
 func _builtin_cmd(entryName, dataJson, entryId, folderId):
 	if !organizerData.get_entry_by_id(entryId):
 		organizerData.add_entry(entryName, dataJson, entryId, folderId)
+
+func _builtin_folder(folderName, folderId):
+	if !organizerData.get_entry_by_id(folderId):
+		organizerData.add_folder(folderName, folderId)
+
+func _delete_cmd(entryId):
+	organizerData.delete_entry_by_id(entryId)
 
 func _generate_stats_array(statNameArray, statPrefix, opts):
 	for statName in statNameArray:
@@ -126,7 +135,7 @@ func generate_stat(statName, median, stdev, percentileRetries):
 		if p > valuePercent: valuePercent = p
 	var value = Util.bell_curve(median, stdev, valuePercent)
 	stats[statName] = value
-	var maxValue = (Util.bell_curve(0.3, 0.075, randf()) + 1) * value
+	var maxValue = (Util.bell_curve(0.5, 0.15, randf()) + 1) * value
 	if maxValue < value: maxValue = value
 	stats['max_'+statName] = maxValue
 	
@@ -181,14 +190,18 @@ func get_stats_summary(statsTree, statPrefix=''):
 					printerr("Invalid stats path when getting summary: ", statsTree)
 					return {'sum':0,'count':0,'mean':0}
 			var lastStep = chunks[chunks.size()-1]
-			if statsTree is Array: return {'sum':get_stat(lastStep),'count':1,'mean':get_stat(lastStep)}
-			else: statsTree = statsTree.get(lastStep)
+			if statsTree is Array: 
+				return {'sum':get_stat(lastStep),'count':1,'mean':get_stat(lastStep)}
+			else: 
+				statsTree = statsTree.get(lastStep)
 	return map_reduce_stats_tree(statsTree, {'sum':0,'count':0,'mean':0}, '_avg_stats_array', '_combine_avg_map', statPrefix)
 
 func _avg_stats_array(statNameArray, statPrefix, opts):
 	var count = 0
 	var sum = 0
 	for statName in statNameArray:
+		if Util.statsMetadata.get(statName, {}).get('noPowerLevel'): 
+			continue
 		var statValue = stats.get(statPrefix+statName)
 		if statValue != null:
 			sum += statValue

@@ -7,6 +7,7 @@ func _ready():
 	Event.connect('place_item', self, 'on_place_item')
 	Event.connect('finalize_place_item', self, 'on_finalize_place_item')
 	Event.connect('restore_item_placement', self, 'on_restore_item_placement')
+	Event.connect('clear_item_placement', self, 'on_clear_item_placement')
 	if GameState.loadingSaveFile:
 		GameState.load_world(GameState.loadingSaveFile)
 		GameState.loadingSaveFile = null
@@ -32,6 +33,11 @@ func on_place_item(itemShadow, itemData, sourceNode):
 	Input.warp_mouse_position(itemShadow.global_position)
 	Conversation.clear()
 	Conversation.speaking(null)
+	Conversation.run()
+
+func on_clear_item_placement():
+	Util.clear_children(hoverItems)
+	Util.clear_children(placedItems)
 
 func on_restore_item_placement(itemData, hover):
 	var posX = itemData.get('posX')
