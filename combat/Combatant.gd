@@ -49,6 +49,7 @@ func add_combat_line(target):
 
 func setup_exemplar():
 	color = Color.aquamarine
+	entityNameLabel.rect_position.y -= entityNameLabel.rect_size.y + radius*2
 	find_node('IconBackground').modulate = color
 	find_node('EntityName').text = entityData.entityName
 	setup_combat_icon("res://img/people/secretary.png")
@@ -97,7 +98,16 @@ func get_targets_on(opponent):
 			result.append(targetIcon)
 	return result
 
-		
+func get_next_offset_slot(opponent):
+	var existingTargets = get_targets_on(opponent)
+	var slotsTaken = {}
+	for target in existingTargets:
+		slotsTaken[target.offsetSlot] = true
+	var firstOpenSlot = 0
+	while slotsTaken.get(firstOpenSlot): 
+		firstOpenSlot += 1
+	return firstOpenSlot
+
 func can_drop_data(pos, data): 
 	if data == self or data is TargetLineFocus:
 		return true

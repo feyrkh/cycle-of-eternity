@@ -3,6 +3,7 @@ extends Node
 export(bool) var enabled = false
 export(float) var periodSeconds = 0.5
 export(Color) var pulseColor = Color(2.5, 2.5, 2.5)
+export(Color) var startColor = Color.white
 var counter:float = 0
 var timer = null
 
@@ -10,7 +11,7 @@ func _process(delta):
 	if !enabled:
 		set_process(false)
 	counter += delta
-	get_parent().modulate = lerp(Color.white, pulseColor, 1-abs(sin(counter/periodSeconds)))
+	get_parent().modulate = lerp(startColor, pulseColor, 1-abs(sin(counter/periodSeconds)))
 	if timer:
 		timer -= delta
 		if timer < 0: 

@@ -1,5 +1,6 @@
 extends LocationScene
 
+
 var entityLayer
 var lineLayer
 var focusLayer
@@ -10,6 +11,8 @@ var opponentDataList
 
 var exemplarCombatants = []
 var opponentCombatants = []
+
+var closestTargetLinePoint
 
 # Any setup commands that will always run before the quest or default room setup - don't forget to call .setup_base()
 func setup_base():
@@ -25,8 +28,9 @@ func setup_base():
 	position_entities(opponentCombatants, opponentDataList, 0.9)
 	for exemplar in exemplarCombatants:
 		for opponent in opponentCombatants:
+			pass
 			#exemplar.add_combat_line(opponent)
-			opponent.add_combat_line(exemplar)
+			#opponent.add_combat_line(exemplar)
 			#exemplar.add_center_line(opponent)
 	
 	rightOrganizerName = 'combat'
@@ -35,6 +39,20 @@ func setup_base():
 	rightOrganizerData.friendlyName = 'Combat'
 	UI.rightOrganizer.refresh_organizer_data(rightOrganizerData)
 	Event.emit_signal("entering_combat", self)
+
+func _process(delta):
+	var closestPoints = get_tree().get_nodes_in_group("closestPoint")
+	var distSq = Util.MAX_INT
+	var mousePos = get_global_mouse_position()
+	for point in closestPoints:
+		point.visible = false
+		var curDist = mousePos.distance_squared_to(point.global_position)
+		if curDist < distSq:
+			distSq = curDist
+			closestTargetLinePoint = point
+	if closestTargetLinePoint: 
+		closestTargetLinePoint.visible = true
+
 
 func shutdown_scene():
 	UI.leave_combat_mode()

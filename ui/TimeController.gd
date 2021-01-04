@@ -88,6 +88,8 @@ func set_speed(newLevel):
 	for i in get_child_count():
 		if newLevel != i: 
 			get_child(i).pressed = false
+		else:
+			get_child(i).pressed = true
 	newLevel = newLevel % levels.size()
 	if newLevel < 0: newLevel += levels.size()
 	previousLevel = curLevel
