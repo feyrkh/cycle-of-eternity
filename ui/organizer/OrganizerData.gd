@@ -8,7 +8,7 @@ var entryIds = {}
 var organizer
 
 var entryTypeIndex = {}
-const entryTypes = ['exemplar', 'producer', 'training', 'consumer', 'project', 'location']
+const entryTypes = ['exemplar', 'producer', 'training', 'consumer', 'project', 'location', 'technique']
 
 func _init():
 	refresh_entry_type_index()

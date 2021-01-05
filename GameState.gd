@@ -53,6 +53,7 @@ var resourceData = {
 var _organizers = {}
 
 var attentionTimer:Timer
+var combatScene
 
 func _ready():
 	attentionTimer = Timer.new()
@@ -60,13 +61,25 @@ func _ready():
 	attentionTimer.autostart = true
 	add_child(attentionTimer)
 	attentionTimer.start(0.1)
+	Event.connect("entering_combat", self, "on_entering_combat")
+	Event.connect("leaving_combat", self, "on_leaving_combat")
 
+func on_entering_combat(combatScene):
+	self.combatScene = combatScene
+
+func on_leaving_combat(combatScene):
+	self.combatScene = null
 
 func run_command(cmd, data:Dictionary, sourceNode:Node=null):
 	if cmd is Array:
 		for c in cmd:
 			run_command(cmd, data, sourceNode)
 		return
+		
+	if combatScene:
+		combatScene.run_command(cmd, data, sourceNode)
+		return
+		
 	#if cmd != 'item' and cmd != 'msg' and cmd != 'train' and cmd != 'trainBonus': 
 	#	UI.clear_inner_panel()
 	match cmd:

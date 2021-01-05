@@ -4,6 +4,7 @@ extends LocationScene
 var entityLayer
 var lineLayer
 var focusLayer
+var techniqueLayer
 
 var combatData
 var exemplarDataList
@@ -11,8 +12,10 @@ var opponentDataList
 
 var exemplarCombatants = []
 var opponentCombatants = []
+var selectedCombatant
 
 var closestTargetLinePoint
+var placingTechnique
 
 # Any setup commands that will always run before the quest or default room setup - don't forget to call .setup_base()
 func setup_base():
@@ -22,6 +25,7 @@ func setup_base():
 	entityLayer = find_node('EntityLayer', true, false)
 	lineLayer = find_node('LineLayer', true, false)
 	focusLayer = find_node('FocusLayer', true, false)
+	techniqueLayer = find_node('TechniqueLayer', true, false)
 	UI.enter_combat_mode()
 	yield(get_tree(), "idle_frame")
 	position_entities(exemplarCombatants, exemplarDataList, 0.1)
@@ -37,6 +41,23 @@ func setup_base():
 	rightOrganizerData = OrganizerData.new()
 	rightOrganizerData.name = 'combat'
 	rightOrganizerData.friendlyName = 'Combat'
+	
+	rightOrganizerData.add_entry("Jab^noDelete", {
+		"cmd": "combatTech", "attack": [
+			{"t":AttackTechnique.PREPARE, "l": 0.1}, # quick preparation
+			{"t":AttackTechnique.PARRY, "l": 0.01}, # quick parry at the start of the strike
+			{"t":AttackTechnique.STRIKE, "l": 0.05}, # quick attack at the end
+		]
+	})
+	
+	rightOrganizerData.add_entry("Punch^noDelete", {
+		"cmd": "combatTech", "attack": [
+			{"t":AttackTechnique.PREPARE, "l": 0.1}, 
+			{"t":AttackTechnique.CHARGE, "l": 0.01},
+			{"t":AttackTechnique.STRIKE, "l": 0.05}, 
+		]
+	})
+	
 	UI.rightOrganizer.refresh_organizer_data(rightOrganizerData)
 	Event.emit_signal("entering_combat", self)
 
@@ -53,6 +74,19 @@ func _process(delta):
 	if closestTargetLinePoint: 
 		closestTargetLinePoint.visible = true
 
+func run_command(cmd, data:Dictionary, sourceNode:Node=null):
+	match cmd:
+		'combatTech': start_placing_technique(data, sourceNode) 
+		_: printerr('Invalid command (at least in combat!): ', cmd, '; data=', data, '; sourceNode=', sourceNode.name)
+
+func start_placing_technique(data, sourceNode):
+	print("placing technique '"+sourceNode.label.text+": "+to_json(data))
+	if placingTechnique:
+		placingTechnique.queue_free()
+		placingTechnique = null
+	var tech = AttackTechnique.new()
+	tech.segments = data.get('attack', [])
+	techniqueLayer.add_child(tech)
 
 func shutdown_scene():
 	UI.leave_combat_mode()

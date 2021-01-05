@@ -26,6 +26,7 @@ const MAX_DISTANCE_TO_HIGHLIGHT_LINE = 30
 
 var defaultScale = scale
 var zoom = Vector2.ONE
+var progress = 0.0
 
 func _ready():
 	defaultScale = scale

@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node2D",
+"class": "AttackTechnique",
+"language": "GDScript",
+"path": "res://combat/AttackTechnique.gd"
+}, {
 "base": "Control",
 "class": "Combatant",
 "language": "GDScript",
@@ -110,6 +115,7 @@ _global_script_classes=[ {
 "path": "res://Util.gd"
 } ]
 _global_script_class_icons={
+"AttackTechnique": "",
 "Combatant": "",
 "DecreeData": "",
 "DecreeOption": "",

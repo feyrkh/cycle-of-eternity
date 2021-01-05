@@ -33,6 +33,9 @@ func _process(delta):
 		dupeLine.points[1] = get_global_mouse_position()
 		dupeLine.default_color = self.modulate
 		dupe.modulate = self.modulate
+	elif !visible:
+		visible = true
+		if dupeLine: dupeLine.queue_free()
 	if !owningCombatant.pauseTargets:
 		rotateCounter += delta
 	if targetLine:
@@ -59,6 +62,7 @@ func set_target_combatant(newTarget):
 		targetCombatant = newTarget
 		self.offsetSlot = nextOffsetSlot
 		targetLine = load("res://combat/TargetLine.tscn").instance()
+		targetLine.targetLineFocus = self
 		targetLine.sourceNode = owningCombatant
 		targetLine.targetNode = newTarget
 		targetLine.default_color = owningCombatant.color

@@ -3,9 +3,12 @@ extends Line2D
 const offsetSmall = deg2rad(12)
 const offset180 = deg2rad(180)
 const caratCount = 4
+const defaultPulseSpeed = 5
 
 var sourceNode
 var targetNode
+var targetLineFocus
+
 var offsetFromNodeCenter = 46
 var offsetFromCenterlineVector = 3
 var angleBetweenNodes = 0
@@ -15,7 +18,16 @@ var pulseSpeed = 5 # seconds it takes for a pulse to travel from one end to the 
 var pulseCarats = []
 var betweenCaratOffset = 1.0/caratCount
 var offsetRadians = 0
+var pauseOffset = 0
 
+var defaultColor
+
+func update_combat_speed(newSpeed):
+	$AnimationPlayer.playback_speed = newSpeed
+	if newSpeed == 0:
+		default_color = Color(1, 1, 1, 0.3)
+	else:
+		default_color = defaultColor
 
 func _ready():
 	$AnimationPlayer.play('pulse')
@@ -31,6 +43,9 @@ func _ready():
 	Event.connect("update_target_lines", self, "update_attack_line", [], CONNECT_DEFERRED)
 	Event.emit_signal("update_target_lines")
 	default_color.a = 0.3
+	defaultColor = default_color
+	Event.connect("combat_speed_multiplier", self, "update_combat_speed")
+	update_combat_speed(Calendar.combatSpeed)
 
 func cleanup():
 	if get_parent():
@@ -39,14 +54,20 @@ func cleanup():
 func _on_AnimationPlayer_animation_finished(anim_name):
 	$AnimationPlayer.play('pulse')
 
-func _process(delta):	
-	var pulseCaratOffset = fmod(Calendar.combatTime, pulseSpeed)/pulseSpeed
+func _process(delta):
+	var pulseCaratOffset
+	if Calendar.combatSpeed == 0:
+		pauseOffset += delta
+		pulseCaratOffset = fmod(Calendar.combatTime+pauseOffset, pulseSpeed)/pulseSpeed
+	else:
+		pulseCaratOffset = fmod(Calendar.combatTime+pauseOffset, pulseSpeed)/pulseSpeed
 	for carat in pulseCarats:
 		carat.position = lerp(points[0], points[points.size()-1], pulseCaratOffset)
 		pulseCaratOffset = fmod(pulseCaratOffset+betweenCaratOffset, 1.0)
 	var mouseProgress = Util.get_segment_progress_from_point(get_global_mouse_position(), points[0], points[points.size()-1])
 	var progressPoint = lerp(points[0], points[points.size()-1], mouseProgress)
 	$ClosestPoint.position = progressPoint
+	$ClosestPoint.progress = mouseProgress
 
 func update_attack_line():
 	if !targetNode or !sourceNode: return
