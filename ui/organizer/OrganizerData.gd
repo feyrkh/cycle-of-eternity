@@ -6,12 +6,17 @@ var friendlyName
 var entries = [] setget set_entries
 var entryIds = {}
 var organizer
+var allowNewFolder = true
+var allowDelete = true
 
 var entryTypeIndex = {}
 const entryTypes = ['exemplar', 'producer', 'training', 'consumer', 'project', 'location', 'technique']
 
 func _init():
 	refresh_entry_type_index()
+
+func save():
+	GameState.add_organizer(name, self)
 
 func refresh_entry_type_index():
 	for entryType in entryTypes:
@@ -66,6 +71,8 @@ func serialize():
 		'f_name':friendlyName,
 		'entries':serializedEntries
 	}
+	if !allowNewFolder: result['allowNewFolder'] = false
+	if !allowDelete: result['allowDelete'] = false
 	for entry in entries:
 		if !(entry['data'] is Dictionary): 
 			entry = entry.duplicate()
@@ -100,6 +107,8 @@ func deserialize(dict:Dictionary)->OrganizerData:
 		entry['data'] = valData
 		deserializedEntries.append(entry)
 	retval.entries = deserializedEntries
+	retval.allowNewFolder = dict.get('allowNewFolder', true)
+	retval.allowDelete = dict.get('allowDelete', true)
 	refresh_entry_type_index()
 	return retval
 	

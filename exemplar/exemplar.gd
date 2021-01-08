@@ -30,18 +30,22 @@ func update_label(labelName, newText):
 	label.text = str(newText)
 
 func _ready():
+	self.rect_min_size = GameState.UI.dragSurface.rect_size
+	
 	if !sourceData:
 		sourceData = load('res://exemplar/ExemplarData.gd').new()
 		sourceData.on_resource_create('Unknown Exemplar', {'name':'Unknown Exemplar'}, 'unknownExemplar')
-	originalOrganizerName = GameState.settings.get('rightOrganizerName')
-	originalOrganizerData = GameState.get_organizer_data(originalOrganizerName)
-	if sourceData:
-		#GameState.change_right_organizer(sourceData.get_organizer_name())
-		GameState.load_char_organizer(sourceData.get_organizer_name())
+	if !GameState.in_combat():
+		originalOrganizerName = GameState.settings.get('rightOrganizerName')
+		originalOrganizerData = GameState.get_organizer_data(originalOrganizerName)
+		if sourceData:
+			#GameState.change_right_organizer(sourceData.get_organizer_name())
+			GameState.load_char_organizer(sourceData.get_organizer_name())
 	initTrainingTab()
 	call_deferred('initStatsTab')
 	find_node('TabContainer').current_tab = GameState.settings.get('curExemplarTab', 0)
 	Event.connect('training_queues_updated', self, 'on_training_queues_updated')
+	Event.emit_signal('open_char_status')
 
 func on_training_queues_updated():
 	initTrainingTab()
@@ -270,6 +274,9 @@ func on_close():
 	#GameState.set_char_organizer_visible(false)
 	GameState.save_char_organizer()
 	trainingOrganizer.save()
+	if GameState.in_combat():
+		GameState.set_char_organizer_visible(false)
+	Event.emit_signal('close_char_status')
 
 func add_stats(grid, statName):
 	var chunks = statName.split('.', false)

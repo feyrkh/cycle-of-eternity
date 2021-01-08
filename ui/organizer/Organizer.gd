@@ -9,7 +9,7 @@ enum {TOP_OF_LIST, BOTTOM_OF_LIST, AFTER_NODE, BEFORE_NODE}
 var dropTargetType
 var dropTarget:Node = null
 var dropContainer:Control = null
-export(bool) var allowNewFolder = true
+export(bool) var allowNewFolder = true setget set_allow_new_folder
 export(bool) var ignoreEntryClicks = false
 export(bool) var canBeClosed = false
 
@@ -21,6 +21,13 @@ var entryCountAtRefreshTime = 0
 const OrganizerFolderScene = preload('./OrganizerFolder.tscn')
 const OrganizerEntryScene = preload('./OrganizerEntry.tscn')
 const ProgressBar = preload("res://ui/organizer/ProgressBar.tscn")
+
+func set_allow_new_folder(val):
+	allowNewFolder = val
+	find_node('NewFolderButton').visible = allowNewFolder
+
+func set_allow_delete(val):
+	find_node('DeleteTarget').visible = val
 
 func _ready():
 	Event.connect("before_pass_time", self, "save")
@@ -35,7 +42,7 @@ func _ready():
 			entryContainer.add_child(child)
 		connect_drag_events_for_tree(child)
 	
-	if !allowNewFolder: find_node('NewFolderButton').queue_free()
+	if !allowNewFolder: find_node('NewFolderButton').visible = false
 	if !canBeClosed: 
 		find_node('CloseButton').queue_free()
 
@@ -79,6 +86,8 @@ func refresh():
 		refresh_organizer_data(GameState.get_organizer_data(organizerDataName))
 	
 func refresh_organizer_data(data):
+	set_allow_new_folder(data.allowNewFolder)
+	set_allow_delete(data.allowDelete)
 	organizerDataName = data.name
 	var label = find_node('OrganizerNameLabel')
 	var friendlyName = data.friendlyName

@@ -8,9 +8,8 @@
 [ext_resource path="res://exemplar/ExemplarStatus.tscn" type="PackedScene" id=6]
 
 [node name="ExemplarCharSheet" type="PanelContainer"]
-margin_left = 797.0
-margin_right = 1109.0
-margin_bottom = 110.0
+anchor_right = 1.0
+anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource( 1 )
@@ -21,8 +20,8 @@ __meta__ = {
 [node name="ExemplarCharSheet" type="VBoxContainer" parent="."]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 798.0
-margin_bottom = 425.0
+margin_right = 1913.0
+margin_bottom = 1073.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 __meta__ = {
@@ -30,7 +29,7 @@ __meta__ = {
 }
 
 [node name="ExemplarName" type="Label" parent="ExemplarCharSheet"]
-margin_right = 791.0
+margin_right = 1906.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 size_flags_vertical = 0
@@ -39,8 +38,8 @@ align = 1
 
 [node name="TabContainer" type="TabContainer" parent="ExemplarCharSheet"]
 margin_top = 18.0
-margin_right = 791.0
-margin_bottom = 418.0
+margin_right = 1906.0
+margin_bottom = 1066.0
 size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
@@ -57,12 +56,12 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="LeftColumn" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/Training"]
-margin_right = 471.0
-margin_bottom = 364.0
+margin_right = 943.0
+margin_bottom = 1012.0
 size_flags_horizontal = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn"]
-margin_right = 471.0
+margin_right = 943.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 size_flags_vertical = 0
@@ -76,36 +75,36 @@ text = "Add To Plan"
 
 [node name="TrainingMethodSelect" type="OptionButton" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer"]
 margin_left = 91.0
-margin_right = 347.0
+margin_right = 819.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 size_flags_vertical = 0
 text = "No training possible in this location"
 
 [node name="CountSelect" type="OptionButton" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer"]
-margin_left = 351.0
-margin_right = 395.0
+margin_left = 823.0
+margin_right = 867.0
 margin_bottom = 20.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 text = "x1"
 
 [node name="RepeatTraining" type="CheckBox" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/HBoxContainer"]
-margin_left = 399.0
-margin_right = 471.0
+margin_left = 871.0
+margin_right = 943.0
 margin_bottom = 24.0
 pressed = true
 text = "Repeat"
 
 [node name="HSeparator3" type="HSeparator" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn"]
 margin_top = 28.0
-margin_right = 471.0
+margin_right = 943.0
 margin_bottom = 32.0
 size_flags_vertical = 0
 
 [node name="SelectedTrainingDesc" type="Label" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn"]
 margin_top = 36.0
-margin_right = 471.0
+margin_right = 943.0
 margin_bottom = 67.0
 size_flags_horizontal = 3
 size_flags_vertical = 0
@@ -114,13 +113,13 @@ Do you even lift, bro?"
 
 [node name="HSeparator2" type="HSeparator" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn"]
 margin_top = 71.0
-margin_right = 471.0
+margin_right = 943.0
 margin_bottom = 75.0
 size_flags_vertical = 0
 
 [node name="Label" type="Label" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn"]
 margin_top = 79.0
-margin_right = 471.0
+margin_right = 943.0
 margin_bottom = 115.0
 rect_min_size = Vector2( 0, 25 )
 size_flags_horizontal = 3
@@ -130,65 +129,66 @@ align = 1
 
 [node name="StatsChangeHistory" type="GridContainer" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn"]
 margin_top = 119.0
-margin_right = 471.0
+margin_right = 943.0
 margin_bottom = 133.0
 size_flags_horizontal = 3
 columns = 4
 
 [node name="Label" type="Label" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/StatsChangeHistory"]
-margin_right = 114.0
+margin_right = 232.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Stat"
 
 [node name="Label4" type="Label" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/StatsChangeHistory"]
-margin_left = 118.0
-margin_right = 232.0
+margin_left = 236.0
+margin_right = 468.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Today"
 align = 1
 
 [node name="Label2" type="Label" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/StatsChangeHistory"]
-margin_left = 236.0
-margin_right = 350.0
+margin_left = 472.0
+margin_right = 704.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Since yesterday"
 align = 1
 
 [node name="Label3" type="Label" parent="ExemplarCharSheet/TabContainer/Training/LeftColumn/StatsChangeHistory"]
-margin_left = 354.0
-margin_right = 468.0
+margin_left = 708.0
+margin_right = 940.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Since last week"
 align = 1
 
 [node name="RightColumn" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer/Training"]
-margin_left = 475.0
-margin_right = 775.0
-margin_bottom = 364.0
+margin_left = 947.0
+margin_right = 1890.0
+margin_bottom = 1012.0
 size_flags_horizontal = 3
 
 [node name="ExemplarStatus" parent="ExemplarCharSheet/TabContainer/Training/RightColumn" instance=ExtResource( 6 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_right = 300.0
+margin_right = 943.0
 margin_bottom = 60.0
 barLength = 250
 
 [node name="TrainingOrganizer" parent="ExemplarCharSheet/TabContainer/Training/RightColumn" instance=ExtResource( 5 )]
 margin_top = 64.0
-margin_bottom = 364.0
+margin_right = 943.0
+margin_bottom = 1012.0
 size_flags_horizontal = 3
 allowNewFolder = false
 ignoreEntryClicks = true
 
 [node name="VSeparator" type="VSeparator" parent="ExemplarCharSheet/TabContainer/Training"]
-margin_left = 779.0
-margin_right = 783.0
-margin_bottom = 364.0
+margin_left = 1894.0
+margin_right = 1898.0
+margin_bottom = 1012.0
 
 [node name="Stats" type="VBoxContainer" parent="ExemplarCharSheet/TabContainer"]
 visible = false

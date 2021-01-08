@@ -63,8 +63,8 @@ func set_target_combatant(newTarget):
 		self.offsetSlot = nextOffsetSlot
 		targetLine = load("res://combat/TargetLine.tscn").instance()
 		targetLine.targetLineFocus = self
-		targetLine.sourceNode = owningCombatant
-		targetLine.targetNode = newTarget
+		targetLine.sourceCombatant = owningCombatant
+		targetLine.targetCombatant = newTarget
 		targetLine.default_color = owningCombatant.color
 		#targetLine.offsetRadians = OFFSET_RADIANS * ((owningCombatant.get_targets_on(newTarget).size() - 1) * 2)
 		targetLine.offsetRadians = OFFSET_RADIANS * nextOffsetSlot

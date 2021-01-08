@@ -31,6 +31,8 @@ signal finalize_place_item(position, scale, rotation, itemData, sourceNode)
 signal restore_item_placement(itemData, hover) # on reloading a scene, add a previously placed item back into the correct layer
 signal clear_item_placement()
 
+signal open_char_status()
+signal close_char_status()
 signal training_queues_updated()
 signal training_added(exemplarData, trainingData, count, repeat, entryName)
 

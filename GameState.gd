@@ -70,6 +70,9 @@ func on_entering_combat(combatScene):
 func on_leaving_combat(combatScene):
 	self.combatScene = null
 
+func in_combat():
+	return combatScene != null
+
 func run_command(cmd, data:Dictionary, sourceNode:Node=null):
 	if cmd is Array:
 		for c in cmd:
@@ -452,3 +455,11 @@ func cmd_spar(data, sourceNode):
 	sparPrompt.sparCmdData = data
 	add_popup(sparPrompt)
 	sparPrompt.popup_centered()
+
+
+func update_builtin_exemplar_commands():
+	var mainOrganizer = _organizers.get('main')
+	var exemplars = mainOrganizer.get_entries_with_type('exemplar')
+	for exemplar in exemplars:
+		exemplar.get('data').init_builtin_commands()
+	mainOrganizer.refresh_organizer_if_loaded()

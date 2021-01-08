@@ -108,6 +108,35 @@ func init_builtin_commands():
 	_builtin_folder('Training Techniques^noDelete^isOpen^noEdit', 'training')
 	_builtin_cmd('Rest^noDelete', 'res://data/train/rest.json', 'cmdRest', 'training')
 	_builtin_cmd('Empty mind^noDelete', 'res://data/train/clear_mind.json', 'cmdClearMind', 'training')
+	if GameState.settings.get('combatEnabled', false):
+		_builtin_folder('Combat Techniques^noDelete^isOpen^noEdit', 'combatTech')
+		
+		_builtin_cmd("Kick^noDelete", {
+			"cmd": "combatTech", "attack": true, "block": false, "segments": [
+				{"t":AttackTechnique.PREPARE, "l": 0.1}, 
+				{"t":AttackTechnique.STRIKE, "l": 0.1}, 
+			]
+		}, 'techPunch', 'combatTech')
+		
+		_builtin_cmd("Jab^noDelete", {
+			"cmd": "combatTech", "attack":true, "block":true, "segments": [
+				{"t":AttackTechnique.STRIKE, "l": 0.05}, # quick attack
+				{"t":AttackTechnique.DEFLECT, "l": 0.01}, # quick parry
+			]
+		}, 'techJab', 'combatTech')
+		
+		_builtin_cmd("Block^noDelete", {
+			"cmd": "combatTech", "attack": false, "block": true, "segments": [
+				{"t":AttackTechnique.BLOCK, "l": 0.3}
+			]
+		}, 'techBlock', 'combatTech')
+		
+		_builtin_cmd("Deflect^noDelete", {
+			"cmd": "combatTech", "attack":false, "block":true, "segments": [
+				{"t":AttackTechnique.DEFLECT, "l":0.07}
+			]
+		}, 'techDeflect', 'combatTech')
+
 
 func _builtin_cmd(entryName, dataJson, entryId, folderId):
 	if !organizerData.get_entry_by_id(entryId):
@@ -171,6 +200,9 @@ func set_stat(statName, amt):
 
 func get_stat(statName):
 	return stats.get(statName, 0)
+
+func get(statName, default=0):
+	return stats.get(statName, default)
 
 func get_stat_max(statName):
 	return stats.get('max_'+statName, 0)

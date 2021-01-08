@@ -13,6 +13,7 @@ var label
 var editNameButton
 var data
 var blinkCount = 0
+var disabled = false
 
 var entryFlags:int = 0
 
@@ -21,6 +22,17 @@ var containingOrganizer
 func set_containing_organizer(org): containingOrganizer = org
 
 func _ready():
+	if GameState.in_combat():
+		if hide_in_combat():
+			disabled = true
+			self.modulate = Color(0.2, 0.2, 0.2)
+		elif data is Dictionary and data.get('cmd') == 'combatTech':
+			if data.get('attack', true) and data.get('block', false):
+				add_icon('res://img/combat/swordshield.png')
+			elif data.get('attack', true):
+				add_icon('res://img/combat/sword.png')
+			elif data.get('block', false):
+				add_icon('res://img/combat/shield.png')
 	label = find_node('Label')
 	editNameButton = find_node('EditNameButton')
 	if labelText: label.text = labelText
@@ -28,11 +40,18 @@ func _ready():
 	labelText = null
 	label.flat = !get_is_toggle()
 	label.toggle_mode = get_is_toggle()
-	if get_no_edit(): editNameButton.visible = false
+	if get_no_edit() or disabled: editNameButton.visible = false
 	if get_is_unread(): set_is_unread(true) # trigger visual indicators
 	else: set_is_unread(false)
 	mark_as_placeable()
 	Event.connect("finalize_place_item", self, 'on_finalize_place_item')
+
+func hide_in_combat():
+	if data is Dictionary:
+		match data.get('cmd'):
+			'combatTech': return false
+			_: return true
+	return false
 
 func on_finalize_place_item(position, scale, rotation, itemData, sourceNode):
 	if sourceNode == self:
@@ -197,6 +216,7 @@ func pulse_until_clicked():
 	Util.start_pulsing(self)
 
 func _on_Label_pressed():
+	if disabled: return
 	Util.stop_pulsing(self)
 	updateOrganizerDataFriendlyName()
 	set_is_unread(false)
@@ -207,6 +227,7 @@ func _on_Label_pressed():
 
 
 func _on_Label_toggled(button_pressed):
+	if disabled: return
 	Util.stop_pulsing(self)
 	updateOrganizerDataFriendlyName()
 	set_is_unread(false)
@@ -230,3 +251,12 @@ func _on_ErrorIcon_pressed():
 
 func _on_UnplacedIcon_pressed():
 	_on_Label_pressed()
+
+func add_icon(iconPath):
+	var icon = TextureRect.new()
+	icon.texture = load(iconPath)
+	icon.rect_min_size = Vector2(20, 22)
+	icon.size_flags_horizontal = 0
+	icon.size_flags_vertical = SIZE_SHRINK_CENTER
+	var sep = self.find_node('VSeparator')
+	self.add_child_below_node(sep, icon)

@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://combat/Combatant.gd" type="Script" id=1]
 [ext_resource path="res://img/combat/combat_token.png" type="Texture" id=2]
+[ext_resource path="res://ui/Pulser.tscn" type="PackedScene" id=3]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Control
@@ -52,6 +53,25 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="IconSelected" type="TextureRect" parent="Control"]
+visible = false
+modulate = Color( 0.380392, 0.380392, 0.380392, 1 )
+margin_left = -4.0
+margin_top = -5.0
+margin_right = 106.0
+margin_bottom = 105.0
+texture = ExtResource( 2 )
+stretch_mode = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Pulser" parent="Control/IconSelected" instance=ExtResource( 3 )]
+enabled = true
+periodSeconds = 1.0
+pulseColor = Color( 1, 1, 1, 1 )
+startColor = Color( 0.317647, 0.317647, 0.317647, 1 )
+
 [node name="IconBackground" type="TextureRect" parent="Control"]
 margin_left = 1.0
 margin_right = 101.0
@@ -89,4 +109,4 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 [connection signal="gui_input" from="." to="." method="_on_Combatant_gui_input"]
-[connection signal="mouse_entered" from="Control/EntityName" to="Control" method="_on_EntityName_mouse_entered"]
+[connection signal="gui_input" from="Control" to="." method="_on_Control_gui_input"]

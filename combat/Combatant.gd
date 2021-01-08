@@ -7,6 +7,7 @@ var combatScene
 var entityData
 var color:Color
 var radius = 50
+var organizerName
 
 var targetIcons = [] # rotating icons the player can drag to target different opponents
 var pauseTargets = false # pause target rotation when the player is using them
@@ -15,6 +16,7 @@ const playfieldPath = "../../PlayField"
 
 onready var entityNameLabel = find_node('EntityName')
 onready var centerX = entityNameLabel.rect_position.x + entityNameLabel.rect_size.x/2 
+onready var iconSelect = find_node('IconSelected')
 
 func _ready():
 	if !entityData: 
@@ -32,17 +34,23 @@ func _ready():
 		setup_opponent()
 	Event.connect('chakraZoom', self, 'on_zoom')
 
+func get_attack_speed():
+	return max(1, entityData.get('attackSpd', 50))
+
+func get_defense_speed():
+	return max(1, entityData.get("reactSpd", 50))
+
 func add_center_line(target):
 	var centerLine = Line2D.new()
-	centerLine.points = [rect_position, target.rect_position]
+	centerLine.points = [rect_position, lerp(rect_position, target.rect_position, 0.5), target.rect_position]
 	centerLine.width = 1
 	centerLine.default_color = Color(0.2, 0, 0)
 	combatScene.lineLayer.add_child(centerLine)
 
 func add_combat_line(target):
 	var targetLine = load('res://combat/TargetLine.tscn').instance()
-	targetLine.sourceNode = self
-	targetLine.targetNode = target
+	targetLine.sourceCombatant = self
+	targetLine.targetCombatant = target
 	targetLine.default_color = color
 	combatScene.lineLayer.add_child(targetLine)
 	return targetLine
@@ -54,6 +62,7 @@ func setup_exemplar():
 	find_node('EntityName').text = entityData.entityName
 	setup_combat_icon("res://img/people/secretary.png")
 	setup_target_icons()
+	organizerName = entityData.get_organizer_name()
 
 func setup_target_icons():
 	var numIcons = 0
@@ -129,3 +138,18 @@ func on_zoom(zoom):
 func _on_Combatant_gui_input(event):
 	# pass through to the PlayField
 	get_node(playfieldPath)._on_PlayField_gui_input(event)
+
+
+func _on_Control_gui_input(event):
+	if event is InputEventMouseButton:
+		if !combatScene.can_select_combatant(): 
+			return
+		if event.button_index == BUTTON_LEFT and event.pressed:
+			combatScene.set_selected_combatant(self)
+
+func select():
+	iconSelect.visible = true
+	GameState.change_right_organizer(organizerName)
+	
+func deselect():
+	iconSelect.visible = false
