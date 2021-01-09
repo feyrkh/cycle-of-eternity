@@ -66,8 +66,8 @@ func _ready():
 	default_color.a = 0.3
 	defaultColor = default_color
 	Event.connect("combat_speed_multiplier", self, "update_combat_speed")
-	$Midpoint/Pulser.startColor = sourceCombatant.color
-	$Midpoint/Pulser.pulseColor = targetCombatant.color
+	$Midpoint/Pulser.pulseColor = sourceCombatant.color
+	$Midpoint/Pulser.startColor = targetCombatant.color
 	update_combat_speed(Calendar.combatSpeed)
 
 func cleanup():

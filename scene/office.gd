@@ -111,9 +111,10 @@ This will be your office, {playerName}. From here you will administer the new sc
 
 If you take a look to your right, I've procured a desk for your paperwork. If you'll just point out where you would like it, I will see to it immediately!
 """)
-		c.speaking(null)
-		UI.call_attention_right_organizer('office_desk')
 		yield(c.run(), 'completed')
+		c.speaking(null)
+		c.run()
+		UI.call_attention_right_organizer('office_desk')
 
 func setup_first_decree():
 	var decreeData = load("res://decree/DecreeData.gd").new()
@@ -146,15 +147,15 @@ func tutorial_first_decree():
 	var c = Conversation
 	c.clear()
 	c.speaking('helper')
-	c.page("""
+	c.text("""
 I have taken the liberty of drawing up your first decree - the drafting of a work party from the nearby villages. With these workers we can get started on the infrastructure we need to support our studies into the sacred arts.
 
-{playerName}, please review the workorder in your outbox and make any changes as you see fit! Any decrees in your outbox at the end of the week will be carried out!'
+{playerName}, please review the workorder in your outbox and make any changes as you see fit! Any decrees in your outbox at the end of the week will be carried out!
 """)
+	yield(c.run(), "completed")
 	var workorder = UI.rightOrganizer.get_entry_by_id('tutorialFirstWorkOrder')
 	UI.call_attention_from_left(workorder)
 	workorder.connect('entry_clicked', self, 'first_decree_clicked')
-	c.run()
 
 func first_decree_clicked():
 	var c = Conversation
@@ -192,6 +193,9 @@ Please feel free to drag those into the garbage bin where they belong!
 """)
 	existingRubbish.call_attention()
 	UI.call_attention_from_left(existingRubbish)
+	var trashIcon = UI.rightOrganizer.find_node('DeleteTarget', true, false)
+	if trashIcon:
+		UI.call_attention_from_left(trashIcon)
 	existingRubbish.connect('entry_deleted', self, 'rubbish_deleted')
 	c.run()
 	
@@ -208,7 +212,7 @@ func tutorial_pass_time():
 	c.clear()
 	c.speaking('helper')
 	c.page("""
-That was a good start, but I'm afraid we have at least another week of cleanup ahead of us...it will take that long for any response from the villagers, anyway.
+That was a good start, but I'm afraid we have at least another few days of cleanup ahead of us...it will take that long for any response from the villagers, anyway.
 Well, no sense in waiting - let's get started!
 """)
 	c.clear()

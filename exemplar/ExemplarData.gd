@@ -141,10 +141,12 @@ func init_builtin_commands():
 func _builtin_cmd(entryName, dataJson, entryId, folderId):
 	if !organizerData.get_entry_by_id(entryId):
 		organizerData.add_entry(entryName, dataJson, entryId, folderId)
+		GameState._organizers[organizerData.name] = organizerData
 
 func _builtin_folder(folderName, folderId):
 	if !organizerData.get_entry_by_id(folderId):
 		organizerData.add_folder(folderName, folderId)
+		GameState._organizers[organizerData.name] = organizerData
 
 func _delete_cmd(entryId):
 	organizerData.delete_entry_by_id(entryId)

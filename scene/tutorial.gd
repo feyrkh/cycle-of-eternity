@@ -28,7 +28,6 @@ func startState():
 	c.page("""
 Master, you've arrived ahead of schedule! 
 Please forgive the disarray, I have not yet had time to complete preparations!
-
 I have made your office ready, but I fear I've run into trouble recruiting a work party from the nearby village so that the remaining work can get under way.
 Actually...perhaps your authority would be useful here?
 

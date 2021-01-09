@@ -14,3 +14,8 @@ const Q_TUTORIAL_OBTAIN_DISCIPLE='obtain_disciple' # go to the training hall to 
 const Q_TUTORIAL_TRAIN_DISCIPLE='train_disciple' # set up a training program
 const Q_TUTORIAL_QUEUE_TRAINING='queue_training'
 const Q_TUTORIAL_SPAR_ATTACK='spar_attack'
+const Q_TUTORIAL_SPAR_DEFEND='spar_defend'
+
+const Q_COMBAT_A='combatA'
+const Q_COMBAT_A_ACTIVE=1
+const Q_COMBAT_A_COMPLETE=2

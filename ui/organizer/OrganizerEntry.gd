@@ -48,6 +48,8 @@ func _ready():
 
 func hide_in_combat():
 	if data is Dictionary:
+		if data.get('combat'): 
+			return false
 		match data.get('cmd'):
 			'combatTech': return false
 			_: return true

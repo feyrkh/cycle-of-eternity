@@ -1,7 +1,7 @@
 extends Control
 class_name Combatant
 
-var BONUS_TARGET_ICON_INTERVAL = 20
+var BONUS_TARGET_ICON_INTERVAL = 75
 
 var combatScene
 var entityData
@@ -53,6 +53,7 @@ func add_combat_line(target):
 	targetLine.targetCombatant = target
 	targetLine.default_color = color
 	combatScene.lineLayer.add_child(targetLine)
+	targetLine.update_attack_line()
 	return targetLine
 
 func setup_exemplar():
@@ -144,12 +145,17 @@ func _on_Control_gui_input(event):
 	if event is InputEventMouseButton:
 		if !combatScene.can_select_combatant(): 
 			return
-		if event.button_index == BUTTON_LEFT and event.pressed:
+		if event.button_index == BUTTON_LEFT and event.pressed and GameState.settings.get('combatSelectOk'):
 			combatScene.set_selected_combatant(self)
 
 func select():
-	iconSelect.visible = true
-	GameState.change_right_organizer(organizerName)
+	if GameState.settings.get('combatSelectOk'):
+		iconSelect.visible = true
+		GameState.change_right_organizer(organizerName)
+		if entityData is ExemplarData:
+			Event.emit_signal("exemplar_combatant_selected", self)
+		else:
+			Event.emit_signal("opponent_combatant_selected", self)
 	
 func deselect():
 	iconSelect.visible = false

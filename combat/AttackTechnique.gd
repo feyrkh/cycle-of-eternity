@@ -26,9 +26,10 @@ var attackSpeed
 var sourceCombatant
 var targetCombatant
 var sourceSegmentLength
-var isBlockTechnique
+var comingFromSourceCombatant
 var isBlock = false
 var isAttack = true
+var techniqueName = ""
 
 var curPosition = 0
 var initialTime = 0
@@ -37,17 +38,21 @@ var balancePenalty = 0
 
 var currentlyPlacing = true
 var combatScene
+onready var sparksEmitter:Particles2D = find_node('Sparks', true, false)
+onready var sparksEmitter2:Particles2D = find_node('Sparks2', true, false)
 
 func deserialize(data):
+	techniqueName = data.get('techName', '')
 	set_segments(data.get('segments', []))
-	self.isBlock = data.get('block', false)
-	self.isAttack = data.get('attack', true)
-	
+	isBlock = data.get('block', false)
+	isAttack = data.get('attack', true)
+
 func finish_placing():
 	currentlyPlacing = false
 	initialProgress = curPosition
 	initialTime = Calendar.combatTime
 	refreshTotalLength()
+	update_endpoints(startPoint, endPoint)
 	targetLine.add_technique(self)
 
 func set_target_line_focus(focus):
@@ -56,16 +61,21 @@ func set_target_line_focus(focus):
 	else:
 		targetLine = null
 	if targetLine:
-		startPoint = targetLine.points[0]
-		endPoint = targetLine.points[targetLine.points.size()-1]
+		update_endpoints(targetLine.points[0], targetLine.points[targetLine.points.size()-1])
 		initialTime = Calendar.combatTime
 	else:
 		startPoint = Vector2.ZERO
 		endPoint = Vector2(-200, 0)
 
-func update_endpoints(s, e):
+func update_endpoints(s:Vector2, e:Vector2):
 	startPoint = s
 	endPoint = e
+	var angle = s.angle_to_point(e)
+	var offsetAngle = deg2rad(80)
+	sparksEmitter.position = e + Vector2(3, -1).rotated(angle-deg2rad(90))
+	sparksEmitter.rotation = angle - offsetAngle
+	sparksEmitter2.position = e + Vector2(3, -1).rotated(angle+deg2rad(90))
+	sparksEmitter2.rotation = angle + offsetAngle
 
 func set_segments(val):
 	for segment in val:
@@ -121,16 +131,16 @@ func render():
 				sourceCombatant = targetLine.sourceCombatant
 				targetCombatant = targetLine.targetCombatant
 				sourceSegmentLength = targetLine.sourceSegmentLength
-				isBlockTechnique = false
+				comingFromSourceCombatant = false
 			else:
 				attackSpeed = targetLine.targetSegmentSpeed
 				startPoint = targetLine.points[2]
 				sourceCombatant = targetLine.targetCombatant
 				targetCombatant = targetLine.sourceCombatant
 				sourceSegmentLength = targetLine.targetSegmentLength
-				isBlockTechnique = true
+				comingFromSourceCombatant = true
 			curPosition = combatScene.closestTargetLinePoint.progress
-			if isBlockTechnique: 
+			if comingFromSourceCombatant: 
 				curPosition = 1-curPosition
 			curPosition = 1.0/sourceSegmentLength * curPosition
 			curPosition = clamp(curPosition, 0, 1)
@@ -144,8 +154,8 @@ func render():
 			segments[segments.size()-1]['l'] = 0
 	
 	var t = curPosition
-	#if isBlockTechnique: t = 1-t + sourceSegmentLength
 	var remainingSegments = false
+	var shouldFireSparks = false
 	for i in segmentLines.size():
 		var segment = segments[i]
 		var line = segmentLines[i]
@@ -162,7 +172,25 @@ func render():
 				segment['done'] = true
 				activate_segment(segment)
 		else:
+			if startT >= 1 and !segment.get('done', false):
+				var consumedAmt = segment.get('consumed', 0) + (startT - 1.0)
+				segment['consumed'] = consumedAmt + segment.get('consumed', 0)
+				shouldFireSparks = LINE_COLORS[segment.get('t', 0)]
 			remainingSegments = true
+	
+	# Set off sparks if needed
+	if shouldFireSparks and !sparksEmitter.emitting:
+		sparksEmitter.emitting = true
+		sparksEmitter.modulate = shouldFireSparks
+		sparksEmitter2.emitting = true
+		sparksEmitter2.modulate = shouldFireSparks
+	elif !shouldFireSparks and sparksEmitter.emitting:
+		sparksEmitter.emitting = false
+		sparksEmitter2.emitting = false
+	elif shouldFireSparks is Color and sparksEmitter.process_material.color != shouldFireSparks:
+		sparksEmitter.modulate = shouldFireSparks
+		sparksEmitter2.modulate = shouldFireSparks
+		
 	if !remainingSegments:
 		print('Finished attack')
 		targetLine.finish_attack(self)

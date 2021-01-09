@@ -190,7 +190,7 @@ func reset_camera():
 func enter_combat_mode():
 	leftOrganizer.visible = false
 	charOrganizer.visible = false
-	textInterface.visible = false
+	#textInterface.visible = false
 	timePassContainer.visible = false
 	dragSurface.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	find_node("DateLabel").visible = false

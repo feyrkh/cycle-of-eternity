@@ -40,6 +40,8 @@ signal entering_combat(combatScene)
 signal leaving_combat(combatScene)
 signal update_target_lines()
 signal combat_speed_multiplier(multiplier) # how fast combat animation should occur
+signal exemplar_combatant_selected(combatant)
+signal opponent_combatant_selected(combatant)
 
 var textInterface:TextInterface
 
