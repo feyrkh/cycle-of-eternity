@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://ui/UI.gd" type="Script" id=1]
 [ext_resource path="res://ui/organizer/ProgressBar.tscn" type="PackedScene" id=2]
@@ -15,6 +15,7 @@
 [ext_resource path="res://ui/MouseLayer.tscn" type="PackedScene" id=13]
 [ext_resource path="res://ui/MessageLogDisplay.gd" type="Script" id=14]
 [ext_resource path="res://ui/TIE.tscn" type="PackedScene" id=15]
+[ext_resource path="res://ui/QuestList.tscn" type="PackedScene" id=16]
 [ext_resource path="res://ui/DragSurface.gd" type="Script" id=17]
 
 [sub_resource type="GDScript" id=1]
@@ -219,72 +220,86 @@ margin_right = 1920.0
 margin_bottom = 1080.0
 mouse_filter = 2
 
+[node name="QuestList" parent="CanvasLayer/HBoxContainer/VBoxContainer2" instance=ExtResource( 16 )]
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 300.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 300, 200 )
+
 [node name="Organizer2" parent="CanvasLayer/HBoxContainer/VBoxContainer2" instance=ExtResource( 9 )]
-margin_bottom = 797.0
+margin_top = 204.0
+margin_bottom = 811.0
 mouse_filter = 1
 size_flags_horizontal = 8
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer2"]
-margin_top = 801.0
+visible = false
+margin_top = 797.0
 margin_right = 300.0
-margin_bottom = 862.0
+margin_bottom = 811.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer"]
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 293.0
-margin_bottom = 54.0
+margin_bottom = 7.0
 
 [node name="ControlsContainer" type="HBoxContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer/VBoxContainer"]
+visible = false
 margin_right = 286.0
-margin_bottom = 20.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TimeController" parent="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer/VBoxContainer/ControlsContainer" instance=ExtResource( 10 )]
-margin_left = 82.0
-margin_right = 203.0
-margin_bottom = 20.0
-size_flags_horizontal = 6
-size_flags_vertical = 0
-
 [node name="QueryTool" parent="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer/VBoxContainer/ControlsContainer" instance=ExtResource( 12 )]
 visible = false
-margin_left = 125.0
-margin_right = 145.0
+margin_left = 266.0
+margin_right = 286.0
 margin_bottom = 20.0
 size_flags_vertical = 4
 
-[node name="DateProgressBar" parent="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer/VBoxContainer" instance=ExtResource( 2 )]
-margin_top = 24.0
-margin_right = 0.0
-margin_bottom = 29.0
-rect_min_size = Vector2( 0, 5 )
-size_flags_vertical = 0
-defaultColor = Color( 0.560784, 0.929412, 0.560784, 1 )
-
-[node name="DateLabel" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer/VBoxContainer"]
-margin_top = 33.0
-margin_right = 286.0
-margin_bottom = 47.0
-text = "Day 1"
-align = 1
-script = SubResource( 3 )
-
 [node name="TimePassContainer" type="PanelContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer2"]
-margin_top = 866.0
+margin_top = 815.0
 margin_right = 300.0
 margin_bottom = 1080.0
 size_flags_horizontal = 5
 
-[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer"]
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 293.0
-margin_bottom = 207.0
+margin_bottom = 258.0
 
-[node name="TimePassButton" type="TextureButton" parent="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/CenterContainer"]
+[node name="DateLabel" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer"]
+margin_right = 286.0
+margin_bottom = 14.0
+text = "Day 1"
+align = 1
+script = SubResource( 3 )
+
+[node name="TimeController" parent="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer" instance=ExtResource( 10 )]
+margin_left = 82.0
+margin_top = 18.0
+margin_right = 203.0
+margin_bottom = 38.0
+size_flags_horizontal = 6
+size_flags_vertical = 0
+
+[node name="DateProgressBar" parent="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer" instance=ExtResource( 2 )]
+margin_top = 42.0
+margin_right = 0.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 0, 5 )
+size_flags_vertical = 0
+defaultColor = Color( 0.560784, 0.929412, 0.560784, 1 )
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer"]
+margin_top = 51.0
+margin_right = 286.0
+margin_bottom = 251.0
+
+[node name="TimePassButton" type="TextureButton" parent="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer/CenterContainer"]
 margin_left = 68.0
 margin_right = 218.0
 margin_bottom = 200.0
@@ -296,6 +311,7 @@ script = SubResource( 4 )
 script = ExtResource( 4 )
 
 [node name="MsgPopup" parent="PopupLayer" instance=ExtResource( 7 )]
+visible = false
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -339,10 +355,10 @@ scroll_following = true
 [connection signal="gui_input" from="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE" to="." method="_on_TIE_gui_input"]
 [connection signal="resized" from="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE" to="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE" method="update_size"]
 [connection signal="resume_break" from="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE" to="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/BlinkTimer" method="_on_TIE_resume_break"]
-[connection signal="state_change" from="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE" to="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/CenterContainer/TimePassButton" method="_on_TIE_state_change"]
+[connection signal="state_change" from="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/TIE" to="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer/CenterContainer/TimePassButton" method="_on_TIE_state_change"]
 [connection signal="timeout" from="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/BlinkTimer" to="CanvasLayer/HBoxContainer/VSplitContainer/TextBoxContainer/BlinkTimer" method="_on_BlinkTimer_timeout"]
-[connection signal="day_fraction_update" from="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer/VBoxContainer/ControlsContainer/TimeController" to="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer/VBoxContainer/DateProgressBar" method="set_progress"]
-[connection signal="day_passed" from="CanvasLayer/HBoxContainer/VBoxContainer2/PanelContainer/VBoxContainer/ControlsContainer/TimeController" to="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/CenterContainer/TimePassButton" method="_on_TimeController_day_passed"]
-[connection signal="pressed" from="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/CenterContainer/TimePassButton" to="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/CenterContainer/TimePassButton" method="_on_TimePassButton_pressed"]
+[connection signal="day_fraction_update" from="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer/TimeController" to="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer/DateProgressBar" method="set_progress"]
+[connection signal="day_passed" from="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer/TimeController" to="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer/CenterContainer/TimePassButton" method="_on_TimeController_day_passed"]
+[connection signal="pressed" from="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer/CenterContainer/TimePassButton" to="CanvasLayer/HBoxContainer/VBoxContainer2/TimePassContainer/VBoxContainer/CenterContainer/TimePassButton" method="_on_TimePassButton_pressed"]
 [connection signal="mouse_entered" from="PopupLayer/MessageLogDisplay/MessageLabel" to="PopupLayer/MessageLogDisplay" method="_on_RichTextLabel_mouse_entered"]
 [connection signal="mouse_exited" from="PopupLayer/MessageLogDisplay/MessageLabel" to="PopupLayer/MessageLogDisplay" method="_on_RichTextLabel_mouse_exited"]

@@ -1,5 +1,8 @@
 extends Container
 
+var dragEnabled = false
+var zoomEnabled = false
+
 var dragging = null
 var dragStart
 
@@ -13,9 +16,19 @@ onready var zoomLevel = camera.zoom
 onready var moveMultiplier = camera.zoom.x
 
 func _ready():
+	Event.connect('entering_combat', self, 'on_enter_combat')
+	Event.connect('leaving_combat', self, 'on_leave_combat')
 	Event.connect('place_item', self, 'on_place_item', [], CONNECT_DEFERRED)
 	Event.connect('organizer_entry_clicked', self, 'on_organizer_entry_clicked') # so we can cancel item placement when they click on something else
 	Event.connect('organizer_entry_toggled', self, 'on_organizer_entry_toggled') # so we can cancel item placement when they click on something else
+
+func on_enter_combat(combatScene):
+	dragEnabled = true
+	zoomEnabled = true
+
+func on_leave_combat(combatScene):
+	dragEnabled = false
+	zoomEnabled = false
 
 func _on_DragSurface_gui_input(event):
 	if placeShadow != null:
@@ -61,7 +74,7 @@ func handle_normal_input(event):
 	if dragging && event is InputEventMouseMotion:
 		camera.position -= event.relative * moveMultiplier
 	elif event is InputEventMouseButton:
-		if event.button_index == BUTTON_MIDDLE and event.pressed:
+		if event.button_index == BUTTON_MIDDLE and event.pressed and dragEnabled:
 			dragging = event.position
 		elif event.button_index == BUTTON_MIDDLE and !event.pressed:
 			dragging = null
@@ -95,6 +108,7 @@ func on_place_item(itemShadow, itemData, sourceNode):
 	self.placeShadowFlipped = false
 
 func zoom_in():
+	if !zoomEnabled: return
 	zoomLevel.x = max(0.1, zoomLevel.x*0.9)
 	zoomLevel.y = max(0.1, zoomLevel.y*0.9)
 	moveMultiplier = camera.zoom.x
@@ -102,6 +116,7 @@ func zoom_in():
 	Event.emit_signal('chakraZoom', zoomLevel)
 	
 func zoom_out():
+	if !zoomEnabled: return
 	zoomLevel.x = min(10, zoomLevel.x*1.1)
 	zoomLevel.y = min(10, zoomLevel.y*1.1)
 	moveMultiplier = camera.zoom.x

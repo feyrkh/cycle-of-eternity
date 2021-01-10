@@ -15,7 +15,7 @@ func setup_default():
 
 # Check for any important quest states and setup as needed, if this returns true then set_default() will be skipped; may call setup_default() manually as well if needed
 func setup_quest()->bool:
-	match GameState.quest.get(Quest.Q_TUTORIAL, ''):
+	match GameState.get_quest_status(Quest.Q_TUTORIAL):
 		Quest.Q_TUTORIAL_OFFICE: 
 			tutorial_office_intro()
 			return true
@@ -44,24 +44,24 @@ func setup_quest()->bool:
 
 
 func on_pass_time(timeAmt):
-	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_PASS_TIME:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PASS_TIME:
 		Conversation.clear()
 		Conversation.run()
 		var workorder = GameState._organizers['office'].get_entry_by_id('tutorialFirstWorkOrder')
 		if !workorder or workorder.get('data').projectComplete: # player passed time and the workorder is completed, now we should have at least one work crew; now we need to create a training hall
-			GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_BUILD_TRAINING
+			GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_BUILD_TRAINING)
 			setup_construction_decrees()
 			setup_quest()
-	elif GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_BUILD_TRAINING or GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_WAIT_FOR_TRAINING_HALL:
+	elif GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_BUILD_TRAINING or GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_WAIT_FOR_TRAINING_HALL:
 		if GameState.settings.get('id_trainingHall', 0) >= 1: 
-			GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_INSTALL_EQUIPMENT
+			GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_INSTALL_EQUIPMENT)
 			#setup_disciple_decrees()
 			setup_quest()
 		else: 
 			tutorial_wait_training_hall()
 
 func on_place_item(itemShadow, itemData, sourceNode):
-	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
 		Conversation.clear()
 		Conversation.speaking(null)
 		Conversation.text("Placing items: resize with mouse wheel, flip with middle mouse button, cancel with right-click, confirm placement with left-click.")
@@ -69,13 +69,13 @@ func on_place_item(itemShadow, itemData, sourceNode):
 
 
 func on_finalize_place_item(position, scale, rotation, itemData, sourceNode):
-	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
 		Conversation.clear()
 		Conversation.run()
 		setup_first_decree()
 
 func on_cancel_place_item():
-	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK: # must have placed the desk, time for the first decree
 		Conversation.clear()
 		Conversation.run()
 
@@ -95,11 +95,11 @@ func tutorial_office_intro():
 	UI.rightOrganizer.refresh_organizer_data(GameState.get_organizer_data('office'))
 	UI.rightOrganizer.visible = true
 	yield(get_tree(), "idle_frame")
-	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_PLACE_DESK
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_PLACE_DESK)
 	setup_quest()
 
 func tutorial_place_desk():
-	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_PLACE_DESK:
 		UI.leftOrganizer.visible = true
 		UI.rightOrganizer.visible = true
 		UI.controlsContainer.visible = false
@@ -135,7 +135,7 @@ func setup_first_decree():
 	UI.rightOrganizer.get_entry_by_id('tutorialFirstWorkOrder').set_no_drag(true)
 	UI.rightOrganizer.get_entry_by_id('tutorialFirstWorkOrder').set_no_delete(true)
 	yield(get_tree(), 'idle_frame')
-	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_FIRST_DECREE
+	GameState.set_quest_status(Quest.Q_TUTORIAL,  Quest.Q_TUTORIAL_FIRST_DECREE)
 	setup_quest()
 	
 
@@ -170,7 +170,7 @@ You might increase the gift we send along with the decree if you would like to r
 	yield(c.run(), 'completed')
 	
 func first_decree_closed():
-	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_DISCARD_RUBBISH
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_DISCARD_RUBBISH)
 	setup_quest()
 
 func create_rubbish():
@@ -200,7 +200,7 @@ Please feel free to drag those into the garbage bin where they belong!
 	c.run()
 	
 func rubbish_deleted():
-	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_PASS_TIME
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_PASS_TIME)
 	setup_quest()
 
 func tutorial_pass_time():
@@ -218,6 +218,7 @@ Well, no sense in waiting - let's get started!
 	c.clear()
 	c.text("Remember, although you are of course free to organize your documents as you see fit, you must leave any decrees you want processed in your Outbox before the end of the day!")
 	yield(c.run(), 'completed')
+	GameState.settings['allowTimePass'] = true
 	UI.call_attention_from_left(UI.timePassContainer)
 
 func setup_construction_decrees():
@@ -245,7 +246,7 @@ While I hope you find me worthy to be the first sacred scientist to start their 
 	c.speaking(null)
 	yield(c.run(), "completed")
 	UI.call_attention_left_organizer('decree_buildTrainingHall')
-	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_WAIT_FOR_TRAINING_HALL
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_WAIT_FOR_TRAINING_HALL)
 
 func tutorial_wait_training_hall():
 	var decrees = GameState._organizers['office'].get_entries_with_type('project')

@@ -66,6 +66,7 @@ func initTrainingOptions():
 	trainingMethodSelect.clear()
 	trainingMethodSelect.add_item("-- Select Training Method --", 0)
 	load_training_options_from_location()
+	trainingOptions.append(null)
 	load_training_options_from_exemplar()
 	countSelect.clear()
 	for i in 5:

@@ -15,6 +15,8 @@ const BLOCK = 6 # directly opposes strikes, does not affect charge
 const INTERRUPT = 7 # interrupts charging
 
 const LINE_COLORS = [Color.transparent, Color.white, Color.darkred, Color.red, Color.yellow, Color.darkgray, Color.cyan, Color.green]
+
+var data
 var segments = [] setget set_segments
 var segmentLines = []
 var totalLength = 0
@@ -29,7 +31,6 @@ var sourceSegmentLength
 var comingFromSourceCombatant
 var isBlock = false
 var isAttack = true
-var techniqueName = ""
 
 var curPosition = 0
 var initialTime = 0
@@ -42,7 +43,7 @@ onready var sparksEmitter:Particles2D = find_node('Sparks', true, false)
 onready var sparksEmitter2:Particles2D = find_node('Sparks2', true, false)
 
 func deserialize(data):
-	techniqueName = data.get('techName', '')
+	self.data = data
 	set_segments(data.get('segments', []))
 	isBlock = data.get('block', false)
 	isAttack = data.get('attack', true)
@@ -79,10 +80,10 @@ func update_endpoints(s:Vector2, e:Vector2):
 
 func set_segments(val):
 	for segment in val:
-		add_segment(segment.get('t', 1), segment.get('l', 0))
+		add_segment(segment.get('t', 1), segment.get('l', 0), segment.get('d', 1.0), segment.get('s', {}))
 	add_segment(OFF_BALANCE, 0)
 
-func add_segment(type, lengthInLinePercent):
+func add_segment(type, lengthInLinePercent, density=1, stats={}):
 	segments.append({'t':type, 'l': lengthInLinePercent})
 	totalLength += lengthInLinePercent
 
@@ -92,7 +93,6 @@ func refreshTotalLength():
 		totalLength += segment.get('l',0)
 
 func _ready():
-	combatScene = get_parent().get_parent()
 	set_target_line_focus(null)
 	for segment in segments:
 		var line = Line2D.new()

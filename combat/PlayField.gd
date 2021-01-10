@@ -2,6 +2,7 @@ extends ColorRect
 
 var dragging = false
 onready var camera = get_tree().root.find_node('Camera2D', true, false)
+onready var combatScene = get_parent()
 var moveMultiplier = 1
 var zoomLevel = Vector2.ONE
 
@@ -66,3 +67,7 @@ func zoom_out():
 	var newMousePos = get_local_mouse_position()
 	camera.position -= newMousePos - originalMousePos
 	Event.emit_signal('chakraZoom', zoomLevel)
+
+
+func _on_TextureButton_pressed():
+	pass # Replace with function body.

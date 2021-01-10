@@ -37,3 +37,7 @@ func update_rect_size():
 
 func _on_MsgPopup_about_to_show():
 	update_rect_size()
+
+
+func _on_CloseButton_pressed():
+	queue_free()

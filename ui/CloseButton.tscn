@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://img/closeIcon.png" type="Texture" id=1]
+
+[node name="CloseButton" type="TextureButton"]
+margin_left = 266.0
+margin_right = 286.0
+margin_bottom = 21.0
+hint_tooltip = "(close organizer)"
+size_flags_horizontal = 8
+texture_normal = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

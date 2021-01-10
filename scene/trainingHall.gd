@@ -13,13 +13,13 @@ func setup_base():
 	
 # Check for any important quest states and setup as needed, if this returns true then set_default() will be skipped; may call setup_default() manually as well if needed
 func setup_quest()->bool:
-	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_INSTALL_EQUIPMENT:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_INSTALL_EQUIPMENT:
 		Conversation.clear()
 		Conversation.speaking('helper')
 		Conversation.text("Before any training can occur, you must order the installation of training equipment - just like you installed your office desk!")
 		Conversation.run()
 		return true
-	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_OBTAIN_DISCIPLE:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_OBTAIN_DISCIPLE:
 		GameState.add_resource("disciple", 1, null, {
 			"name": GameState.settings.get('helperName'),
 			"id": "helper",
@@ -29,10 +29,10 @@ func setup_quest()->bool:
 		GameState.refresh_organizers()
 		var item = UI.leftOrganizer.get_entry_by_id('helper')
 		UI.call_attention_from_right(item)
-		GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_TRAIN_DISCIPLE
+		GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_TRAIN_DISCIPLE)
 		setup_quest()
 		return true
-	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_TRAIN_DISCIPLE:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_TRAIN_DISCIPLE:
 		Conversation.clear()
 		Conversation.speaking('helper')
 		Conversation.text("Now to set up a training program! To get started, just open up my personnel file - it should be in your New Arrivals folder, but please feel free to reorganize as you like. Oh - my name is {helperName}, by the way!")
@@ -40,7 +40,7 @@ func setup_quest()->bool:
 		setup_disciple_decrees()
 		UI.call_attention_left_organizer('new')
 		return true
-	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_SPAR_ATTACK:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_SPAR_ATTACK:
 		Conversation.clear()
 		Conversation.speaking('helper')
 		Conversation.page("Training takes a long time to show results, especially if you're already near the limits of your ability, but I believe that the sacred science will allow us to transcend those limits into unimaginable realms of power!\nLet's try out our new training hall by attacking a wooden dummy.")
@@ -49,20 +49,20 @@ func setup_quest()->bool:
 	return false
 
 func on_pass_time(timeAmt):
-	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_TRAIN_DISCIPLE:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_TRAIN_DISCIPLE:
 		pass
 
 func on_organizer_entry_clicked(organizer, organizerEntryClicked):
-	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_TRAIN_DISCIPLE:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_TRAIN_DISCIPLE:
 		if organizerEntryClicked and organizerEntryClicked.id == 'helper':
 			Conversation.clear()
 			Conversation.page("Here you can adjust my training plan. Training in different locations and with different equipment available may lead to better outcomes, while progress will slow as I approach my physical limits.\nPlease queue up at least one exercise!")
 			Conversation.run()
-			GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_QUEUE_TRAINING
+			GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_QUEUE_TRAINING)
 			
 
 func on_place_item(itemShadow, itemData, sourceNode):
-	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_INSTALL_EQUIPMENT:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_INSTALL_EQUIPMENT:
 		Conversation.clear()
 		Conversation.speaking(null)
 		Conversation.text("Placing items: resize with mouse wheel, flip with middle mouse button, cancel with right-click, confirm placement with left-click.")
@@ -70,10 +70,10 @@ func on_place_item(itemShadow, itemData, sourceNode):
 
 
 func on_finalize_place_item(position, scale, rotation, itemData, sourceNode):
-	if GameState.quest.get(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_INSTALL_EQUIPMENT:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_INSTALL_EQUIPMENT:
 		Conversation.clear()
 		Conversation.run()
-		GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_OBTAIN_DISCIPLE
+		GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_OBTAIN_DISCIPLE)
 		setup_quest()
 
 func setup_disciple_decrees():
@@ -84,12 +84,12 @@ func setup_disciple_decrees():
 		GameState.refresh_organizers()
 
 func on_training_added(exemplarData, trainingData, count, repeat, entryName):
-	if GameState.quest[Quest.Q_TUTORIAL] == Quest.Q_TUTORIAL_QUEUE_TRAINING:
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_QUEUE_TRAINING:
 		GameState.settings['sparringUnlocked'] = true
 		GameState.settings['sparAttackUnlock'] = true
 		GameState.save_organizers()
 		setup_sparring()
-		GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_SPAR_ATTACK
+		GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_SPAR_ATTACK)
 		setup_quest()
 		
 func setup_sparring():

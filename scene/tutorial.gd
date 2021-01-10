@@ -12,8 +12,7 @@ func setupNewScene(ui, gameScene):
 	self.GameScene = gameScene
 
 func setupState():
-	print('Resetting state for ', GameState.quest.get(Quest.Q_TUTORIAL))
-	match GameState.quest.get(Quest.Q_TUTORIAL):
+	match GameState.get_quest_status(Quest.Q_TUTORIAL):
 		Quest.Q_TUTORIAL_OFFICE: officeState()
 		_: startState()
 
@@ -51,7 +50,7 @@ func on_input_player_name(playerName):
 	if playerName.dedent() == '': 
 		playerName = 'Master'
 	GameState.settings['playerName'] = playerName
-	GameState.quest[Quest.Q_TUTORIAL] = Quest.Q_TUTORIAL_OFFICE
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_OFFICE)
 	setupState()
 	
 func direct_to_office():

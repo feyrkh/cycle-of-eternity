@@ -85,6 +85,8 @@ func set_enabled(enabled):
 		self.modulate = Color.white
 
 func set_speed(newLevel):
+	if !GameState.settings.get('allowTimePass'):
+		return
 	for i in get_child_count():
 		if newLevel != i: 
 			get_child(i).pressed = false
@@ -102,6 +104,8 @@ func set_speed(newLevel):
 		TIME_MODE_PHYSICS: set_physics_speed(newLevel)
 
 func set_physics_speed(newLevel):
+	if !GameState.settings.get('allowTimePass'):
+		return
 	newLevel = newLevel % levels.size()
 	if newLevel < 0: newLevel += levels.size()
 	previousLevel = curLevel

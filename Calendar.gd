@@ -32,6 +32,8 @@ func _process(delta):
 	combatTime += delta * combatSpeed
 
 func on_after_pass_time():
+	if !GameState.settings.get('allowTimePass'):
+		return
 	var curDay = get_date() + 1
 	GameState.settings['calendarDate'] = curDay
 	Event.emit_signal("after_calendar_update", curDay)

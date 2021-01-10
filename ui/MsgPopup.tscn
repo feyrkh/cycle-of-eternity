@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://ui/MsgPopup.gd" type="Script" id=1]
+[ext_resource path="res://ui/CloseButton.tscn" type="PackedScene" id=2]
 
 [node name="MsgPopup" type="PopupPanel"]
+visible = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -1269.0
@@ -15,29 +17,35 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-margin_left = 4.0
-margin_top = 4.0
-margin_right = 647.0
-margin_bottom = 485.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 margin_left = 4.0
 margin_top = 4.0
 margin_right = 647.0
 margin_bottom = 485.0
 
-[node name="ItemImage" type="TextureRect" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_right = 643.0
+margin_bottom = 22.0
+size_flags_vertical = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CloseButton" parent="VBoxContainer/HBoxContainer" instance=ExtResource( 2 )]
+margin_left = 621.0
+margin_right = 643.0
+margin_bottom = 22.0
+hint_tooltip = "(close)"
+size_flags_horizontal = 10
+
+[node name="ItemImage" type="TextureRect" parent="VBoxContainer"]
+margin_top = 26.0
+margin_right = 643.0
+margin_bottom = 26.0
 stretch_mode = 6
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
-margin_top = 4.0
+margin_top = 30.0
 margin_right = 643.0
 margin_bottom = 481.0
 rect_min_size = Vector2( 300, 250 )
@@ -49,7 +57,7 @@ __meta__ = {
 
 [node name="ItemText" type="Label" parent="VBoxContainer/ScrollContainer"]
 margin_right = 643.0
-margin_bottom = 477.0
+margin_bottom = 451.0
 rect_min_size = Vector2( 300, 250 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -59,3 +67,4 @@ valign = 1
 autowrap = true
 [connection signal="about_to_show" from="." to="." method="_on_MsgPopup_about_to_show"]
 [connection signal="popup_hide" from="." to="." method="_on_MsgPopup_popup_hide"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/CloseButton" to="." method="_on_CloseButton_pressed"]

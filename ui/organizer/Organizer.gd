@@ -96,7 +96,8 @@ func refresh_organizer_data(data):
 	for child in entryContainer.get_children():
 		child.queue_free()
 		entryContainer.remove_child(child)
-		
+	var hotkeyIdx = 1
+	
 	for e in data.entries:
 		var entry:Dictionary = e
 		var entryData = entry['data']
@@ -112,7 +113,17 @@ func refresh_organizer_data(data):
 		if entry.has('id'): 
 			entryIds[entry.id] = item
 			item.id = entry.id
+			
+		if entryData is Dictionary:
+			# Combat hotkeys
+			if GameState.in_combat() and (entryData.has('hotkey') or entryData.get('cmd') == 'combatTech'):
+				entryData['hotkey'] = str(hotkeyIdx)
+				hotkeyIdx += 1
+			else:
+				entryData.erase('hotkey')
+				
 		target.add_item_bottom(item)
+			
 		if entryData is Dictionary and entryData.get('error'):
 			var errorIcon = item.find_node('ErrorIcon')
 			errorIcon.visible = true
@@ -132,7 +143,7 @@ func refresh_organizer_data(data):
 		Util.blink_once(self)
 	entryCountAtRefreshTime = data.entries.size()
 	data.refresh_entry_type_index()
-		
+
 func save():
 	var serializedOrganizer = serialize()
 	GameState.add_organizer(organizerDataName, serializedOrganizer)

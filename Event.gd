@@ -24,6 +24,7 @@ signal after_calendar_update(newDate)
 signal time_should_pause()
 signal pause_key_mutex(amt) # call with amt=1 when doing something that might require pressing the spacebar, which is used for pausing/unpausing the flow of time, and with -1 when that thing is finished.
 signal special_event(msgData, category)
+signal quest_state_changed(questName, oldState, newState)
 
 signal place_item(itemShadow, itemData, sourceNode) # place an item into a location
 signal cancel_place_item() # cancelled placement of an item

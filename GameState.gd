@@ -13,9 +13,11 @@ var settings = {
 	'helperName': 'Ren Xiu',
 }
 
-var quest = {
+var _quest = {
 	'tutorial':'start'
 }
+
+var _activeQuests = ['tutorial']
 
 var resources = {
 	"coin": 500
@@ -229,7 +231,8 @@ func serialize_world()->String:
 		msgHistory = msgHistoryNode.get_message_history()
 	var retval = {
 		'settings':settings,
-		'quest':quest,
+		'quest':_quest,
+		'activeQuests':_activeQuests,
 		'organizers':{},
 		'resources':resources,
 		'msgHistory':msgHistory
@@ -240,6 +243,33 @@ func serialize_world()->String:
 		retval.organizers[k] = serializedOrganizer
 	return to_json(retval)
 
+func deserialize_world(worldJson):
+	UI.clear_inner_panel()
+	set_char_organizer_visible(false)
+	if curScene: curScene.queue_free()
+	var serializedWorld = parse_json(worldJson)
+	settings = serializedWorld.settings
+	init_settings_for_new_game()
+	var msgHistoryNode = UI.find_node('MessageLogDisplay')
+	if msgHistoryNode:
+		msgHistoryNode.set_message_history(serializedWorld.get('msgHistory', ''))
+	_quest = serializedWorld.get('quest', {})
+	_activeQuests = serializedWorld.get('activeQuests', [])
+	resources = serializedWorld.get('resources', {})
+	_organizers = {}
+	var dummyOrg = OrganizerData.new() # needed because gdscript 3 doesn't support self-reference of classes from static functions :eyeroll:
+	for k in serializedWorld.organizers:
+		var deserializedOrganizer = dummyOrg.deserialize(serializedWorld.organizers[k])
+		_organizers[k] = deserializedOrganizer
+	if UI:
+		load_organizers(true)
+		UI.deserialize_text_interface(settings.get('uiTextInterface'))
+	loadScene(settings['curSceneName'], settings['curSceneSettings'])
+	Event.emit_signal('save_state_loaded')
+
+	Event.special_event("Save game loaded - %s"%[Util.formatted_datetime()], "system")
+	
+	
 func refresh_organizers(organizerDataName=null):
 	if !organizerDataName: load_organizers(true)
 	else:
@@ -269,30 +299,6 @@ func load_organizers(skipSave=false):
 func change_right_organizer(organizerName):
 	if UI: UI.load_right_organizer(organizerName, false)
 
-func deserialize_world(worldJson):
-	UI.clear_inner_panel()
-	set_char_organizer_visible(false)
-	if curScene: curScene.queue_free()
-	var serializedWorld = parse_json(worldJson)
-	settings = serializedWorld.settings
-	init_settings_for_new_game()
-	var msgHistoryNode = UI.find_node('MessageLogDisplay')
-	if msgHistoryNode:
-		msgHistoryNode.set_message_history(serializedWorld.get('msgHistory', ''))
-	quest = serializedWorld.get('quest', {})
-	resources = serializedWorld.get('resources', {})
-	_organizers = {}
-	var dummyOrg = OrganizerData.new() # needed because gdscript 3 doesn't support self-reference of classes from static functions :eyeroll:
-	for k in serializedWorld.organizers:
-		var deserializedOrganizer = dummyOrg.deserialize(serializedWorld.organizers[k])
-		_organizers[k] = deserializedOrganizer
-	if UI:
-		load_organizers(true)
-		UI.deserialize_text_interface(settings.get('uiTextInterface'))
-	loadScene(settings['curSceneName'], settings['curSceneSettings'])
-	Event.emit_signal('save_state_loaded')
-
-	Event.special_event("Save game loaded - %s"%[Util.formatted_datetime()], "system")
 
 func init_settings_for_new_game():
 	if !settings.has('calendarDate'):
@@ -463,3 +469,20 @@ func update_builtin_exemplar_commands():
 	for exemplar in exemplars:
 		exemplar.get('data').init_builtin_commands()
 	mainOrganizer.refresh_organizer_if_loaded()
+
+func get_active_quests():
+	return _activeQuests
+
+func get_quest_status(questName):
+	return _quest.get(questName, null)
+
+func set_quest_status(questName, status):
+	var oldState = get_quest_status(questName)
+	if status != null:
+		_quest[questName] = status
+		if !(_activeQuests.has(questName)):
+			_activeQuests.push_front(questName)
+	else:
+		_quest.erase(questName)
+		_activeQuests.erase(questName)
+	Event.emit_signal("quest_state_changed", questName, oldState, status)

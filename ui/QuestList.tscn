@@ -1,0 +1,73 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://img/carat_icon.png" type="Texture" id=1]
+[ext_resource path="res://img/carat_icon_down.png" type="Texture" id=2]
+[ext_resource path="res://ui/QuestList.gd" type="Script" id=3]
+[ext_resource path="res://img/unread.png" type="Texture" id=4]
+[ext_resource path="res://ui/Pulser.tscn" type="PackedScene" id=5]
+
+[node name="QuestList" type="PanelContainer"]
+margin_left = 344.0
+margin_top = 3.0
+margin_right = 652.0
+margin_bottom = 169.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 301.0
+margin_bottom = 159.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 294.0
+margin_bottom = 20.0
+
+[node name="CloseButton" type="TextureButton" parent="VBoxContainer/HBoxContainer"]
+margin_right = 20.0
+margin_bottom = 20.0
+toggle_mode = true
+texture_normal = ExtResource( 2 )
+texture_pressed = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="UnreadIcon" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
+visible = false
+margin_left = 24.0
+margin_right = 44.0
+margin_bottom = 20.0
+texture = ExtResource( 4 )
+
+[node name="Pulser" parent="VBoxContainer/HBoxContainer/UnreadIcon" instance=ExtResource( 5 )]
+enabled = true
+
+[node name="ObjectiveLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+margin_left = 24.0
+margin_top = 3.0
+margin_right = 93.0
+margin_bottom = 17.0
+text = "Objectives"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+margin_top = 24.0
+margin_right = 294.0
+margin_bottom = 152.0
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+margin_right = 294.0
+margin_bottom = 128.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="QuestListLabel" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
+margin_right = 294.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+autowrap = true
+[connection signal="toggled" from="VBoxContainer/HBoxContainer/CloseButton" to="." method="_on_TextureButton_toggled"]

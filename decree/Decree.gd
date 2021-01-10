@@ -92,7 +92,11 @@ func update_rect_size():
 	var optionsGridSize = decreeOptionsGrid.rect_global_position.x - rect_global_position.x + decreeOptionsGrid.rect_size.x+6
 	var inputsGridSize = decreeInputsGrid.rect_global_position.x - rect_global_position.x + decreeInputsGrid.rect_size.x+6
 	var resultsGridSize = decreeResultsGrid.rect_global_position.x - rect_global_position.x + decreeResultsGrid.rect_size.x+6
-	self.rect_size.x = max(resultsGridSize, max(optionsGridSize, inputsGridSize))
+	var closeButton = find_node('CloseButton')
+	var closeButtonSize = 0
+	if closeButton and closeButton.visible:
+		closeButtonSize = closeButton.rect_size.x + 6
+	self.rect_size.x = max(resultsGridSize, max(optionsGridSize, inputsGridSize)) + closeButtonSize
 	#print('grid.x=', decreeOptionsGrid.rect_global_position.x, '; popup.x=',  rect_global_position.x, '; grid.size.x=', decreeOptionsGrid.rect_size.x)
 	#visible = true
 	update_rect_position()
@@ -130,4 +134,8 @@ func update_decree_text():
 	
 func _on_PopupPanel_popup_hide():
 	#if decreeOrganizerNode: decreeOrganizerNode.data = decreeData.serialize()
+	queue_free()
+
+
+func _on_CloseButton_pressed():
 	queue_free()

@@ -14,6 +14,7 @@ var editNameButton
 var data
 var blinkCount = 0
 var disabled = false
+var hotkeyIdx
 
 var entryFlags:int = 0
 
@@ -22,6 +23,14 @@ var containingOrganizer
 func set_containing_organizer(org): containingOrganizer = org
 
 func _ready():
+	if data is Dictionary:
+		hotkeyIdx = data.get('hotkey', null)
+		if hotkeyIdx != null: 
+			var icon = add_icon('res://img/hotkey/%s.png'%hotkeyIdx)
+			icon.hint_tooltip = "Hotkey: "+hotkeyIdx
+		else:
+			data.erase('hotkey')
+	
 	if GameState.in_combat():
 		if hide_in_combat():
 			disabled = true
@@ -45,6 +54,12 @@ func _ready():
 	else: set_is_unread(false)
 	mark_as_placeable()
 	Event.connect("finalize_place_item", self, 'on_finalize_place_item')
+
+func _unhandled_key_input(event:InputEventKey):
+	if hotkeyIdx:
+		if OS.get_scancode_string(event.scancode) == hotkeyIdx:
+			Event._on_Event_organizer_entry_clicked(containingOrganizer, self)
+			get_tree().set_input_as_handled()
 
 func hide_in_combat():
 	if data is Dictionary:
@@ -255,10 +270,13 @@ func _on_UnplacedIcon_pressed():
 	_on_Label_pressed()
 
 func add_icon(iconPath):
-	var icon = TextureRect.new()
-	icon.texture = load(iconPath)
+	var icon = TextureButton.new()
+	icon.texture_normal = load(iconPath)
 	icon.rect_min_size = Vector2(20, 22)
 	icon.size_flags_horizontal = 0
 	icon.size_flags_vertical = SIZE_SHRINK_CENTER
-	var sep = self.find_node('VSeparator')
-	self.add_child_below_node(sep, icon)
+	icon.mouse_filter = MOUSE_FILTER_PASS
+	var sep = self.find_node('VSeparator', true, false)
+	sep.get_parent().add_child_below_node(sep, icon)
+	icon.connect("pressed", self, '_on_Label_pressed')
+	return icon

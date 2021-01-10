@@ -114,26 +114,26 @@ func init_builtin_commands():
 		_builtin_cmd("Kick^noDelete", {
 			"cmd": "combatTech", "attack": true, "block": false, "segments": [
 				{"t":AttackTechnique.PREPARE, "l": 0.1}, 
-				{"t":AttackTechnique.STRIKE, "l": 0.1}, 
+				{"t":AttackTechnique.STRIKE, "l": 0.1, "d": 1.0, "s":{"legStr":0.9, "attackAgi":0.1}}, 
 			]
 		}, 'techPunch', 'combatTech')
 		
 		_builtin_cmd("Jab^noDelete", {
 			"cmd": "combatTech", "attack":true, "block":true, "segments": [
-				{"t":AttackTechnique.STRIKE, "l": 0.05}, # quick attack
-				{"t":AttackTechnique.DEFLECT, "l": 0.01}, # quick parry
+				{"t":AttackTechnique.STRIKE, "l": 0.05, "d": 0.5, "s":{"armStr":0.7, "attackAgi":0.3}}, # quick attack
+				{"t":AttackTechnique.DEFLECT, "l": 0.01, "d": 5.0, "s":{"reactSpd":0.5, "armStr":0.5}},
 			]
 		}, 'techJab', 'combatTech')
 		
 		_builtin_cmd("Block^noDelete", {
 			"cmd": "combatTech", "attack": false, "block": true, "segments": [
-				{"t":AttackTechnique.BLOCK, "l": 0.3}
+				{"t":AttackTechnique.BLOCK, "l": 0.3, "d": 1.0, "s":{"armBoneStr":0.7, "coreEnd":0.3}}
 			]
 		}, 'techBlock', 'combatTech')
 		
 		_builtin_cmd("Deflect^noDelete", {
 			"cmd": "combatTech", "attack":false, "block":true, "segments": [
-				{"t":AttackTechnique.DEFLECT, "l":0.07}
+				{"t":AttackTechnique.DEFLECT, "l":0.07, "d": 10.0, "s":{"reactSpd":1.0}}
 			]
 		}, 'techDeflect', 'combatTech')
 
