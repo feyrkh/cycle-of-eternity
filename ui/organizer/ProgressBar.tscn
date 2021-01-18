@@ -11,3 +11,13 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="MissingPortion" type="ColorRect" parent="."]
+visible = false
+margin_right = 143.0
+margin_bottom = 28.0
+size_flags_horizontal = 0
+color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

@@ -9,6 +9,9 @@ const DEFAULT_SEGMENT_SPEED = 0.1 # full-lines per second
 var sourceCombatant:Combatant
 var targetCombatant:Combatant
 var targetLineFocus
+var closestPoint
+var mirrorPoint
+
 
 var offsetFromNodeCenter = 48
 var offsetFromCenterlineVector = 3
@@ -44,6 +47,14 @@ func update_combat_speed(newSpeed):
 #		default_color = defaultColor
 
 func _ready():
+	if !closestPoint:
+		closestPoint = find_node('ClosestPoint')
+		remove_child(closestPoint)
+		get_parent().get_parent().find_node('LineMarkerLayer').add_child(closestPoint)
+	if !mirrorPoint:
+		mirrorPoint = find_node('MirrorPoint')
+		remove_child(mirrorPoint)
+		get_parent().get_parent().find_node('LineMarkerLayer').add_child(mirrorPoint)
 	$AnimationPlayer.play('pulse')
 	$AnimationPlayer.seek(fmod(OS.get_system_time_msecs()/1000.0, $AnimationPlayer.current_animation_length))
 	for i in caratCount:
@@ -82,20 +93,42 @@ func _process(delta):
 	#carats coming from source node
 	#if Calendar.combatSpeed == 0:
 	#	pauseOffset += delta
-	pulseCaratOffset = fmod(((Calendar.combatTime+pauseOffset)*sourceSegmentSpeed), sourceSegmentLength)/sourceSegmentLength
+	pulseCaratOffset = fmod(((Calendar.combatTime+pauseOffset)*sourceSegmentSpeed/2), 1.0)#/sourceSegmentLength
 	for carat in sourceCarats:
-		carat.position = lerp(points[0], points[1], pulseCaratOffset)
-		pulseCaratOffset = fmod(pulseCaratOffset+sourceBetweenCaratOffset, 1.0)
+		if pulseCaratOffset < 0 or pulseCaratOffset > sourceSegmentLength: 
+			carat.visible = false
+		else: 
+			carat.visible = true
+		carat.position = lerp(points[0], points[2], pulseCaratOffset)
+		#pulseCaratOffset = fmod(pulseCaratOffset+sourceBetweenCaratOffset/sourceSegmentLength, 1.0)
+		pulseCaratOffset = pulseCaratOffset + sourceBetweenCaratOffset
+		if pulseCaratOffset > sourceSegmentLength:
+			pulseCaratOffset -= 1.0
 	# carats coming from target node
-	pulseCaratOffset = fmod(((Calendar.combatTime+pauseOffset)*targetSegmentSpeed), targetSegmentLength)/targetSegmentLength
+	pulseCaratOffset = fmod(((Calendar.combatTime+pauseOffset)*targetSegmentSpeed/2), 1.0)#/targetSegmentLength
 	for carat in targetCarats:
-		carat.position = lerp(points[2], points[1], pulseCaratOffset)
-		pulseCaratOffset = fmod(pulseCaratOffset+targetBetweenCaratOffset, 1.0)
+		if pulseCaratOffset > targetSegmentLength:
+			pulseCaratOffset -= 1.0
+		if pulseCaratOffset < 0 or pulseCaratOffset > targetSegmentLength:
+			carat.visible = false
+		else:
+			carat.visible = true
+		carat.position = lerp(points[2], points[0], pulseCaratOffset)
+		pulseCaratOffset = pulseCaratOffset + targetBetweenCaratOffset
+		#pulseCaratOffset = fmod(pulseCaratOffset+targetBetweenCaratOffset/targetSegmentLength, 1.0)
 	# find the point on the line the mouse cursor is closest to
 	var mouseProgress = Util.get_segment_progress_from_point(get_global_mouse_position(), points[0], points[points.size()-1])
 	var progressPoint = lerp(points[0], points[points.size()-1], mouseProgress)
-	$ClosestPoint.position = progressPoint
-	$ClosestPoint.progress = mouseProgress
+	closestPoint.position = progressPoint
+	closestPoint.progress = mouseProgress
+	var mirrorProgress = sourceSegmentLength+(sourceSegmentLength-mouseProgress)
+	if mirrorProgress < 0 or mirrorProgress > 1:
+		closestPoint.mirrorVisible = false
+	else:
+		var mirrorPointPosition = lerp(points[0], points[2], mirrorProgress)
+		mirrorPoint.position = mirrorPointPosition
+		closestPoint.mirrorVisible = true
+	
 
 # look at the end of the last technique on the line coming from the given combatant.
 func get_latest_add_offset(forCombatant):
@@ -155,8 +188,11 @@ func update_attack_line():
 	var defenseSpeed = float(targetCombatant.get_defense_speed())
 	sourceSegmentLength = 1.0 - (attackSpeed / (attackSpeed+defenseSpeed))
 	targetSegmentLength = 1.0 - sourceSegmentLength
-	sourceSegmentSpeed = DEFAULT_SEGMENT_SPEED
-	targetSegmentSpeed = DEFAULT_SEGMENT_SPEED
+	
+	sourceBetweenCaratOffset = 1.0/caratCount
+	targetBetweenCaratOffset = 1.0/caratCount
+	sourceSegmentSpeed = (DEFAULT_SEGMENT_SPEED / sourceSegmentLength) / 2
+	targetSegmentSpeed = (DEFAULT_SEGMENT_SPEED / targetSegmentLength) / 2
 	if sourceSegmentLength < MIN_SEGMENT_LENGTH:
 		# If the segment is too short, that means the source was much faster than the target. We don't want super-tiny segments, so we need to enlarge the segment
 		# but since we're making the segment longer, it also needs to move faster...at least for non-blocking maneuvers.

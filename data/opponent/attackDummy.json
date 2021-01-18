@@ -1,4 +1,33 @@
 {
-"entityName":"Training Dummy",
-"combatIcon":"res://img/items/attack_dummy.png"
+   "entityName": "Training Dummy",
+   "combatIcon": "res://img/items/attack_dummy.png",
+   "combatStyle": {
+      "moves": {
+         "Wooden Block": {
+            "block": true,
+            "attack": false,
+            "cost": {"fatigue":25},
+            "segments": [
+               {
+                  "t": "block",
+                  "l": 0.3,
+                  "d": 1,
+                  "s": {
+                     "defense": 1
+                  }
+               }
+            ]
+         }
+      },
+      "autoAttack": [],
+      "autoDefense": [
+         "Wooden Block"
+      ],
+      "autoAttackPercent":  0,
+      "autoDefendPercent":  1.0
+   },
+   "defense": 50,
+   "health": 200,
+   "fatigue": 25,
+   "fatigueRecover": 50
 }

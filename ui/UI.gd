@@ -4,8 +4,8 @@ onready var leftOrganizer:Organizer = find_node('Organizer')
 onready var rightOrganizer:Organizer = find_node('Organizer2')
 onready var charOrganizer:Organizer = find_node('CharOrganizer')
 onready var textInterfaceSplit:VSplitContainer = find_node('VSplitContainer')
-onready var timePassContainer = find_node('TimePassContainer')
 onready var timePassButton = find_node('TimePassButton')
+onready var dateProgressBar = find_node('DateProgressBar')
 onready var controlsContainer = find_node('ControlsContainer')
 onready var dragSurface = find_node('DragSurface')
 
@@ -191,7 +191,8 @@ func enter_combat_mode():
 	leftOrganizer.visible = false
 	charOrganizer.visible = false
 	#textInterface.visible = false
-	timePassContainer.visible = false
+	timePassButton.visible = false
+	dateProgressBar.visible = false
 	dragSurface.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	find_node("DateLabel").visible = false
 	#find_node("DateProgressBar").visible = false
@@ -199,7 +200,8 @@ func enter_combat_mode():
 func leave_combat_mode():
 	leftOrganizer.visible = true
 	textInterface.visible = true
-	timePassContainer.visible = true
+	timePassButton.visible = true
+	dateProgressBar.visible = true
 	dragSurface.mouse_filter = Control.MOUSE_FILTER_PASS
 	find_node("DateLabel").visible = true
 	find_node("DateProgressBar").visible = true

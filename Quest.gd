@@ -29,6 +29,7 @@ const Q_COMBAT_A_PLACE_ATTACK="combatA_placeAttack"
 const Q_COMBAT_A_UNPAUSE="combatA_unpause"
 const Q_COMBAT_A_EXIT_COMBAT="combatA_exitCombat"
 
+const Q_COMBAT_B_ACTIVE="combatB_active"
 
 
 
@@ -46,7 +47,7 @@ const QuestDescriptions = {
 	Q_TUTORIAL_WAIT_FOR_TRAINING_HALL: "Build a training hall using the decree template in the left-hand organizer - a new decree will appear in your outbox. Then pass time until the training hall is completed.",
 	Q_TUTORIAL_INSTALL_EQUIPMENT: "Visit the training hall and install training equipment",
 	Q_TUTORIAL_TRAIN_DISCIPLE: "Click on {helperName} in your New Arrivals folder in the left-hand organizer to open her status page",
-	Q_TUTORIAL_QUEUE_TRAINING: "Select a type of training, then click 'Add to Plan' it to her training plan - set up as many as you like!",
+	Q_TUTORIAL_QUEUE_TRAINING: "Select a type of training, then click 'Add to Plan' it to her training plan - set up as many as you like!\nMake sure you're in the location you want to train - it makes a difference.",
 	Q_TUTORIAL_SPAR_ATTACK: "Use the attack dummy in the training hall to learn how to attack",
 	Q_TUTORIAL_SPAR_DEFEND: "Use the defense dummy in the training hall to learn how to defend",
 	
@@ -57,4 +58,6 @@ const QuestDescriptions = {
 	Q_COMBAT_A_PLACE_ATTACK: "Hover your selected technique over your half of the attack line. The gray segment at the end of the attack represents loss of balance - the closer you place the attack to your opponent on the timeline, the more unbalanced you will be.",
 	Q_COMBAT_A_UNPAUSE: "Press spacebar or use the time controls to unpause time",
 	Q_COMBAT_A_EXIT_COMBAT: "Destroy all of your opponents, or right-click to deselect your exemplar and use the combat menu on the right to exit combat",
+
+
 }

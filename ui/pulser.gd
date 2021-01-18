@@ -7,6 +7,9 @@ export(Color) var startColor = Color.white
 var counter:float = 0
 var timer = null
 
+func _ready():
+	connect("tree_exiting", self, "stop")
+
 func _process(delta):
 	if !enabled:
 		set_process(false)

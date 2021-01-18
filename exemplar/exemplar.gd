@@ -66,7 +66,6 @@ func initTrainingOptions():
 	trainingMethodSelect.clear()
 	trainingMethodSelect.add_item("-- Select Training Method --", 0)
 	load_training_options_from_location()
-	trainingOptions.append(null)
 	load_training_options_from_exemplar()
 	countSelect.clear()
 	for i in 5:
@@ -215,7 +214,9 @@ func initStatsTab():
 		add_stats(grid, 'str.endurance.coreEnd')
 		add_stats(grid, 'str.endurance.gripEnd')
 		add_stats(grid, 'str.b_recover')
+		add_stats(grid, 'str.b_recover.health')
 		add_stats(grid, 'str.b_recover.healthRecover')
+		add_stats(grid, 'str.b_recover.fatigue')
 		add_stats(grid, 'str.b_recover.fatigueRecover')
 		
 		grid = find_node('AgiStats')

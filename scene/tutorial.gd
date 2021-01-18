@@ -21,7 +21,7 @@ func startState():
 	UI.leftOrganizer.visible = false
 	UI.rightOrganizer.visible = false
 	UI.controlsContainer.visible = false
-	UI.timePassContainer.visible = false
+	UI.timePassButton.visible = false
 	# done by default now - c.character('helper', '{helperName}', 'secretary')
 	c.speaking('helper')
 	c.page("""

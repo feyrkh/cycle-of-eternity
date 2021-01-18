@@ -28,18 +28,28 @@ const MAX_DISTANCE_TO_HIGHLIGHT_LINE = 30
 var defaultScale = scale
 var zoom = Vector2.ONE
 var progress = 0.0
+var mirrorPoint
+var mirrorVisible = true
+var parentLine
 
 func _ready():
+	if !parentLine:
+		parentLine = get_parent()
+	if !mirrorPoint:
+		mirrorPoint = parentLine.find_node('MirrorPoint')
 	defaultScale = scale
+	mirrorPoint.scale = scale
 	Event.connect('chakraZoom', self, 'on_zoom')
 
 func _process(delta):
 	if visible and global_position.distance_to(get_global_mouse_position()) > max(30, MAX_DISTANCE_TO_HIGHLIGHT_LINE*zoom.x):
 		visible = false
+	mirrorPoint.visible = self.visible and mirrorVisible
 
 func on_zoom(zoom):
 	self.zoom = zoom
 	scale = zoom * defaultScale
+	mirrorPoint.scale = scale
 	#entityNameLabel.rect_position.x = centerX - (entityNameLabel.rect_size.x/2 * zoom.x)
 "
 
@@ -61,9 +71,15 @@ anims/pulse = SubResource( 1 )
 ]]
 modulate = Color( 1, 1, 1, 0.721569 )
 position = Vector2( -0.0576191, -0.0261632 )
-scale = Vector2( 0.03, 0.03 )
+scale = Vector2( 0.06, 0.06 )
 texture = ExtResource( 2 )
 script = SubResource( 2 )
+
+[node name="MirrorPoint" type="Sprite" parent="."]
+modulate = Color( 1, 1, 1, 0.721569 )
+position = Vector2( -0.0576191, -0.0261632 )
+scale = Vector2( 0.03, 0.03 )
+texture = ExtResource( 2 )
 
 [node name="Midpoint" type="Sprite" parent="."]
 position = Vector2( 112.386, -0.355935 )

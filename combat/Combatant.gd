@@ -17,6 +17,38 @@ const playfieldPath = "../../PlayField"
 onready var entityNameLabel = find_node('EntityName')
 onready var centerX = entityNameLabel.rect_position.x + entityNameLabel.rect_size.x/2 
 onready var iconSelect = find_node('IconSelected')
+onready var chargeIcon = find_node('ChargeIcon')
+
+var chargeAmt = 0
+var combatStyle
+
+var incomingTargetLines = []
+var outgoingTargetLines = []
+
+func update_target_line_cache():
+	incomingTargetLines = []
+	outgoingTargetLines = []
+	var targetLines = get_tree().get_nodes_in_group('targetLine')
+	for line in targetLines:
+		if line.sourceCombatant == self: outgoingTargetLines.append(line)
+		if line.targetCombatant == self: incomingTargetLines.append(line)
+
+func updateStatLines():
+	var statEntity = self.find_node('CombatStyle', true, false)
+	if !statEntity:
+		statEntity = self
+	var line = find_node('HealthLine')
+	line.statEntity = statEntity
+	line.statName = 'health'
+	line.maxStatName = 'max_health'
+	line = find_node('AttackFatigueLine')
+	line.statEntity = statEntity
+	line.statName = 'autoAttackFatigue'
+	line.maxStatName = 'max_fatigue'
+	line = find_node('DefendFatigueLine')
+	line.statEntity = statEntity
+	line.statName = 'autoDefendFatigue'
+	line.maxStatName = 'max_fatigue'
 
 func _ready():
 	if !entityData: 
@@ -32,7 +64,32 @@ func _ready():
 		setup_exemplar()
 	else:
 		setup_opponent()
+	updateStatLines()
 	Event.connect('chakraZoom', self, 'on_zoom')
+	Event.connect('update_target_lines', self, 'update_target_line_cache')
+
+func _process(_delta):
+	pass
+
+func trigger_charge(strength, segment, technique):
+	pass
+	#print('Charge: ', strength, '; ', segment)
+
+func trigger_strike(strength, segment, technique):
+	pass
+	#print('Strike: ', strength, '; ', segment)
+
+func trigger_deflect(strength, segment, technique):
+	pass
+	#print('Deflect: ', strength, '; ', segment)
+
+func trigger_block(strength, segment, technique):
+	pass
+	#print('Block: ', strength, '; ', segment)
+	
+func trigger_interrupt(strength, segment, technique):
+	pass
+	#print('Interrupt: ', strength, '; ', segment)
 
 func get_attack_speed():
 	return max(1, entityData.get('attackSpd', 50))
@@ -64,6 +121,12 @@ func setup_exemplar():
 	setup_combat_icon("res://img/people/secretary.png")
 	setup_target_icons()
 	organizerName = entityData.get_organizer_name()
+	setup_combat_style({
+	  "autoAttackPercent":  0.5,
+	  "autoDefendPercent":  0.5,
+	  "autoAttack": [],
+	  "autoDefense": [],
+	})
 
 func setup_target_icons():
 	var numIcons = 0
@@ -90,6 +153,17 @@ func setup_opponent():
 	find_node('IconBackground').modulate = color
 	find_node('EntityName').text = entityData.get('entityName', "Unknown opponent")
 	setup_combat_icon(entityData.get('combatIcon'))
+	setup_combat_style(entityData.get('combatStyle'))
+
+func setup_combat_style(styleData):
+	if !styleData: 
+		combatStyle = null
+	combatStyle = load('res://combat/CombatStyle.gd').new()
+	combatStyle.name = "CombatStyle"
+	combatStyle.setup(self)
+	combatStyle.deserialize(styleData)
+	add_child(combatStyle)
+	updateStatLines()
 
 func setup_combat_icon(textureName):
 	if textureName: 
@@ -131,6 +205,12 @@ func drop_data(pos, data):
 		Event.emit_signal("update_target_lines")
 
 func is_combatant(): return true
+
+func get_stat(statName, defaultVal=0):
+	if entityData is ExemplarData:
+		return entityData.get_stat(statName, defaultVal)
+	else:
+		return entityData.get(statName, defaultVal)
 
 func on_zoom(zoom):
 	entityNameLabel.rect_scale = zoom

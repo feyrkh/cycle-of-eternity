@@ -32,8 +32,8 @@ func setup_base():
 		GameState.settings['combatEnabled'] = true
 		GameState.update_builtin_exemplar_commands()
 	combatType = combatData.get('combatType', 'normal')
-	opponentDataList = opponentDataList + opponentDataList
-	opponentDataList = opponentDataList + opponentDataList
+	#opponentDataList = opponentDataList + opponentDataList
+	#opponentDataList = opponentDataList + opponentDataList
 	#.setup_base() - skip base setup, this isn't really a location that needs equipment or organizers loaded
 	entityLayer = find_node('EntityLayer', true, false)
 	lineLayer = find_node('LineLayer', true, false)
@@ -52,7 +52,7 @@ func setup_base():
 		for opponent in opponentCombatants:
 			pass
 			#exemplar.add_combat_line(opponent)
-			#opponent.add_combat_line(exemplar)
+			opponent.add_combat_line(exemplar)
 			#exemplar.add_center_line(opponent)
 	
 	rightOrganizerName = 'combat'
@@ -73,9 +73,9 @@ func setup_base():
 func setup_quest():
 	GameState.update_builtin_exemplar_commands()
 	yield(get_tree(), "idle_frame")
-	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_SPAR_ATTACK and !GameState.get_quest_status(Quest.Q_COMBAT_A):
-		GameState.set_quest_status(Quest.Q_COMBAT_A, Quest.Q_COMBAT_A_ACTIVE)
-	var combatAttackState = GameState.get_quest_status(Quest.Q_COMBAT_A)
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_TUTORIAL_SPAR_ATTACK:
+		GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_COMBAT_A_ACTIVE)
+	var combatAttackState = GameState.get_quest_status(Quest.Q_TUTORIAL)
 	if combatAttackState:
 		match combatAttackState:
 			Quest.Q_COMBAT_A_ACTIVE: quest_move_combatants()
@@ -134,8 +134,8 @@ func run_command(cmd, data:Dictionary, sourceNode:Node=null):
 func exit_combat():
 	var postCombatSceneData = combatData.get('postCombatScene', {'sceneName':'office', 'sceneSettings':{'cmd':'scene', 'scene':'office', 'organizerName':'office'}})
 	GameState.loadScene(postCombatSceneData.get('sceneName'), postCombatSceneData.get('sceneSettings'))
-	if GameState.get_quest_status(Quest.Q_COMBAT_A) and GameState.get_quest_status(Quest.Q_COMBAT_A) != Quest.Q_COMPLETE:
-		GameState.set_quest_status(Quest.Q_COMBAT_A, Quest.Q_COMPLETE)
+	if GameState.get_quest_status(Quest.Q_TUTORIAL) and GameState.get_quest_status(Quest.Q_TUTORIAL) == Quest.Q_COMBAT_A_EXIT_COMBAT:
+		GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_SPAR_DEFEND)
 
 func start_placing_technique(data, sourceNode):
 	#print("placing technique '"+sourceNode.label.text+": "+to_json(data))
@@ -146,6 +146,7 @@ func start_placing_technique(data, sourceNode):
 	var tech = preload('res://combat/AttackTechnique.tscn').instance()
 	#data['techName'] = sourceNode.label.text
 	tech.combatScene = self
+	tech.sourceCombatant = selectedCombatant
 	tech.deserialize(data)
 	techniqueLayer.add_child(tech)
 	placingTechnique = tech
@@ -224,48 +225,47 @@ func quest_move_combatants():
 	find_node("FocusLayer").visible = false
 	GameState.settings['combatSelectOk'] = false
 	UI.rightOrganizer.get_entry_by_id('exitCombat').visible = false
-	GameState.set_quest_status(Quest.Q_COMBAT_A, Quest.Q_COMBAT_A_MOVE_COMBATANT)
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_COMBAT_A_MOVE_COMBATANT)
 	Conversation.clear()
 	Conversation.text("Welcome to combat. This is an abstract representation of a battle, with your allies at the top and enemies at the bottom.\nClick and drag one of the combatants to move them.")
 	yield(Conversation.run(), "completed")
 	yield(Event,"update_target_lines")
-	GameState.set_quest_status(Quest.Q_COMBAT_A, Quest.Q_COMBAT_A_FOCUS_TARGET)
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_COMBAT_A_FOCUS_TARGET)
 	Conversation.clear()
 	Conversation.text("Good. Position doesn't affect any outcomes, but it can help you observe the fight better. Now take a look at the target icon floating around your exemplar.\nIf you are exceptionally skilled you may have two targets, but most exemplars have only one. Click and drag a target onto one of the practice dummies.")
 	Conversation.run()
 	find_node("FocusLayer").visible = true
 	while lineLayer.get_child_count() == 0:
 		yield(Event,"update_target_lines")
-	GameState.set_quest_status(Quest.Q_COMBAT_A, Quest.Q_COMBAT_A_SELECT_EXEMPLAR)
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_COMBAT_A_SELECT_EXEMPLAR)
 	Conversation.clear()
 	Conversation.text("This represents your ability to bring the attack to the enemy. This line is a timeline of attack and response - your attacks will start from your exemplar's icon and travel down the line toward the enemy.\nEnemy responses, if any, will travel up the line to meet your attacks.\nWhen your attacks reach the midpoint they will strike the enemy, or be blocked if the enemy times their response correctly.\nThe midpoint of the line varies depending on your attack speed relative to the enemy's response speed - if you are fast enough, you could potentially send multiple attacks their way before they can respond even once!\nNext, click on your exemplar to select them, and look for the list of combat techniques they know.")
 	yield(Conversation.run(), "completed")
 	GameState.settings['combatSelectOk'] = true
 	yield(Event, "exemplar_combatant_selected")
-	GameState.set_quest_status(Quest.Q_COMBAT_A, Quest.Q_COMBAT_A_SELECT_ATTACK)
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_COMBAT_A_SELECT_ATTACK)
 	Conversation.clear()
 	Conversation.text("Entries not related to combat are disabled. Combat techniques have icons for sword, shield, or both next to them.\nA sword means the technique can be placed on your attack line, a shield means it can be placed on an enemy's attack line.\nClick on an attack (Kick or Jab) - defensive skills are no use, since these training dummies will not target you.")
 	Conversation.run()
 	yield(self, "attack_technique_selected")
-	GameState.set_quest_status(Quest.Q_COMBAT_A, Quest.Q_COMBAT_A_PLACE_ATTACK)
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_COMBAT_A_PLACE_ATTACK)
 	Conversation.clear()
 	Conversation.text("A representation of the technique appears near your mouse, and you can hover over your attack timeline to see it in context.\nYou can place it anywhere you like on your half of the timeline, but the closer to the midpoint you place it, the longer you will be 'unbalanced' after the move completes.\nYou could throw out a quick deflection to prevent damage at the last moment, but you may be vulnerable to multiple followup attacks if you do!\nPlace the technique on your timeline wherever you like.")
 	Conversation.run()
 	yield(self, "attack_technique_placed")
-	GameState.set_quest_status(Quest.Q_COMBAT_A, Quest.Q_COMBAT_A_UNPAUSE)
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_COMBAT_A_UNPAUSE)
 	Conversation.clear()
 	Conversation.text("You will notice that once you've placed a technique on the line, you can't place any other techniques ahead of it - techniques may only be added after the end of the last placed technique!\nUnpause the flow of time to see your attack play out - you can press the spacebar, or use the controls at the bottom right.")
 	Conversation.run()
 	yield(Event,"combat_speed_multiplier")
 	var speed = Calendar.combatSpeed
-	GameState.set_quest_status(Quest.Q_COMBAT_A, Quest.Q_COMBAT_A_EXIT_COMBAT)
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_COMBAT_A_EXIT_COMBAT)
 	Conversation.clear()
 	Conversation.text("The different colored sections of a technique represent different phases of the attack - preparing, charging, striking, blocking, deflecting, grappling, or unbalanced penalties.\nWe'll learn more about the details later. For now, either proceed to destroy all of the practice dummies or right-click to deselect any combatants and use the 'Leave combat' item to return to the training hall.")	
 	yield(Conversation.run(), "completed")
 	Calendar.update_combat_speed(speed) # conversation automatically pauses, so we have to unpause or it feels weird since we just told them to start time up
-	GameState.set_quest_status(Quest.Q_COMBAT_A, Quest.Q_COMPLETE)
-	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_TUTORIAL_SPAR_DEFEND)
-	set_selected_combatant(null)
+	GameState.set_quest_status(Quest.Q_TUTORIAL, Quest.Q_COMBAT_A_EXIT_COMBAT)
+	#set_selected_combatant(null)
 	var exitBtn = UI.rightOrganizer.get_entry_by_id('exitCombat')
 	if exitBtn: 
 		exitBtn.visible = true

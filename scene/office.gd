@@ -84,7 +84,7 @@ func tutorial_office_intro():
 	UI.leftOrganizer.visible = true
 	UI.rightOrganizer.visible = false
 	UI.controlsContainer.visible = false
-	UI.timePassContainer.visible = false
+	UI.timePassButton.visible = false
 
 	var officeOrg = load("res://ui/organizer/OrganizerData.gd").new()
 	officeOrg.add_folder('Outbox^noEdit^isOpen^noDelete', 'outbox')
@@ -103,7 +103,7 @@ func tutorial_place_desk():
 		UI.leftOrganizer.visible = true
 		UI.rightOrganizer.visible = true
 		UI.controlsContainer.visible = false
-		UI.timePassContainer.visible = false
+		UI.timePassButton.visible = false
 		var c = Conversation
 		c.speaking('helper')
 		c.text("""
@@ -143,7 +143,7 @@ func tutorial_first_decree():
 	UI.leftOrganizer.visible = true
 	UI.rightOrganizer.visible = true
 	UI.controlsContainer.visible = false
-	UI.timePassContainer.visible = false
+	UI.timePassButton.visible = false
 	var c = Conversation
 	c.clear()
 	c.speaking('helper')
@@ -183,7 +183,7 @@ func tutorial_discard_rubbish():
 	UI.leftOrganizer.visible = true
 	UI.rightOrganizer.visible = true
 	UI.controlsContainer.visible = false
-	UI.timePassContainer.visible = false
+	UI.timePassButton.visible = false
 	var c = Conversation
 	c.clear()
 	c.speaking('helper')
@@ -206,7 +206,7 @@ func rubbish_deleted():
 func tutorial_pass_time():
 	UI.leftOrganizer.visible = true
 	UI.rightOrganizer.visible = true
-	UI.timePassContainer.visible = true
+	UI.timePassButton.visible = true
 	UI.controlsContainer.visible = true
 	var c = Conversation
 	c.clear()
@@ -219,7 +219,7 @@ Well, no sense in waiting - let's get started!
 	c.text("Remember, although you are of course free to organize your documents as you see fit, you must leave any decrees you want processed in your Outbox before the end of the day!")
 	yield(c.run(), 'completed')
 	GameState.settings['allowTimePass'] = true
-	UI.call_attention_from_left(UI.timePassContainer)
+	UI.call_attention_from_left(UI.timePassButton)
 
 func setup_construction_decrees():
 	var org = GameState._organizers['main']
@@ -233,7 +233,7 @@ func setup_construction_decrees():
 func tutorial_build_training_hall():
 	UI.leftOrganizer.visible = true
 	UI.rightOrganizer.visible = true
-	UI.timePassContainer.visible = true
+	UI.timePassButton.visible = true
 	UI.controlsContainer.visible = true
 	var c = Conversation
 	c.clear()

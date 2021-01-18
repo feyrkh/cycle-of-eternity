@@ -7,7 +7,7 @@ const statsTree = {
 		'bone': ['armBoneStr', 'legBoneStr', 'skullBoneStr', 'coreBoneStr'],  # bone density
 		'muscle': ['armStr', 'legStr', 'gripStr', 'coreStr'], # muscle strength (how much force you can exert)
 		'endurance': ['armEnd', 'legEnd', 'gripEnd', 'coreEnd', 'fatigue'], # muscle endurance (how much muscle fatigue you can handle)
-		'b_recover': ['fatigueRecover', 'healthRecover'], # recovery speed
+		'b_recover': ['fatigue', 'fatigueRecover', 'health', 'healthRecover'], # recovery speed
 	},
 	'agi':{
 		'speed': ['moveSpd', 'attackSpd', 'reactSpd'], # speed of actions
@@ -115,26 +115,30 @@ func init_builtin_commands():
 			"cmd": "combatTech", "attack": true, "block": false, "segments": [
 				{"t":AttackTechnique.PREPARE, "l": 0.1}, 
 				{"t":AttackTechnique.STRIKE, "l": 0.1, "d": 1.0, "s":{"legStr":0.9, "attackAgi":0.1}}, 
-			]
+			],
+			"cost": {"fatigue":20}
 		}, 'techPunch', 'combatTech')
 		
 		_builtin_cmd("Jab^noDelete", {
 			"cmd": "combatTech", "attack":true, "block":true, "segments": [
 				{"t":AttackTechnique.STRIKE, "l": 0.05, "d": 0.5, "s":{"armStr":0.7, "attackAgi":0.3}}, # quick attack
 				{"t":AttackTechnique.DEFLECT, "l": 0.01, "d": 5.0, "s":{"reactSpd":0.5, "armStr":0.5}},
-			]
+			],
+			"cost": {"fatigue":5}
 		}, 'techJab', 'combatTech')
 		
 		_builtin_cmd("Block^noDelete", {
 			"cmd": "combatTech", "attack": false, "block": true, "segments": [
 				{"t":AttackTechnique.BLOCK, "l": 0.3, "d": 1.0, "s":{"armBoneStr":0.7, "coreEnd":0.3}}
-			]
+			],
+			"cost": {"fatigue":10}
 		}, 'techBlock', 'combatTech')
 		
 		_builtin_cmd("Deflect^noDelete", {
 			"cmd": "combatTech", "attack":false, "block":true, "segments": [
 				{"t":AttackTechnique.DEFLECT, "l":0.07, "d": 10.0, "s":{"reactSpd":1.0}}
-			]
+			],
+			"cost": {"fatigue":15}
 		}, 'techDeflect', 'combatTech')
 
 
@@ -186,7 +190,7 @@ func map_reduce_stats_tree(tree, baseData:Dictionary, mapFuncName, reduceFuncNam
 			if v is Dictionary:
 				var subSummary = map_reduce_stats_tree(v, baseData, mapFuncName, reduceFuncName, statPrefix, opts)
 				summary = call(reduceFuncName, summary, subSummary, statPrefix, opts)
-			else: # value is an array of stat names
+			else: # value is an array of stat namesmap_reduce_stats_tree
 				var subSummary = call(mapFuncName, v, statPrefix, opts)
 				summary = call(reduceFuncName, summary, subSummary, statPrefix, opts)
 	elif tree is Array:
@@ -200,8 +204,8 @@ func set_stat(statName, amt):
 		if stats[statName] > maxVal:
 			stats[statName] = maxVal 
 
-func get_stat(statName):
-	return stats.get(statName, 0)
+func get_stat(statName, defaultVal=0):
+	return stats.get(statName, defaultVal)
 
 func get(statName, default=0):
 	return stats.get(statName, default)
@@ -230,6 +234,12 @@ func get_stats_summary(statsTree, statPrefix=''):
 				statsTree = statsTree.get(lastStep)
 	return map_reduce_stats_tree(statsTree, {'sum':0,'count':0,'mean':0}, '_avg_stats_array', '_combine_avg_map', statPrefix)
 
+func _generate_missing_stat(statNameArray, statPrefix, expectedValue):
+	for statName in statNameArray:
+		if !stats.has(statName):
+			stats[statName] = expectedValue
+			stats['max_'+statName] = expectedValue
+	
 func _avg_stats_array(statNameArray, statPrefix, opts):
 	var count = 0
 	var sum = 0
@@ -275,7 +285,7 @@ func _combine_avg_map(prevSummary, newSummary, statPrefix, opts):
 			
 	
 func checkMissingStats(statsTree, expectedAmt):
-	pass
+	map_reduce_stats_tree(statsTree, {}, '_generate_missing_stat', '_no_op_reduce', "", expectedAmt)
 
 func get_stats_change_over_time(daysAgo)->Dictionary:
 	if daysAgo > statsHistory.size(): 

@@ -1,8 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://combat/Combatant.gd" type="Script" id=1]
 [ext_resource path="res://img/combat/combat_token.png" type="Texture" id=2]
 [ext_resource path="res://ui/Pulser.tscn" type="PackedScene" id=3]
+[ext_resource path="res://img/combat/chargeup.png" type="Texture" id=4]
+[ext_resource path="res://ui/ProgressLine.tscn" type="PackedScene" id=5]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Control
@@ -12,7 +14,8 @@ var dupe
 
 func _ready():
 	for child in get_children():
-		child.set_drag_forwarding(self)
+		if child.has_method('set_drag_forwarding'):
+			child.set_drag_forwarding(self)
 
 func _process(_delta):
 	pass
@@ -38,7 +41,9 @@ func get_drag_data_fw(pos, forwardedFrom):
 mouse_filter = 1
 script = ExtResource( 1 )
 __meta__ = {
-"_edit_use_anchors_": false
+"_edit_horizontal_guides_": [ -24.6453, 25.144 ],
+"_edit_use_anchors_": false,
+"_edit_vertical_guides_": [ -36.7046, 37.24 ]
 }
 
 [node name="Control" type="Control" parent="."]
@@ -55,7 +60,8 @@ __meta__ = {
 
 [node name="IconSelected" type="TextureRect" parent="Control"]
 visible = false
-modulate = Color( 0.380392, 0.380392, 0.380392, 1 )
+modulate = Color( 0.380392, 0.380392, 0.380392, 0.705882 )
+self_modulate = Color( 1, 1, 1, 0.701961 )
 margin_left = -4.0
 margin_top = -5.0
 margin_right = 106.0
@@ -108,5 +114,38 @@ valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="ChargeIcon" type="TextureRect" parent="Control"]
+visible = false
+margin_left = 1.0
+margin_top = -25.8361
+margin_right = 102.0
+margin_bottom = 97.1639
+rect_pivot_offset = Vector2( 50, 123 )
+texture = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HealthLine" parent="Control" instance=ExtResource( 5 )]
+position = Vector2( 15.3138, 25.3547 )
+default_color = Color( 0.101961, 0.509804, 0, 1 )
+
+[node name="AttackDefendBackground" type="Line2D" parent="Control"]
+position = Vector2( 85.209, 25.5657 )
+points = PoolVector2Array( 0, 0, 0, 50 )
+width = 4.0
+default_color = Color( 0, 0, 0, 1 )
+
+[node name="AttackFatigueLine" parent="Control" instance=ExtResource( 5 )]
+position = Vector2( 85.2087, 25.5654 )
+default_color = Color( 1, 0, 0, 1 )
+backgroundColor = Color( 0, 0, 0, 0 )
+
+[node name="DefendFatigueLine" parent="Control" instance=ExtResource( 5 )]
+position = Vector2( 85.2087, 75.3547 )
+rotation = 3.14159
+default_color = Color( 0, 0.203922, 1, 1 )
+backgroundColor = Color( 0, 0, 0, 0 )
 [connection signal="gui_input" from="." to="." method="_on_Combatant_gui_input"]
 [connection signal="gui_input" from="Control" to="." method="_on_Control_gui_input"]
